@@ -15,7 +15,7 @@
       lower:
     }>,
     duration: Option<Number> // (in sec),
-    maker: String
+    marker: String
   },
   {
     cmd: 'FERMATA',

@@ -1,7 +1,7 @@
 TEMPO 60 1/4
 MEASURE 1 [4/4] chiffre1
 
-MEASURE 2 2s
+MEASURE 2 [2s]
 // la mesure 3 et 4 seront aussi "timer" à 2s
 
 // le TEMPO est apppliqué à la prochaine mesure définie
