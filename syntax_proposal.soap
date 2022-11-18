@@ -1,0 +1,45 @@
+TEMPO 60 1/4
+MEASURE 1 [4/4] chiffre1
+
+MEASURE 2 2s
+// la mesure 3 et 4 seront aussi "timer" à 2s
+
+// le TEMPO est apppliqué à la prochaine mesure définie
+TEMPO 160 1/4
+MEASURE 5 [3/8]
+
+TEMPO 160 1/4
+MEASURE 6 [4/4]
+
+TEMPO 100 1/8
+MEASURE 7 [1/8]
+
+TEMPO 160 1/8
+MEASURE 8 [7/8]
+
+TEMPO 60 1/4
+MEASURE 9 [4/4]
+
+MEASURE 10 chiffre4
+
+TEMPO 120 1/4
+MEASURE 11 [3/4] chiffre5
+
+FERMATA 15|1
+
+MEASURE 16 1m15s
+MEASURE 17 [4/4]
+FERMATA 17|3
+
+TEMPO 63.4 1/4
+MEASURE 18 [3/4]
+
+// implicite 23|1
+FERMATA 23
+
+// implicite à 1/4
+TEMPO 60
+MEASURE 24 5s
+
+MEASURE 50 [4/4]
+TEMPO_CURVE 50|1 60 50|3 120 (1/2)
