@@ -1,0 +1,36 @@
+[
+  {
+    cmd: 'TEMPO'
+    bpm: Number,
+    basis: Option<TimeSignature {
+      upper:
+      lower:
+    }> // default to { upper: 1, lower: 4 }
+  },
+  {
+    cmd: 'MEASURE'
+    number: Number,
+    signature: Option<TimeSignature {
+      upper:
+      lower:
+    }>,
+    duration: Option<Number> // (in sec),
+    maker: String
+  },
+  {
+    cmd: 'FERMATA',
+    position: Position {
+      measure: Number
+      beat: Option<Number> // default à 1
+    }
+  },
+  {
+    cmd: 'TEMPO_CURVE',
+    start_position: Position
+    start_tempo: Number
+    end_position: Position
+    end_tempo: Number
+    curve: Option<Number> // default to 1
+  },
+]
+
