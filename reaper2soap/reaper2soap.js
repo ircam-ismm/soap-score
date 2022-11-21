@@ -40,7 +40,6 @@ fs.readFile('./sample_score.mid', 'base64', function (err,data) {
   let dataset = {};
 
   rawTempoList.forEach(line => {
-    console.log(line)
     currentMeasure = computeMetricTime(currentMetric.upper, currentMetric.lower, line.deltaTime/timeDiv) + currentMeasure;
     if (!dataset[currentMeasure]) {
       dataset[currentMeasure] = {};
@@ -66,7 +65,6 @@ fs.readFile('./sample_score.mid', 'base64', function (err,data) {
     }
 
   });
-  console.log()
   output = createOutputFile(dataset);
   fs.writeFileSync(`${outputFileName}.soap`, output);
   console.log(output);

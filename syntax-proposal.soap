@@ -1,5 +1,6 @@
 // exemple simple
-BAR [4/4] TEMPO 60
+BAR [3/4] TEMPO 60
+
 
 // le symbole | défini le temps à l'intérieur d'une mesure
 BAR 1 [4/4] "chiffre1"
@@ -19,7 +20,7 @@ BAR 3 [4/4]
 BAR 4 [6/8]
 // équivalence
 | TEMPO 160
-| TEMPO 160 [3/8]
+| TEMPO 160 [1/4]
 // ___________
 
 // les fermata
