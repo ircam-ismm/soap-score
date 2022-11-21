@@ -1,18 +1,14 @@
 import fs from 'node:fs';
 import TimeSignature from '@tonaljs/time-signature';
-import parseDuration from 'parse-duration'
-
-
-const score = fs.readFileSync('./syntax-proposal.soap').toString();
+import parseDuration from 'parse-duration';
 
 const Position = {
   get(str) {
     let parts = str.split('|');
-    parts = parts.map(el => parseInt(el));
 
     return {
-      measure: parts[0],
-      beat: parts[1] || 1,
+      measure: parseInt(parts[0]),
+      beat: parseFloat(parts[1]) || 1,
     }
   }
 }
@@ -31,7 +27,7 @@ const parseCommand = {
 
     return { cmd, bpm, basis };
   },
-  MEASURE: elems => {
+  BAR: elems => {
     const cmd = elems[0];
     const number = elems[1];
 
@@ -70,39 +66,55 @@ const parseCommand = {
   },
 };
 
-const lines = score.split('\n');
-// remove empty lines or comment lines
-const parsed = lines
-  .map(line => line.trim())
-  // remove empty lines or comment lines
-  .filter(line => {
-    if (line === '' || /^\/\//.test(line)) {
-      return false;
-    }
+export default function(fileOrText) {
+  let score;
 
-    return true
-  })
-  // remove line ending comments
-  .map(line => {
-    const elems = line.split(' ').map(el => el.trim());
+  if (fs.existsSync(fileOrText)) {
+    score = fs.readFileSync(fileOrText).toString();
+  } else {
+    score = fileOrText;
+  }
 
-    let index = null;
-    elems.forEach((el, i) => {
-      if (el == '//') {
-        index = i;
-      }
-    });
+  try {
+    const lines = score.split('\n');
+    // remove empty lines or comment lines
+    const parsed = lines
+      .map(line => line.trim())
+      // remove empty lines or comment lines
+      .filter(line => {
+        if (line === '' || /^\/\//.test(line)) {
+          return false;
+        }
 
-    if (index !== null) {
-      elems.splice(index);
-    }
+        return true
+      })
+      // remove line ending comments
+      .map(line => {
+        const elems = line.split(' ').map(el => el.trim());
 
-    return elems;
-  })
-  .map(elems => {
-    const cmd = elems[0];
+        let index = null;
+        elems.forEach((el, i) => {
+          if (el == '//') {
+            index = i;
+          }
+        });
 
-    return parseCommand[cmd](elems);
-  });
+        if (index !== null) {
+          elems.splice(index);
+        }
 
-console.log(parsed);
+        return elems;
+      })
+      .map(elems => {
+        const cmd = elems[0];
+
+        return parseCommand[cmd](elems);
+      });
+
+    return parsed;
+  } catch(err) {
+    console.error('> Unable to parse soap score');
+    console.error(err);
+  }
+}
+

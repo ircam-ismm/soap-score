@@ -5,12 +5,14 @@
   "main": "parser.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@tonaljs/time-signature": "^4.6.10",
+    "chai": "^4.3.7",
+    "mocha": "^10.1.0",
     "parse-duration": "^1.0.2"
   }
 }
