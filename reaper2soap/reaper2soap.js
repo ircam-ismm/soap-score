@@ -14,13 +14,13 @@ function computeMetricTime(prevUpper, prevLower, triggerTime) {
 function createOutputFile(dataset) {
   output = ``;
   Object.keys(dataset).forEach(bar => {
-    output += `TEMPO ${dataset[bar].tempo} 1/4\n`
     if (!dataset[bar].marker) {
       output += `BAR ${bar} [${dataset[bar].metric.upper}/${dataset[bar].metric.lower}]\n`
     }
     else {
-      output += `BAR ${bar} [${dataset[bar].metric.upper}/${dataset[bar].metric.lower}] ${dataset[bar].marker}\n`
+      output += `BAR ${bar} [${dataset[bar].metric.upper}/${dataset[bar].metric.lower}] "${dataset[bar].marker}"\n`
     }
+    output += `| TEMPO ${dataset[bar].tempo} 1/4\n`
   });
   return output;
 }

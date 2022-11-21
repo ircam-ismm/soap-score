@@ -119,3 +119,8 @@ BAR 200 [6/8] TEMPO 60 [3/8]
 BAR 201 [3/4] TEMPO [1/4]->[1/4]
 // est donc équivalent à:
 BAR 201 [3/4] TEMPO 90 [1/4]
+
+
+BAR 300 [5/4] "section1"
+|4 "attention au SOL#"
+
