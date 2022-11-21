@@ -1,104 +1,126 @@
-BAR 1 [4/4] chiffre1
+// exemple simple
+BAR [4/4] TEMPO 60
+
+// le symbole | défini le temps à l'intérieur d'une mesure
+BAR 1 [4/4] "chiffre1"
 | TEMPO 60 [1/4]
 
-BAR 1 [3/4] TEMPO 120 1/4
-BAR 2 [6/8] TEMPO 1/4 -> 1/8
+// équivalence, i.e. definition du premier temps optionnelle
+BAR 1 [4/4] "chiffre1"
+|1 TEMPO 60 [1/4]
 
+// par défaut une métrique en [[1-9]+/4] est battue à la noire et une métrique en [[3*x]/8] est battue à la croche pointée
 BAR 3 [4/4]
-// implicite
+// équivalence
 | TEMPO 160
-// explicite
 | TEMPO 160 [1/4]
+// ___________
 
 BAR 4 [6/8]
-// implicite
+// équivalence
 | TEMPO 160
-// explicite
-| TEMPO 160 [3/8] // ou [1/8] ?
+| TEMPO 160 [3/8]
+// ___________
 
+// les fermata
+// il s'agit de pause dans la battue
+// définie soit avec une durée, soit avec une action utilisateur
+
+// fermata définie avec une durée (1, pause de 2s, 3, 4)
 BAR 6 [4/4]
+| TEMPO 60
 |2 FERMATA [2s]
 
-BAR 7 FERMATA
+//fermata définie sans durée (le deuxième temps de la mesure 7 sera battu quand l'utilisateur appuiera sur play)
+BAR 7 [2/4]
+| TEMPO 80
+| FERMATA
 
+// les 2 premiers temps de la mesure 8 sont battus, mais la suite ne sera battue qu'après l'action utilisateur
 BAR 8
 |2 FERMATA
 
-BAR 9 [1/8]
+BAR 60 FERMATA
+// équivaut à
+BAR 60 "maMesure60"
+|1 FERMATA
+
+// la mesure 9 est en [4/4] mais est battue à la croche
+// on peut écrire l'équivalence suivante
+BAR 9 [4/4]
 | TEMPO 100 [1/8]
 
+BAR 9 [4/4]
+| TEMPO 50 [1/4]
+// ______________________________________
+
+// on peut écrire des mesures composées
 BAR 10 [2+3+2/8]
 | TEMPO 160 [1/8]
 
-
-<<<<<<< HEAD
-BAR 11 [4/4] TEMPO 60 [1/4]
-=======
-MEASURE 16 [1m15s]
-MEASURE 17 [4/4]
-FERMATA 17|3
->>>>>>> 45fe100cc11ddde9b394058093cfbab2887bd611
-
-BAR 12 chiffre4 TEMPO 120 [1/4]
-
-BAR 13 FERMATA [1m15s]
-BAR 17 [4/4]
-|3 FERMATA
-
-<<<<<<< HEAD
-BAR 20
-// équivalence
-| TEMPO 63.4 [1/4]
+// on peut définir des changements de tempo à l'intérieur des mesures
+BAR 20 [4/4]
 |1 TEMPO 63.4 [1/4]
-// ____________
-|2 TEMPO 120 [1/4]
-|3 TEMPO 40
+|2 TEMPO 120 [1/8]
+|3 TEMPO 40 // implicitement [1/8]
 |4 TEMPO 200
 
-BAR 21 [4/4] maMesure21
+// on peut définir des changements de temps à l'intérieur des temps.
+BAR 21 [4/4] "maMesure21"
 | TEMPO 63.4
 |3.5 TEMPO 80 // le changement de tempo intervient sur la 6e croche
 
-BAR 22 [3/4] toto // le tempo est toujours à 80
-BAR 22|3 TEMPO 63.4  // à discuter
+
+// syntaxe sans "|"
+
+BAR 30 [4/4] TEMPO 60
+BAR 30 [4/4] "chiffre2" TEMPO 60 // même définition avec un marker
+BAR 30 [4/4] "chiffre2" TEMPO 60 [1/4] // même définition plus verbeuse
+
+// seule la signature est modifiée, le tempo à 60 est hérité de la mesure 30
+BAR 31 [2/4]
+
+BAR 32 TEMPO 60 // seul le tempo est modifié, la signature est héritée de la mesure 31
+BAR 33 FERMATA [1m15s] // fermata sur le 1er temps
+BAR 34 |3 FERMATA
+BAR 35 |1 TEMPO 78 |2 FERMATA
 
 
-BAR 30 [3/4] toto TEMPO 60
-BAR 31 [4/4] TEMPO 63
-BAR 32 [3/4] toto // on reste à 63
-BAR 33 [4/4] TEMPO 66 toto // est-ce possible ?
+BAR 39 [3/4] "toto" // le tempo est toujours à 78
+BAR 39 |3 TEMPO 63.4
 
-BAR 34 [3/4] titi
-|1 TEMPO 60 // le tempo change sur le premier temps de la mesure 34
 
-BAR 35 [8/4] pouet
-|1 TEMPO 99 // le tempo change sur le premier temps de la mesure 35
+// les courbes de tempo
+
+// l'accelerando commence mesure 40 1er temps (à 60 à la noire) et se termine sur la mesure 50 2nd temps (à 120 à la noire)
+BAR 40 [8/4] "chiffre10" TEMPO 60 curve 0.5
+BAR 50 [8/4] "chiffre11" |2 TEMPO 120
+
+
+BAR 60 [8/4] "pouet"
+|1 TEMPO 99 // le tempo change sur le premier temps de la mesure 60
 |2 FERMATA // arret avec action utilisateur
-|3 TEMPO 60 curve 0.5 //courbe de tempo qui commence sur le 3e temps de la mesure 35 et qui finit sur le 4e temps de la mesure 35 (prochaine definition de TEMPO). Facteur exponentiel de 0.5
+|3 TEMPO 60 curve 0.5 //courbe de tempo qui commence sur le 3e temps de la mesure 60 et qui finit sur le 4e temps de la mesure 60 (prochaine definition de TEMPO). Facteur exponentiel de 0.5
 |4 TEMPO 120
 
-BAR 40 [8/4] chiffre10 TEMPO 60 curve
-BAR 43 [2/4]
-BAR 45 [6/8]
-BAR 48 [1/4]
-BAR 49 [4/4]
-BAR 50 [8/4] chiffre11
-|2 TEMPO 120
-// l'accelerando commence mesure 40 1er temps (à 60 à la noire) et se termine sur la mesure 50 2nd temps (à 120 à la noire)
-
-BAR 60 FERMATA
-// équivaut à
-BAR 60 maMesure60
-|1 FERMATA
-
 BAR 100 [4/4]
-|1 TEMPO 60 curve 0.5
+| TEMPO 60 curve 0.5
+BAR 101 [2/4] "hoo"
+BAR 102 |3 FERMATA
+BAR 103 [4/4]
+BAR 105 [3/8]
+BAR 110
 |3.5 TEMPO 120
-=======
-// implicite à 1/4
-TEMPO 60
-MEASURE 24 [5s]
 
-MEASURE 50 [4/4]
-TEMPO_CURVE 50|1 60 50|3 120 0.2
->>>>>>> 45fe100cc11ddde9b394058093cfbab2887bd611
+// les équivalences
+
+BAR 200 [6/8] TEMPO 60 [3/8]
+// noire en 6/8 = noire en 3/4
+BAR 201 [3/4] TEMPO [1/4]->[1/4]
+// est donc équivalent à:
+BAR 201 [3/4] TEMPO 90 [1/4]
+
+
+
+
+
