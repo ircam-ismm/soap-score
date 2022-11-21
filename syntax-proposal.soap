@@ -31,7 +31,13 @@ BAR 10 [2+3+2/8]
 | TEMPO 160 [1/8]
 
 
+<<<<<<< HEAD
 BAR 11 [4/4] TEMPO 60 [1/4]
+=======
+MEASURE 16 [1m15s]
+MEASURE 17 [4/4]
+FERMATA 17|3
+>>>>>>> 45fe100cc11ddde9b394058093cfbab2887bd611
 
 BAR 12 chiffre4 TEMPO 120 [1/4]
 
@@ -39,6 +45,7 @@ BAR 13 FERMATA [1m15s]
 BAR 17 [4/4]
 |3 FERMATA
 
+<<<<<<< HEAD
 BAR 20
 // équivalence
 | TEMPO 63.4 [1/4]
@@ -87,3 +94,11 @@ BAR 60 maMesure60
 BAR 100 [4/4]
 |1 TEMPO 60 curve 0.5
 |3.5 TEMPO 120
+=======
+// implicite à 1/4
+TEMPO 60
+MEASURE 24 [5s]
+
+MEASURE 50 [4/4]
+TEMPO_CURVE 50|1 60 50|3 120 0.2
+>>>>>>> 45fe100cc11ddde9b394058093cfbab2887bd611
