@@ -6,7 +6,8 @@ BAR 1 [4/4] "section 1"
 | TEMPO 60 [1/4]
 
 // équivalence, i.e. definition du premier temps optionnelle
-BAR 1 [4/4] "section 1"
+BAR 1 [4/4]
+|1 "section 1"
 |1 TEMPO 60 [1/4]
 
 // we can give an abolsute duration to a bar

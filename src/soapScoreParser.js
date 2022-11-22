@@ -13,60 +13,61 @@ const Position = {
   }
 }
 
-const parseCommand = {
-  TEMPO: elems => {
-    const cmd = elems[0];
-    const bpm = parseFloat(elems[1]);
+// const parseCommand = {
+//   TEMPO: elems => {
+//     const cmd = elems[0];
+//     const bpm = parseFloat(elems[1]);
 
-    let basis;
-    if (elems[2]) {
-      basis = TimeSignature.get(elems[2]);
-    } else {
-      basis = TimeSignature.get('1/4');
-    }
+//     let basis;
+//     if (elems[2]) {
+//       basis = TimeSignature.get(elems[2]);
+//     } else {
+//       basis = TimeSignature.get('1/4');
+//     }
 
-    return { cmd, bpm, basis };
-  },
-  BAR: elems => {
-    const cmd = elems[0];
-    const number = elems[1];
+//     return { cmd, bpm, basis };
+//   },
+//   BAR: elems => {
+//     const cmd = elems[0];
+//     const number = elems[1];
 
-    const data = { cmd, number };
+//     const data = { cmd, number };
 
-    for (let i = 2; i < elems.length; i++) {
-      if (/\[[0-9]+\/[0-9]+\]/.test(elems[i])) {
-        const sig = elems[i].slice(1, -1); // remove brackets
-        // this is a time signature
-        data.signature = TimeSignature.get(sig);
-      } else if (/\[[0-9hms]+\]/.test(elems[i])) {
-        const dur = elems[i].slice(1, -1); // remove brackets
-        data.duration = parseDuration(dur, 's');
-      } else {
-        // this is a marker
-        data.marker = elems[i];
-      }
-    }
+//     for (let i = 2; i < elems.length; i++) {
+//       if (/\[[0-9]+\/[0-9]+\]/.test(elems[i])) {
+//         const sig = elems[i].slice(1, -1); // remove brackets
+//         // this is a time signature
+//         data.signature = TimeSignature.get(sig);
+//       } else if (/\[[0-9hms]+\]/.test(elems[i])) {
+//         const dur = elems[i].slice(1, -1); // remove brackets
+//         data.duration = parseDuration(dur, 's');
+//       } else {
+//         // this is a marker
+//         data.marker = elems[i];
+//       }
+//     }
 
-    return data;
-  },
-  FERMATA: elems => {
-    const cmd = elems[0];
-    const position = Position.get(elems[1]);
-    return { cmd, position };
-  },
-  TEMPO_CURVE: elems => {
-    const cmd = elems[0];
-    const start_position = Position.get(elems[1]);
-    const start_tempo = parseFloat(elems[2]);
-    const end_position = Position.get(elems[3]);
-    const end_tempo = parseFloat(elems[4]);
-    const curve = elems[5] ? parseFloat(elems[5]) : 1;
+//     return data;
+//   },
+//   FERMATA: elems => {
+//     const cmd = elems[0];
+//     const position = Position.get(elems[1]);
+//     return { cmd, position };
+//   },
+//   TEMPO_CURVE: elems => {
+//     const cmd = elems[0];
+//     const start_position = Position.get(elems[1]);
+//     const start_tempo = parseFloat(elems[2]);
+//     const end_position = Position.get(elems[3]);
+//     const end_tempo = parseFloat(elems[4]);
+//     const curve = elems[5] ? parseFloat(elems[5]) : 1;
 
-    return { cmd, start_position, start_tempo, end_position, end_tempo, curve };
-  },
-};
+//     return { cmd, start_position, start_tempo, end_position, end_tempo, curve };
+//   },
+// };
 
-export default function(fileOrText, _returnParsedText = false) {
+// this one is private, but splitted for testing purposes
+export function formatScore(fileOrText) {
   let score;
 
   if (fs.existsSync(fileOrText)) {
@@ -75,9 +76,8 @@ export default function(fileOrText, _returnParsedText = false) {
     score = fileOrText;
   }
 
-  const lines = score.trim().split('\n');
   // remove empty lines or comment lines
-  const cleaned = lines
+  const lines = score.trim().split('\n')
     .map(line => line.trim())
     // remove empty lines or comment lines
     .filter(line => {
@@ -89,7 +89,9 @@ export default function(fileOrText, _returnParsedText = false) {
     })
     // remove line ending comments
     .map(str => {
-      const line = str.split(' ').map(el => el.trim());
+      // keep word in quotes (i.e. labels) intact
+      const regexp = / +(?=(?:(?:[^"]*"){2})*[^"]*$)/g;
+      const line = str.split(regexp).map(el => el.trim());
 
       let index = null;
       line.forEach((el, i) => {
@@ -116,8 +118,8 @@ export default function(fileOrText, _returnParsedText = false) {
     });
 
   // pack multiline BAR defs on 1 line
-  for (let i = cleaned.length - 1; i >= 0; i--) {
-    const line = cleaned[i];
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i];
 
     // if the line begins with a '|' we want to concatenate it to the previous entry
     if (line[0][0] === '|') {
@@ -127,16 +129,33 @@ export default function(fileOrText, _returnParsedText = false) {
       }
 
       // concat to previous line
-      cleaned[i - 1] = cleaned[i - 1].concat(line);
+      lines[i - 1] = lines[i - 1].concat(line);
       // remove from list
-      cleaned.splice(i, 1);
+      lines.splice(i, 1);
+    }
+  }
+
+  // prepend LABEL to "labels"
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    for (let j = line.length - 1; j >= 0; j--) {
+      const word = line[j];
+
+      if (word.startsWith('"') && word.endsWith('"')) {
+        const prev = line[j - 1];
+
+        if (prev !== 'LABEL') {
+          line.splice(j, 0, 'LABEL');
+        }
+      }
     }
   }
 
   // insert pipes before command if not present (simplified syntax)
-  cleaned.forEach(line => {
+  lines.forEach(line => {
     for (let i = 0; i < line.length; i++) {
-      if (line[i] === 'TEMPO' || line[i] === 'FERMATA') {
+      if (line[i] === 'TEMPO' || line[i] === 'FERMATA' || line[i] === 'LABEL') {
         const prev = line[i - 1];
         // if previous entry is pipe without beat number, default to one
         if (prev === '|') {
@@ -159,12 +178,12 @@ export default function(fileOrText, _returnParsedText = false) {
     }
   });
 
-  // for debug / tests
-  if (_returnParsedText) {
-    const parsedText = cleaned.map(line => line.join(' ')).join('\n');
-    console.log(parsedText);
-    return parsedText;
-  }
+  const parsedText = lines.map(line => line.join(' ')).join('\n');
+  return parsedText;
+}
+
+export default function(fileOrText) {
+
 
 }
 

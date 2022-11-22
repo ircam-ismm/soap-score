@@ -1,19 +1,66 @@
-[
+// rather
+
+const events = [
   {
+    type: 'BAR'
     bar: Integer=1,
     beat: Float=1,
+
     signature: null || TimeSignature {
       upper: Number=4
       lower: Number=4
     },
+  }
+  {
+    type: 'TEMPO'
+    bar: Integer=1,
+    beat: Float=1,
+
     basis: null || TimeSignature {
       upper: Number=1
       lower: Number=4
     },
     bpm: null || Number=60,
     bpm_curve: null || Number=1
+  }
+  {
+    type: 'FERMATA'
+    bar: Integer=1,
+    beat: Float=1,
     fermata: null || Number=+Infinity
+  }
+  {
+    type: 'LABEL'
+    bar: Integer=1,
+    beat: Float=1,
     label: String="",
   }
-]
+  // ...
+];
+
+// [
+//   {
+//     bar: Integer=1,
+//     beat: Float=1,
+//     // type BAR
+//     signature: null || TimeSignature {
+//       upper: Number=4
+//       lower: Number=4
+//     },
+
+//     // type TEMPO
+//     basis: null || TimeSignature {
+//       upper: Number=1
+//       lower: Number=4
+//     },
+//     bpm: null || Number=60,
+//     bpm_curve: null || Number=1
+
+//     // type FERMATA
+//     fermata: null || Number=+Infinity
+
+//     // type LABEL
+//     label: String="",
+//   }
+// ]
 

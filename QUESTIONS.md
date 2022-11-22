@@ -12,8 +12,9 @@ BAR 12 [3/4]
 or do we have to write:
 
 ```
-BAR 12 [3/4]
-|2 TEMPO 60 
+BAR 12 [3/4] 
+|2 "label"
+|1 TEMPO 60 
 |2 FERMATA
 ```
 
