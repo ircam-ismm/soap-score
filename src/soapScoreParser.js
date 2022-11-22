@@ -66,7 +66,7 @@ const parseCommand = {
   },
 };
 
-export default function(fileOrText) {
+export default function(fileOrText, _returnParsedText = false) {
   let score;
 
   if (fs.existsSync(fileOrText)) {
@@ -75,46 +75,96 @@ export default function(fileOrText) {
     score = fileOrText;
   }
 
-  try {
-    const lines = score.split('\n');
+  const lines = score.trim().split('\n');
+  // remove empty lines or comment lines
+  const cleaned = lines
+    .map(line => line.trim())
     // remove empty lines or comment lines
-    const parsed = lines
-      .map(line => line.trim())
-      // remove empty lines or comment lines
-      .filter(line => {
-        if (line === '' || /^\/\//.test(line)) {
-          return false;
+    .filter(line => {
+      if (line === '' || line.startsWith('//')) {
+        return false;
+      }
+
+      return true;
+    })
+    // remove line ending comments
+    .map(str => {
+      const line = str.split(' ').map(el => el.trim());
+
+      let index = null;
+      line.forEach((el, i) => {
+        if (el.startsWith('//')) {
+          index = i;
         }
-
-        return true
-      })
-      // remove line ending comments
-      .map(line => {
-        const elems = line.split(' ').map(el => el.trim());
-
-        let index = null;
-        elems.forEach((el, i) => {
-          if (el == '//') {
-            index = i;
-          }
-        });
-
-        if (index !== null) {
-          elems.splice(index);
-        }
-
-        return elems;
-      })
-      .map(elems => {
-        const cmd = elems[0];
-
-        return parseCommand[cmd](elems);
       });
 
-    return parsed;
-  } catch(err) {
-    console.error('> Unable to parse soap score');
-    console.error(err);
+      if (index !== null) {
+        line.splice(index);
+      }
+
+      return line;
+    })
+    // check that lines begin with 'BAR' or '|'
+    .map(line => {
+      const first = line[0];
+
+      if (first !== 'BAR' && /^\|[0-9]*/.test(first) === false) {
+        throw new Error(`Syntax error: ${line.join(' ')}`);
+      }
+
+      return line;
+    });
+
+  // pack multiline BAR defs on 1 line
+  for (let i = cleaned.length - 1; i >= 0; i--) {
+    const line = cleaned[i];
+
+    // if the line begins with a '|' we want to concatenate it to the previous entry
+    if (line[0][0] === '|') {
+      // add default beat, if not explicitely given
+      if (line[0] === '|') {
+        line[0] += '1';
+      }
+
+      // concat to previous line
+      cleaned[i - 1] = cleaned[i - 1].concat(line);
+      // remove from list
+      cleaned.splice(i, 1);
+    }
   }
+
+  // insert pipes before command if not present (simplified syntax)
+  cleaned.forEach(line => {
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === 'TEMPO' || line[i] === 'FERMATA') {
+        const prev = line[i - 1];
+        // if previous entry is pipe without beat number, default to one
+        if (prev === '|') {
+          line[i - 1] += '1';
+        }
+
+        if (/^\|[0-9]*/.test(prev) === false) {
+          let prevBeat = '|1'; // default
+          // look for the first beat info before the command
+          // e.g. BAR 3 [4/4] |2 TEMPO 60 FERMATA
+          for (let j = i - 1; j >= 0; j--) {
+            if (/^\|[0-9]*/.test(line[j])) {
+              prevBeat = line[j];
+            }
+          }
+
+          line.splice(i, 0, prevBeat);
+        }
+      }
+    }
+  });
+
+  // for debug / tests
+  if (_returnParsedText) {
+    const parsedText = cleaned.map(line => line.join(' ')).join('\n');
+    console.log(parsedText);
+    return parsedText;
+  }
+
 }
 
