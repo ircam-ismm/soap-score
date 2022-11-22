@@ -2,17 +2,18 @@
   "name": "soap-score",
   "version": "1.0.0",
   "description": "",
-  "main": "parser.js",
   "type": "module",
   "scripts": {
     "test": "mocha"
   },
   "author": "",
-  "license": "ISC",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.1.0"
+  },
   "dependencies": {
     "@tonaljs/time-signature": "^4.6.10",
-    "chai": "^4.3.7",
-    "mocha": "^10.1.0",
     "parse-duration": "^1.0.2"
   }
 }

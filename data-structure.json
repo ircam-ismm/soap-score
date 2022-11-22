@@ -10,6 +10,7 @@ const events = [
       upper: Number=4
       lower: Number=4
     },
+    duration: null,
   }
   {
     type: 'TEMPO'
@@ -27,7 +28,7 @@ const events = [
     type: 'FERMATA'
     bar: Integer=1,
     beat: Float=1,
-    fermata: null || Number=+Infinity
+    duration: null || Number=+Infinity
   }
   {
     type: 'LABEL'
