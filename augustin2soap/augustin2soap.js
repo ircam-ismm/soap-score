@@ -11,7 +11,25 @@ function convertSignature(str) {
 }
 
 function parseTime(str) {
-  return str
+  let time = 0;
+  if ( !isNaN(str) ) {
+    time = parseFloat(str);
+  } else {
+    const a = str.split(':');
+    switch (a.length) {
+      case 2:
+        console.log(2)
+        break;
+      case 3:
+        break;
+    }
+    if (a.length === 2)
+    time = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+    // console.log(seconds);
+    // time = null;
+    // console.log(str);
+  }
+  return time
 }
 
 const data = fs.readFileSync(strInputFileName,{encoding:'utf8', flag:'r'});
@@ -22,17 +40,16 @@ let index = 0;
 const cmd = ['fermata', 'timer'];
 
 dataArray.forEach(line => {
-  line = line.replace(",","");
+  line = line.replace(",", "");
   line = line.replace(";", "");
   cleanArray.push((line.split(" ")));
 });
 
 cleanArray.forEach(line => {
-  if (line.length === 3) {
-    if (cmd.includes(line[1])) {
+  if (line.length > 1 && line.length < 4 ) {
+    if ( cmd.includes(line[1]) ) {
       switch (line[1]) {
         case 'fermata':
-          // ne marche pas car 2 arguments dans ce cas
           events.push({ bar : parseInt(line[0]) , beat : 1 , fermata : +Infinity });
           break;
         case 'timer':
@@ -40,15 +57,15 @@ cleanArray.forEach(line => {
           break;
       }
     } else {
+      // console.log(line)
       events.push({ bar : parseInt(line[0]) , beat : 1 , bpm : parseFloat(line[2]) });
       events.push({ bar : parseInt(line[0]) , beat : 1 , signature : convertSignature(line[1]) });
     }
+  } else {
+    console.log("this line cannot be parsed ", line);
   }
-  // console.log(line);
-
 });
-// cleanArray.forEach()
 console.log(events);
-console.log(cleanArray)
+// console.log(cleanArray)
 
 
