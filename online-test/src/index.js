@@ -20,7 +20,8 @@ function parseScore(code) {
     res = soapScoreParser(code);
     console.log(res);
   } catch (err) {
-    res = err;
+    console.log(err);
+    res = err.message;
   }
 
   renderScreen();
@@ -55,5 +56,8 @@ function renderScreen() {
 
 (async function main() {
   renderScreen();
+
   window.addEventListener('resize', () => renderScreen());
+  // this does not work
+  document.querySelector('sc-editor').click();
 }());

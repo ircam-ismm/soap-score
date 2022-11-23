@@ -184,14 +184,14 @@ export function soapScoreParser(fileOrText) {
           event.label = part[2].slice(1, -1); // remove quotes
           break;
         case 'FERMATA':
-          if (part.length > 3) {
-            throw new Error(`Invalid syntax for FERMATA in line: ${line}`);
-          }
-
           if (part[2]) {
-            event.duration = parseDuration(part[2].slice(1, -1));
+            if (absDurationRegexp.test(part[2])) {
+              event.duration = parseDuration(part[2].slice(1, -1), 's');
+            } else {
+              throw new Error(`Invalid absolute time syntax for FERMATA in line: ${line}`);
+            }
           } else {
-            event.duration = null;
+            event.duration = +Infinity;
           }
           break;
         case 'TEMPO':
