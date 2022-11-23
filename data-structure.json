@@ -22,7 +22,7 @@ const events = [
       lower: Number=4
     },
     bpm: null || Number=60,
-    bpm_curve: null || Number=1
+    curve: null || Number=1
   }
   {
     type: 'FERMATA'

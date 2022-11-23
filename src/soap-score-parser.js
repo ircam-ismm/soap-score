@@ -310,3 +310,33 @@ export function soapScoreParser(fileOrText) {
   return ir;
 }
 
+
+export function soapScoreEventParser(events) {
+  let output = ``;
+  let lastWrittenBar = 0;
+  events.forEach((e) => {
+    switch (e.type) {
+      case 'BAR':
+        output += `BAR ${e.bar} [${e.signature.upper}/${e.signature.lower}]\n`
+        lastWrittenBar = e.bar;
+        break;
+      case 'TEMPO':
+        if (lastWrittenBar !== e.bar) {
+          output += `BAR ${e.bar}\n`
+        }
+        if (e.curve === null) {
+          output += `|${e.beat} TEMPO ${e.bpm} [1/4]\n`
+        } else {
+          output += `|${e.beat} TEMPO ${e.bpm} [1/4] curve ${e.curve}\n`
+        }
+        break;
+      case 'LABEL':
+        if (lastWrittenBar !== e.bar) {
+          output += `BAR ${e.bar}\n`
+        }
+        output += `|${e.beat} "${e.label}"\n`
+        break;
+    }
+  });
+  return output;
+}

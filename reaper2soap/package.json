@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "midi-parser-js": "^4.0.4"
   }

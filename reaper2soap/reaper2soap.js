@@ -1,7 +1,6 @@
-let midiParser  = require('midi-parser-js');
-let fs = require('fs')
-
-let output = ``;
+import midiParser from 'midi-parser-js';
+import fs from 'node:fs';
+import { soapScoreEventParser } from '../src/soap-score-parser.js';
 
 const inputFilename = process.argv.slice(2);
 const strInputFileName = `./${inputFilename[0]}`
@@ -28,39 +27,13 @@ function computeBarBeat(upper, lower, floatMeasure) {
 }
 
 function parseUnusableEvent(events) {
-  cleanEvents = []
+  const cleanEvents = []
   events.forEach((e) => {
     if (Object.keys(e).length > 2) {
       cleanEvents.push(e);
     }
   });
   return cleanEvents;
-}
-
-function createOutputFile(events) {
-  output = ``;
-  let lastWrittenBar = 0;
-  events.forEach((e) => {
-    switch (e.type) {
-      case 'BAR':
-        output += `BAR ${e.bar} [${e.signature.upper}/${e.signature.lower}]\n`
-        lastWrittenBar = e.bar;
-        break;
-      case 'TEMPO':
-        if (lastWrittenBar !== e.bar) {
-          output += `BAR ${e.bar}\n`
-        }
-        output += `|${e.beat} TEMPO ${e.bpm} [1/4]\n`
-        break;
-      case 'LABEL':
-        if (lastWrittenBar !== e.bar) {
-          output += `BAR ${e.bar}\n`
-        }
-        output += `|${e.beat} "${e.label}"\n`
-        break;
-    }
-  });
-  return output;
 }
 
 // read a .mid binary (as base64)
@@ -78,7 +51,7 @@ fs.readFile(strInputFileName, 'base64', function (err,data) {
 
   rawTempoList.forEach((line) => {
     currentFloatMeasure = computeMetricTime(currentMetric.upper, currentMetric.lower, line.deltaTime/timeDiv) + currentFloatMeasure;
-    currentBarBeat = computeBarBeat(currentMetric.upper, currentMetric.lower, Math.round(currentFloatMeasure*1000)/1000);
+    const currentBarBeat = computeBarBeat(currentMetric.upper, currentMetric.lower, Math.round(currentFloatMeasure*1000)/1000);
 
     index = events.push({bar:currentBarBeat.bar,beat:currentBarBeat.beat});
     index -= 1;
@@ -89,9 +62,11 @@ fs.readFile(strInputFileName, 'base64', function (err,data) {
         events[index].label = line.data;
         break;
       case 81:
+        // @TODO parse TEMPO CURVE FROM REAPER
         events[index].type = "TEMPO";
         const thisTempo = Math.round( (60000000 / line.data) * 1000 ) / 1000;
         events[index].bpm = thisTempo;
+        events[index].curve = null;
         break;
       case 88:
         events[index].type = "BAR";
@@ -104,8 +79,8 @@ fs.readFile(strInputFileName, 'base64', function (err,data) {
     }
 
   });
-  cleanEvents = parseUnusableEvent(events);
-  output = createOutputFile(cleanEvents);
+  const cleanEvents = parseUnusableEvent(events);
+  const output = soapScoreEventParser(cleanEvents);
   fs.writeFileSync(outputFileName, output);
   console.log('done');
 });

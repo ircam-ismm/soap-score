@@ -1,0 +1,45 @@
+BAR 0 [4/4]
+|1 TEMPO 60 [1/4]
+BAR 3 [4/4]
+|1 TEMPO 120 [1/4] curve 1
+BAR 5 [3/8]
+|1 TEMPO 160 [1/4]
+BAR 6 [1/8]
+|1 TEMPO 100 [1/4]
+BAR 7 [3/4]
+|1 TEMPO 50 [1/4]
+|2 TEMPO 50 [1/4] curve 1
+BAR 8 [7/8]
+|1 TEMPO 160 [1/4]
+BAR 9 [4/4]
+|1 TEMPO 60 [1/4]
+BAR 10 [4/4]
+|1 TEMPO 60 [1/4] curve 1
+BAR 11 [3/4]
+|1 TEMPO 120 [1/4]
+BAR 12 [7/4]
+|1 TEMPO 120 [1/4]
+|3 TEMPO 120 [1/4] curve 1
+BAR 13 [4/4]
+|1 TEMPO 60 [1/4]
+BAR 18 [3/4]
+|1 TEMPO 63.5 [1/4]
+BAR 19 [4/4]
+BAR 20 [5/4]
+|1 TEMPO 120 [1/4] curve 1
+|4 TEMPO 80.5 [1/4] curve 1
+BAR 30 [4/4]
+|1 TEMPO 120 [1/4]
+|3 TEMPO 120 [1/4] curve 1
+BAR 31 [2/4]
+BAR 32 [6/8]
+BAR 3
+|4 TEMPO 80 [1/4]
+BAR 8
+|2 TEMPO 80 [1/4]
+BAR 12
+|6 TEMPO 60 [1/4]
+BAR 21
+|1 TEMPO 100 [1/4]
+BAR 33
+|1 TEMPO 60 [1/4]
