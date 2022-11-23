@@ -1,0 +1,16 @@
+FALL 
+n° mesures partition / n° mesures click 
+pas de click pour mesures 1-9
+
+mes 10 = mes 1 
+mes 27 = mes 18 
+mes 43 = mes 34
+mes 52 = mes 43
+mes 63 = mes 54 
+mes 79 = mes 70 
+mes 87 = mes 79
+mes 99 = mes 91
+mes 111 = mes 103 
+mes 131 = mes 123
+mes 145 = mes 137 
+mes 160 = mes 152 

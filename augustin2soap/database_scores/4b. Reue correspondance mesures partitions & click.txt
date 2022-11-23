@@ -1,0 +1,9 @@
+Reue - équivalences n° mesures / n° click 
+
+jusqu'à mesure 20 pas de différence 
+
+mes 24 = mes 26
+mes 34 = mes 37
+mes 48 = mes 53
+mes 59 = mes 64
+mes 74 = mes 78 
