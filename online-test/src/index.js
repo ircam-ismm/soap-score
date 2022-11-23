@@ -59,5 +59,5 @@ function renderScreen() {
 
   window.addEventListener('resize', () => renderScreen());
   // this does not work
-  document.querySelector('sc-editor').click();
+  document.querySelector('sc-editor').focus();
 }());
