@@ -232,7 +232,7 @@ export function soapScoreParser(fileOrText) {
               (lastUnitEqSignature.upper / lastUnitEqSignature.lower);
 
             event.bpm = lastBPM * tempoRatio;
-            event.signature = TimeSignature.get(newUnitEq.slice(1, -1));
+            event.basis = TimeSignature.get(newUnitEq.slice(1, -1));
           } else {
             if (part.length > 4) {
               throw new Error(`Invalid syntax for TEMPO in line: ${line}`);
@@ -246,7 +246,7 @@ export function soapScoreParser(fileOrText) {
 
             if (part[3]) {
               if (signatureRegexp.test(part[3])) {
-                event.signature = TimeSignature.get(part[3].slice(1, -1));
+                event.basis = TimeSignature.get(part[3].slice(1, -1));
               } else {
                 throw new Error(`Invalid syntax for TEMPO signature in line: ${line}`)
               }
