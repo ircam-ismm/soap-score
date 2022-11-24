@@ -348,6 +348,7 @@ export function soapScoreFromEvent(events) {
 
         if (lastWrittenBar !== e.bar) {
           output += `\nBAR ${e.bar}\n`
+          lastWrittenBar = e.bar;
         }
 
         if (e.curve === null) {

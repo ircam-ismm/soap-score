@@ -48,6 +48,10 @@ export function checkSoapEvent(event) {
       if (event.duration !== null && !Number.isFinite(event.duration)) {
         throw new Error('Invalid `event.duration`, should be Float: ' + JSON.stringify(event));
       }
+
+      if (event.beat !== 1) {
+        throw new Error('`event.type: "BAR"` should be only located on first beat' + JSON.stringify(event));
+      }
       break;
     }
     case 'TEMPO': {

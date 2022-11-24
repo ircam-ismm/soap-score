@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "@tonaljs/time-signature": "^4.6.10",
     "midi-parser-js": "^4.0.4"
   }
 }
