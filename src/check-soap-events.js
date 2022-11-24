@@ -1,5 +1,13 @@
 function isTimeSignature(sig) {
-  return ('empty' in sig && 'name' in sig && 'type' in sig && 'upper' in sig && 'lower' in sig && 'additive' in sig);
+  if (sig !== undefined) {
+    if (sig === null) {
+        return true;
+      } else {
+        return ('empty' in sig && 'name' in sig && 'type' in sig && 'upper' in sig &&    'lower' in sig && 'additive' in sig);
+      }
+  } else {
+    return false;
+  }
 }
 
 export function checkSoapEvent(event) {
@@ -33,9 +41,10 @@ export function checkSoapEvent(event) {
         throw new Error('`event.duration` is mandatory: ' + JSON.stringify(event));
       }
 
-      if (event.signature === null && event.duration === null) {
-        throw new Error('`event.signature` and `event.duration` cannot be both null: ' + JSON.stringify(event));
-      }
+      // in BAR message, signature and duration can be both null
+      // if (event.signature === null && event.duration === null) {
+      //   throw new Error('`event.signature` and `event.duration` cannot be both null: ' + JSON.stringify(event));
+      // }
 
       if (event.signature !== null && event.duration !== null) {
         throw new Error('`event.signature` and `event.duration` cannot be both non null: ' + JSON.stringify(event));

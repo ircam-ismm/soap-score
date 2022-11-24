@@ -136,6 +136,8 @@ export function soapScoreParser(fileOrText) {
       type: 'BAR',
       bar: null,
       beat: 1,
+      signature: null,
+      duration: null,
     };
 
     // @todo - refactor to enforce positionnal
@@ -195,6 +197,12 @@ export function soapScoreParser(fileOrText) {
           }
           break;
         case 'TEMPO':
+          // WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          // remove this line when implementing tempo curve
+          // ______________________________________________
+          event.curve = null;
+          event.basis = null;
+          // ______________________________________________
           // if we are in front of a tempo equivalence
           if (tempoEquivalenceRegexp.test(part[2])) {
             if (part.length > 3) {
@@ -209,7 +217,7 @@ export function soapScoreParser(fileOrText) {
               let event = ir[i];
 
               if (event.type === 'TEMPO') {
-                // bpm is mandatory is TEMPO definition
+                // bpm is mandatory in TEMPO definition
                 lastBPM = event.bpm;
 
                 if (event.signature) {
