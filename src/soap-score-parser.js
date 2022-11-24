@@ -310,31 +310,73 @@ export function soapScoreParser(fileOrText) {
   return ir;
 }
 
+export function soapSortEvent(events) {
+  events.sort((a, b) => {
+    if (a.bar < b.bar) {
+      return -1;
+    } else if (a.bar === b.bar) {
+      if (a.beat < b.beat) {
+        return -1
+      } else if (a.beat === b.beat && b.type === 'BAR') {
+        return 1;
+      } else if (a.beat === b.beat && a.type === 'BAR') {
+        return -1;
+      }
+    } else {
+      return 1;
+    }
+  });
+  return events;
+}
 
-export function soapScoreEventParser(events) {
+
+export function soapScoreFromEvent(events) {
   let output = ``;
   let lastWrittenBar = 0;
   events.forEach((e) => {
     switch (e.type) {
       case 'BAR':
-        output += `BAR ${e.bar} [${e.signature.upper}/${e.signature.lower}]\n`
+        if (e.signature !== null) {
+          output += `\nBAR ${e.bar} [${e.signature.upper}/${e.signature.lower}]\n`;
+        } else {
+          output += `\nBAR ${e.bar} [${e.duration}s]\n`
+        }
         lastWrittenBar = e.bar;
+
         break;
       case 'TEMPO':
+
         if (lastWrittenBar !== e.bar) {
-          output += `BAR ${e.bar}\n`
+          output += `\nBAR ${e.bar}\n`
         }
+
         if (e.curve === null) {
-          output += `|${e.beat} TEMPO ${e.bpm} [1/4]\n`
+          output += `|${e.beat} TEMPO ${e.bpm} [${e.basis.name}]\n`
         } else {
-          output += `|${e.beat} TEMPO ${e.bpm} [1/4] curve ${e.curve}\n`
+          output += `|${e.beat} TEMPO ${e.bpm} [${e.basis.name}] curve ${e.curve}\n`
         }
+
         break;
       case 'LABEL':
+
         if (lastWrittenBar !== e.bar) {
-          output += `BAR ${e.bar}\n`
+          output += `\nBAR ${e.bar}\n`
         }
+
         output += `|${e.beat} "${e.label}"\n`
+        break;
+      case 'FERMATA':
+
+        if (lastWrittenBar !== e.bar) {
+          output += `\nBAR ${e.bar}\n`
+        }
+        output += `|${e.beat} FERMATA `
+
+        if (e.duration !== Infinity) {
+          output += `[${e.duration}s]`;
+        }
+
+        output += `\n`;
         break;
     }
   });

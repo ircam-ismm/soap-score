@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import TimeSignature from '@tonaljs/time-signature';
 import chunk from 'lodash.chunk';
 
-import { soapScoreEventParser } from '../src/soap-score-parser.js';
+import { soapScoreFromEvent, soapSortEvent } from '../src/soap-score-parser.js';
+import { checkSoapEvent } from '../src/check-soap-events.js';
 
 const inputFilename = process.argv.slice(2);
 const strInputFileName = `./${inputFilename[0]}`
@@ -109,9 +110,10 @@ function simpleParsing(line) {
           console.log("cannot parse ", line);
         } else {
           events.push({
-            type: 'FERMATA',
+            type: 'BAR',
             bar: parseInt(line[0]),
             beat: 1,
+            signature: null,
             duration: parseTime(line[2]),
           });
         }
@@ -125,6 +127,7 @@ function simpleParsing(line) {
       bar: parseInt(line[0]),
       beat: 1,
       signature: TimeSignature.get(thisSignature),
+      duration: null,
     });
 
     if (line.length === 3) {
@@ -232,11 +235,17 @@ endCurvePositionArray.forEach(line => {
 
 });
 
+events.forEach(e => {
+  checkSoapEvent(e);
+})
+
+
 // now we have to sort events by time
-// @TODO
+const sortedEvents = soapSortEvent(events)
 
 // and then parse to our format
-const output = soapScoreEventParser(events);
+let output = `// Score Generated from augustin2soap on ${new Date}\n`;
+output += soapScoreFromEvent(sortedEvents);
 fs.writeFileSync(outputFileName, output);
 console.log('done');
 
