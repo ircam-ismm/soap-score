@@ -9,9 +9,11 @@ const outputFileName = `${inputFilename[0].slice(0,-5)}.asco.txt`;
 console.log('parsing ', strInputFileName, ' and saving into ', outputFileName);
 
 
-function computeTick(upper) {
+function computeTick(sig, basis) {
+  const numBasisInBar = (sig.upper / sig.lower) /
+        (basis.upper / basis.lower);
   let tick = [];
-  for (let i = 0; i < upper; i++) {
+  for (let i = 0; i < numBasisInBar; i++) {
     if (i === 0) {
       tick.push(75);
     } else {
@@ -26,28 +28,34 @@ const events = soapScoreParser(score);
 const asco = [];
 let output = ``;
 let lastSignature = TimeSignature.get('1/4');
+let lastBasis = TimeSignature.get('1/4');
 
 events.forEach(e => {
   checkSoapEvent(e);
 
   switch(e.type) {
     case 'BAR': {
-      // on peut calculer tous les ticks de la mesure à partir du message bar
+      // on peut calculer tous les ticks de la mesure à partir du message bar NON ! il faut également le BPM BASIS
       if (e.signature !== null) {
         asco.push({
           bar: e.bar,
-          ticks: computeTick(e.signature.upper),
+          sig: e.signature,
         });
         lastSignature = e.signature;
       } else {
         asco.push({
           bar: e.bar,
-          ticks: computeTick(lastSignature.upper),
+          sig: lastSignature,
         });
       }
       break;
     };
     case 'TEMPO': {
+      const thisBarIndex = asco.findIndex(f => {
+        return (e.bar === f.bar);
+      });
+      asco[thisBarIndex].basis = e.basis;
+      asco[thisBarIndex].bpm = e.bpm;
       // console.log(e.bar, e.beat, e.bpm);
       // we don't need tempo here
       break;
@@ -58,6 +66,11 @@ events.forEach(e => {
   }
 });
 
+asco.forEach((e,i) => {
+  // compute ticks
+  asco[i].ticks = computeTick(e.sig, e.basis);
+})
+
 // fill missing bar
 for (let i = 1; i <= asco[asco.length-1].bar; i++) {
   const thisBar = asco.find(e => {
@@ -65,6 +78,7 @@ for (let i = 1; i <= asco[asco.length-1].bar; i++) {
   });
   if (thisBar === undefined) {
     asco.splice(i-1,0, {bar: i, ticks:asco[i-1].ticks});
+    console.log("fill bar ", asco[i].bar , "with ticks from bar", asco[i-1].bar);
   };
 };
 
@@ -88,12 +102,12 @@ asco.forEach(e => {
   })
 })
 
-// console.log(output);
+// console.log(asco);
 
 fs.writeFileSync(outputFileName, output);
 console.log('done');
 
-console.log("I don't parse tempo change when there are not on a beat (eg |4.5)");
+console.log("I don't care about tempo change inside a bar");
 console.log("I don't care about tempo basis and temps fort temps faible");
 console.log("I don't care about LABEL");
 console.log("I don't care about FERMATA");
