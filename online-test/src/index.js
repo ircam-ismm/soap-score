@@ -6,7 +6,7 @@ import JSON5 from 'json5';
 import '@ircam/simple-components/sc-editor.js';
 import '@ircam/simple-components/sc-text.js';
 
-import { soapScoreParser } from '../../src/soap-score-parser.js';
+import { getEventList } from '../../src/soap-score-parser.js';
 
 
 console.info('> self.crossOriginIsolated', self.crossOriginIsolated);
@@ -17,7 +17,7 @@ function parseScore(code) {
   res = null;
 
   try {
-    res = soapScoreParser(code);
+    res = getEventList(code);
     console.log(res);
   } catch (err) {
     console.log(err);

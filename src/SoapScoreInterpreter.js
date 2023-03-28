@@ -3,7 +3,9 @@
 class SoapScoreInterpreter {
   constructor(score) {
     this.score = score;
-    // console.log(score);
+
+    // should never change at this point
+    this._labels = score.filter(e => e.type === 'LABEL').map(e => e.label);
   }
 
   _computeDurationFromPosition(
@@ -32,6 +34,10 @@ class SoapScoreInterpreter {
       + ((nextBeat - 1) / barSignature.upper);
 
     return numBarNormalized * barDuration;
+  }
+
+  getLabels() {
+    return this._labels;
   }
 
   getLocationAtLabel(label) {

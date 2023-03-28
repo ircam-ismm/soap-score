@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@tonaljs/time-signature": "^4.6.10",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.sortby": "^4.7.0",
     "parse-duration": "^1.0.2"
   }
 }

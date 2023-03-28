@@ -1,5 +1,6 @@
 // rather
 
+// Intermediate representation
 const events = [
   {
     type: 'BAR'
@@ -39,6 +40,47 @@ const events = [
   // ...
 ];
 
+// Final representation
+const events = [
+  {
+    bar: Integer,
+    beat: Float,
+    signature: TimeSignature { upper, lower },
+    basis: timeSignature { upper, lower },
+    bpm: Float,
+    bpmCurve: null || {
+      start: { bar, beat },
+      end: { bar, beat },
+      exponent: Float
+    },
+    fermata: null || Number=+Infinity,
+    label: null || String,
+  }
+  // { // middle of the curve
+  //   bar: Integer,
+  //   beat: Float,
+  //   signature: TimeSignature { upper, lower },
+  //   basis: timeSignature { upper, lower },
+  //   bpm: Float,
+  //   bpmCurve: {
+  //     start: { bar, beat },
+  //     end: { bar, beat },
+  //     exponent: Float
+  //   },
+  //   fermata: null || Number=+Infinity,
+  //   label: null || String,
+  // }
+  { // end of the curve
+    bar: Integer,
+    beat: Float,
+    signature: TimeSignature { upper, lower },
+    basis: timeSignature { upper, lower },
+    bpm: Float,
+    bpmCurve: null,
+    fermata: null || Number=+Infinity,
+    label: null || String,
+  }
+];
 // [
 //   {
 //     bar: Integer=1,

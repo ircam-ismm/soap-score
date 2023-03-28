@@ -1,15 +1,21 @@
 // import fs from 'node:fs';
 import TimeSignature from '@tonaljs/time-signature';
 import parseDuration from 'parse-duration';
+import cloneDeep from 'lodash.clonedeep';
 
 const splitWordsRegexp = / +(?=(?:(?:[^"]*"){2})*[^"]*$)/g;
 // @note - must accept composed signature 2+3+2/8
-const signatureRegexp = /\[[0-9\+]+\/[0-9]+\]/;
-const absDurationRegexp = /\[[0-9hms]+\]/;
-const bracketDefaultRegExp = /\[.*\]/;
-const tempoEquivalenceRegexp = /\[[0-9]+\/[0-9]+\]\-\>\[[0-9]+\/[0-9]+\]/;
-// this one is private, but splitted for testing purposes
-export function soapFormatScore(score) {
+export const signatureRegexp = /\[[0-9\+]+\/[0-9]+\]/;
+export const absDurationRegexp = /\[[0-9hms]+\]/;
+export const bracketDefaultRegExp = /\[.*\]/;
+export const tempoEquivalenceRegexp = /\[[0-9]+\/[0-9]+\]\=\[[0-9]+\/[0-9]+\]/;
+export const tempoSyntaxRegexp = /\[[0-9]+\/[0-9]+\]\=[0-9]+/;
+
+
+/**
+ * Format user-friendly syntax to verbose syntax
+ */
+export function formatScore(score) {
   // remove empty lines or comment lines
   const lines = score.trim().split('\n')
     .map(line => line.trim())
@@ -116,8 +122,50 @@ export function soapFormatScore(score) {
   return parsedText;
 }
 
-export function soapScoreParser(fileOrText) {
-  const formattedScore = soapFormatScore(fileOrText);
+
+/**
+ * Return verbose list of events, kind of intermediate level representation:
+ * const events = [
+ *   {
+ *     type: 'BAR'
+ *     bar: Integer=1,
+ *     beat: Float=1,
+ *
+ *     signature: null || TimeSignature {
+ *       upper: Number=4
+ *       lower: Number=4
+ *     },
+ *     duration: null,
+ *   }
+ *   {
+ *     type: 'TEMPO'
+ *     bar: Integer=1,
+ *     beat: Float=1,
+ *
+ *     basis: null || TimeSignature {
+ *       upper: Number=1
+ *       lower: Number=4
+ *     },
+ *     bpm: null || Number=60,
+ *     bpm_curve: null || Number=1
+ *   }
+ *   {
+ *     type: 'FERMATA'
+ *     bar: Integer=1,
+ *     beat: Float=1,
+ *     duration: null || Number=+Infinity
+ *   }
+ *   {
+ *     type: 'LABEL'
+ *     bar: Integer=1,
+ *     beat: Float=1,
+ *     label: String="",
+ *   }
+ *   // ...
+ * ];
+ */
+export function getEventList(score) {
+  const formattedScore = formatScore(score);
 
   const lines = formattedScore.split('\n');
   const ir = [];
@@ -195,7 +243,7 @@ export function soapScoreParser(fileOrText) {
           }
           break;
         case 'TEMPO':
-          // if we are in front of a tempo equivalence
+          // tempo equivalence syntax
           if (tempoEquivalenceRegexp.test(part[2])) {
             if (part.length > 3) {
               throw new Error(`Invalid syntax for TEMPO in line: ${line}`);
@@ -223,8 +271,8 @@ export function soapScoreParser(fileOrText) {
               lastTempoSignature = TimeSignature.get('1/4');
             }
 
-            const lastUnitEq = part[2].replace(/\-\>\[[0-9]+\/[0-9]+\]/, '');
-            const newUnitEq = part[2].replace(/\[[0-9]+\/[0-9]+\]\-\>/, '');
+            const lastUnitEq = part[2].replace(/\=\[[0-9]+\/[0-9]+\]/, '');
+            const newUnitEq = part[2].replace(/\[[0-9]+\/[0-9]+\]\=/, '');
 
             const lastUnitEqSignature = TimeSignature.get(lastUnitEq.slice(1, -1));
             // ratio betwen the last defined signature and signature before convertion
@@ -233,24 +281,14 @@ export function soapScoreParser(fileOrText) {
 
             event.bpm = lastBPM * tempoRatio;
             event.basis = TimeSignature.get(newUnitEq.slice(1, -1));
+          // normal syntax
+          } else if (tempoSyntaxRegexp.test(part[2])) {
+            const [basis, bpm] = part[2].split('=');
+
+            event.bpm = parseFloat(bpm);
+            event.basis = TimeSignature.get(basis.slice(1, -1));
           } else {
-            if (part.length > 4) {
-              throw new Error(`Invalid syntax for TEMPO in line: ${line}`);
-            }
-
-            if (!part[2]) {
-              throw new Error(`Invalid syntax for TEMPO, bpm is mandatory, in line: ${line}`);
-            }
-
-            event.bpm = parseFloat(part[2]);
-
-            if (part[3]) {
-              if (signatureRegexp.test(part[3])) {
-                event.basis = TimeSignature.get(part[3].slice(1, -1));
-              } else {
-                throw new Error(`Invalid syntax for TEMPO signature in line: ${line}`)
-              }
-            }
+            throw new Error(`Invalid syntax for TEMPO signature in line: ${line}`)
           }
           break;
         default:
@@ -260,47 +298,6 @@ export function soapScoreParser(fileOrText) {
 
       ir.push(event);
     });
-
-    // @todo - review, find the first bar with a signature and check for tempo there
-    // first bar could have absolute time
-    // if (currentBar === 1) {
-    //   if (ir[0].type !== 'BAR') {
-    //     throw new Error(`Invalid score, should start with a BAR command`);
-    //   }
-
-    //   let hasTempo = false;
-
-    //   // this should be done when creating the tempo event?
-    //   // events.forEach(event => {
-    //   //   if (event.type === 'TEMPO' && event.beat === 1) {
-    //   //     hasTempo = true;
-
-    //   //     if (!event.signature) {
-    //   //       // define signature according to bar
-    //   //       const equivalences = {
-    //   //         '2/4': '1/4'
-    //   //         '3/4': '1/4'
-    //   //         '4/4': '1/4'
-    //   //         '3/8': '1/8'
-    //   //         '6/8': '1/8'
-    //   //         '9/8': '1/8'
-    //   //       };
-    //   //       const bar = events[0];
-    //   //       const barSignature = bar.signature.name;
-
-    //   //       if (equivalences[barSignature]) {
-
-    //   //       }
-    //   //
-    //   //       event.signature
-    //   //     }
-    //   //   }
-    //   // });
-
-    //   if (!hasTempo) {
-    //     throw new Error(`Invalid score, a TEMPO should be defined on first beat`);
-    //   }
-    // }
   });
 
   // @todo - stable sort by bar and beat
@@ -308,5 +305,101 @@ export function soapScoreParser(fileOrText) {
   // see https://lodash.com/docs/4.17.15#sortBy
 
   return ir;
+}
+
+function insertEventInList(event, list) {
+  if (list.length === 0) {
+    if (event.signature === null) {
+      throw new Error(`First bar should have a signature defined`);
+    }
+
+    if (event.bpm === null) {
+      throw new Error(`First bar should have a tempo defined`);
+    }
+  }
+
+  list.push(event);
+}
+
+export function parseScore(score) {
+  const ir = getEventList(score);
+  const list = [];
+
+  let currentEvent = {
+    bar: 1,
+    beat: 1,
+    signature: null,
+    basis: null,
+    bpm: null,
+    bpmCurve: null,
+    fermata: null,
+    label: null,
+  };
+
+  for (let index = 0; index < ir.length; index++) {
+    let event = ir[index];
+
+    if (event.bar !== currentEvent.bar || event.beat !== currentEvent.beat) {
+      // store current event
+      insertEventInList(currentEvent, list);
+      // deep copy current event and re-initialize
+      currentEvent = cloneDeep(currentEvent);
+      currentEvent.bar = event.bar;
+      currentEvent.beat = event.beat;
+      // reset label and fermata
+      currentEvent.label = null;
+      currentEvent.fermata = null;
+      // keep other infos untouched, bpmCurve is reset to null when only needed
+    }
+
+    switch (event.type) {
+      case 'BAR':
+        if (event.signature) {
+          currentEvent.signature = event.signature;
+        }
+
+        // @todo - handle event duration
+        break;
+      case 'TEMPO':
+        // these are mandatory in getEventList
+        currentEvent.basis = event.basis;
+        currentEvent.bpm = event.bpm;
+
+        if (event.bpmCurve) {
+          const start = { bar: currentEvent.bar, beat: currentEvent.beat };
+          // find next TEMPO event in list
+          let nextTempoEvent = null;
+
+          for (j = index + 1; j < ir.length; j++) {
+            if (ir[j].type === 'TEMPO') {
+              nextTempoEvent = ir[j];
+              break;
+            }
+          }
+
+          if (nextTempoEvent === null) {
+            throw new Error(`Tempo curve has no end`);
+          }
+
+          const end = { bar: nextTempoEvent.bar, beat: nextTempoEvent.beat };
+          const curve = event.bpmCurve;
+
+          currentEvent.bpmCurve = { start, end, curve };
+        } else {
+          currentEvent.bpmCurve = null;
+        }
+        break;
+      case 'FERMATA':
+        currentEvent.fermata = event.duration;
+        break;
+      case 'LABEL':
+        currentEvent.label = event.label;
+        break;
+    }
+  }
+  // push last event into list
+  insertEventInList(currentEvent, list);
+
+  return list;
 }
 
