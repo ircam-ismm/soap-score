@@ -12,7 +12,7 @@
 		"classnamespace" : "box",
 		"rect" : [ 34.0, 100.0, 1444.0, 767.0 ],
 		"bglocked" : 0,
-		"openinpresentation" : 0,
+		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
 		"default_fontface" : 0,
 		"default_fontname" : "Arial",
@@ -47,7 +47,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1369.0, 126.0, 65.0, 35.0 ],
-					"presentation_linecount" : 2,
 					"text" : ";\rtimer_on 0"
 				}
 
@@ -110,7 +109,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1278.5, 258.0, 93.0, 35.0 ],
-					"presentation_linecount" : 3,
 					"text" : ";\rtimer_scaled $1"
 				}
 
