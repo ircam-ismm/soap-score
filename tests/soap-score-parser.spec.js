@@ -191,7 +191,7 @@ BAR [4/4]
     // });
   });
 
-  describe.only('[internal] getEventList(score)', () => {
+  describe('[internal] getEventList(score)', () => {
     it('should parse BAR correctly', () => {
       {
         const score = `BAR [4/4]`;
@@ -200,6 +200,7 @@ BAR [4/4]
           type: 'BAR',
           bar: 1,
           beat: 1,
+          duration: null,
           signature: {
             empty: false,
             name: '4/4',
@@ -219,6 +220,7 @@ BAR [4/4]
           type: 'BAR',
           bar: 2,
           beat: 1,
+          duration: null,
           signature: {
             empty: false,
             name: '3/4',
@@ -239,6 +241,7 @@ BAR [4/4]
           bar: 19,
           beat: 1,
           duration: 2.5,
+          signature: null,
         }];
         assert.deepEqual(ir, expected);
       }
@@ -251,6 +254,7 @@ BAR [4/4]
         {
           type: 'BAR',
           beat: 1,
+          duration: null,
           signature: {
             empty: false,
             name: '2+2+3/8',
@@ -321,7 +325,7 @@ BAR [4/4]
     });
   });
 
-  describe.only(`parseScore(score)`, () => {
+  describe(`parseScore(score)`, () => {
     describe('# Basics', () => {
       it(`## Example 1`, () => {
         const score = `BAR 1 [4/4] TEMPO [1/4]=60`;

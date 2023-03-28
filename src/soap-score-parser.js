@@ -184,6 +184,8 @@ export function getEventList(score) {
       type: 'BAR',
       bar: null,
       beat: 1,
+      signature: null,
+      duration: null,
     };
 
     // @todo - refactor to enforce positionnal
@@ -202,7 +204,7 @@ export function getEventList(score) {
       } else if (bracketDefaultRegExp.test(el)) {
         throw new Error(`Invalid bracket syntax for signature or absolute duration in line ${line}`);
       } else {
-        // this is a marker
+        // this is a bar number
         currentBar = parseInt(el);
       }
     }
@@ -243,6 +245,8 @@ export function getEventList(score) {
           }
           break;
         case 'TEMPO':
+          // @todo parse tempo curve
+
           // tempo equivalence syntax
           if (tempoEquivalenceRegexp.test(part[2])) {
             if (part.length > 3) {
@@ -257,7 +261,7 @@ export function getEventList(score) {
               let event = ir[i];
 
               if (event.type === 'TEMPO') {
-                // bpm is mandatory is TEMPO definition
+                // bpm is mandatory in TEMPO definition
                 lastBPM = event.bpm;
 
                 if (event.signature) {
@@ -402,4 +406,3 @@ export function parseScore(score) {
 
   return list;
 }
-
