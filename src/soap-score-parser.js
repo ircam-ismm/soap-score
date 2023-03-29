@@ -119,6 +119,7 @@ export function formatScore(score) {
   });
 
   const parsedText = lines.map(line => line.join(' ')).join('\n');
+
   return parsedText;
 }
 
@@ -325,6 +326,37 @@ function insertEventInList(event, list) {
   list.push(event);
 }
 
+/**
+ * Return a list of events
+ * ```
+ * const events = [
+ *   {
+ *     bar: Integer,
+ *     beat: Float,
+ *     signature: TimeSignature { upper: Integer, lower: Number },
+ *     // is a duration is set, it takes precedance over tempo
+ *     duration: null || Number
+ *     tempo: null || {
+ *       basis: timeSignature { upper: Integer, lower: Number },
+ *       bpm: Float,
+ *       curve: null || {
+ *         start: { bar, beat },
+ *         end: { bar, beat },
+ *         exponent: Float
+ *       },
+ *     },
+ *     fermata: null || {
+ *       basis: timeSignature { upper: Integer, lower: Number },
+ *       // onlt one of these should be non `null`
+ *       absDuration: null || Number,
+ *       relDuration: null || Number,
+ *       suspended: null || true,
+ *     },
+ *     label: null || String,
+ *   }
+ * ];
+ * ```
+ */
 export function parseScore(score) {
   const ir = getEventList(score);
   const list = [];
@@ -333,9 +365,8 @@ export function parseScore(score) {
     bar: 1,
     beat: 1,
     signature: null,
-    basis: null,
-    bpm: null,
-    bpmCurve: null,
+    duration: null,
+    tempo: null,
     fermata: null,
     label: null,
   };
@@ -350,10 +381,11 @@ export function parseScore(score) {
       currentEvent = cloneDeep(currentEvent);
       currentEvent.bar = event.bar;
       currentEvent.beat = event.beat;
-      // reset label and fermata
+      // reset field that are not persisted
+      currentEvent.duration = null,
       currentEvent.label = null;
       currentEvent.fermata = null;
-      // keep other infos untouched, bpmCurve is reset to null when only needed
+      // keep other fields untouched, bpmCurve is reset to null when only needed
     }
 
     switch (event.type) {
@@ -362,12 +394,19 @@ export function parseScore(score) {
           currentEvent.signature = event.signature;
         }
 
+        if (event.duration) {
+          currentEvent.duration = event.duration;
+        }
         // @todo - handle event duration
         break;
       case 'TEMPO':
         // these are mandatory in getEventList
-        currentEvent.basis = event.basis;
-        currentEvent.bpm = event.bpm;
+        if (currentEvent.tempo === null) {
+          currentEvent.tempo = {};
+        }
+
+        currentEvent.tempo.basis = event.basis;
+        currentEvent.tempo.bpm = event.bpm;
 
         if (event.bpmCurve) {
           const start = { bar: currentEvent.bar, beat: currentEvent.beat };
@@ -386,11 +425,11 @@ export function parseScore(score) {
           }
 
           const end = { bar: nextTempoEvent.bar, beat: nextTempoEvent.beat };
-          const curve = event.bpmCurve;
+          const exponent = event.bpmCurve;
 
-          currentEvent.bpmCurve = { start, end, curve };
+          currentEvent.tempo.curve = { start, end, exponent };
         } else {
-          currentEvent.bpmCurve = null;
+          currentEvent.tempo.curve = null;
         }
         break;
       case 'FERMATA':

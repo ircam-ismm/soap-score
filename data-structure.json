@@ -1,109 +1,29 @@
-// rather
-
-// Intermediate representation
-const events = [
-  {
-    type: 'BAR'
-    bar: Integer=1,
-    beat: Float=1,
-
-    signature: null || TimeSignature {
-      upper: Number=4
-      lower: Number=4
-    },
-    duration: null,
-  }
-  {
-    type: 'TEMPO'
-    bar: Integer=1,
-    beat: Float=1,
-
-    basis: null || TimeSignature {
-      upper: Number=1
-      lower: Number=4
-    },
-    bpm: null || Number=60,
-    curve: null || Number=1
-  }
-  {
-    type: 'FERMATA'
-    bar: Integer=1,
-    beat: Float=1,
-    duration: null || Number=+Infinity
-  }
-  {
-    type: 'LABEL'
-    bar: Integer=1,
-    beat: Float=1,
-    label: String="",
-  }
-  // ...
-];
-
 // Final representation
 const events = [
   {
     bar: Integer,
     beat: Float,
-    signature: TimeSignature { upper, lower },
-    basis: timeSignature { upper, lower },
-    bpm: Float,
-    bpmCurve: null || {
-      start: { bar, beat },
-      end: { bar, beat },
-      exponent: Float
+    signature: TimeSignature { upper: Integer, lower: Number },
+    // is a duration is set, it takes precedance over tempo
+    duration: null || Number
+    tempo: null || {
+      basis: timeSignature { upper: Integer, lower: Number },
+      bpm: Float,
+      curve: null || {
+        start: { bar, beat },
+        end: { bar, beat },
+        exponent: Float
+      },
     },
-    fermata: null || Number=+Infinity,
-    label: null || String,
-  }
-  // { // middle of the curve
-  //   bar: Integer,
-  //   beat: Float,
-  //   signature: TimeSignature { upper, lower },
-  //   basis: timeSignature { upper, lower },
-  //   bpm: Float,
-  //   bpmCurve: {
-  //     start: { bar, beat },
-  //     end: { bar, beat },
-  //     exponent: Float
-  //   },
-  //   fermata: null || Number=+Infinity,
-  //   label: null || String,
-  // }
-  { // end of the curve
-    bar: Integer,
-    beat: Float,
-    signature: TimeSignature { upper, lower },
-    basis: timeSignature { upper, lower },
-    bpm: Float,
-    bpmCurve: null,
-    fermata: null || Number=+Infinity,
+    fermata: null || {
+      basis: timeSignature { upper: Integer, lower: Number },
+      // onlt one of these should be non `null`
+      absDuration: null || Number,
+      relDuration: null || Number,
+      suspended: null || true,
+    },
     label: null || String,
   }
 ];
-// [
-//   {
-//     bar: Integer=1,
-//     beat: Float=1,
-//     // type BAR
-//     signature: null || TimeSignature {
-//       upper: Number=4
-//       lower: Number=4
-//     },
 
-//     // type TEMPO
-//     basis: null || TimeSignature {
-//       upper: Number=1
-//       lower: Number=4
-//     },
-//     bpm: null || Number=60,
-//     bpm_curve: null || Number=1
-
-//     // type FERMATA
-//     fermata: null || Number=+Infinity
-
-//     // type LABEL
-//     label: String="",
-//   }
-// ]
 

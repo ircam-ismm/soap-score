@@ -6,18 +6,18 @@ import JSON5 from 'json5';
 import '@ircam/simple-components/sc-editor.js';
 import '@ircam/simple-components/sc-text.js';
 
-import { getEventList } from '../../src/soap-score-parser.js';
+import { getEventList, parseScore } from '../../src/soap-score-parser.js';
 
 
 console.info('> self.crossOriginIsolated', self.crossOriginIsolated);
 
 let res = null;
 
-function parseScore(code) {
+function parseAndShowScore(code) {
   res = null;
 
   try {
-    res = getEventList(code);
+    res = parseScore(code);
     console.log(res);
   } catch (err) {
     console.log(err);
@@ -28,7 +28,7 @@ function parseScore(code) {
 }
 
 const defaultScore = `// most minimalistic metronome
-BAR [4/4] TEMPO 60
+BAR [4/4] TEMPO [1/4]=60
 `;
 
 function renderScreen() {
@@ -41,7 +41,7 @@ function renderScreen() {
       height="${height}"
       style="float: left"
       value="${defaultScore}"
-      @change="${e => parseScore(e.detail.value)}"
+      @change="${e => parseAndShowScore(e.detail.value)}"
     ></sc-editor>
 
     <sc-text
