@@ -234,8 +234,6 @@ export function getEventList(score) {
         case 'FERMATA':
           const value = part[2];
 
-          console.log(value);
-
           if (fermataSyntaxRegexp.test(value)) {
             const parts = value.split('=');
             event.basis = TimeSignature.get(parts[0].slice(1, -1));
@@ -256,10 +254,6 @@ export function getEventList(score) {
 
           // tempo equivalence syntax
           if (tempoEquivalenceRegexp.test(part[2])) {
-            if (part.length > 3) {
-              throw new Error(`Invalid syntax for TEMPO in line: ${line}`);
-            }
-
             // find last tempo and last tempo signature
             let lastBPM = null;
             let lastTempoSignature = null;
@@ -301,6 +295,20 @@ export function getEventList(score) {
           } else {
             throw new Error(`Invalid syntax for TEMPO signature in line: ${line}`)
           }
+
+          if (part[3] === 'curve') {
+            let exponent = 1; // linear ramp
+
+            if (part[4] !== undefined) {
+              exponent = parseFloat(part[4]);
+            }
+
+            if (Number.isNaN(exponent)) {
+              throw new Error(`Invalid syntax for TEMPO curve in line: ${line}`);
+            }
+
+            event.bpmCurve = exponent;
+          }
           break;
         default:
           throw new Error(`Invalid command: ${event.type}`);
@@ -319,7 +327,6 @@ export function getEventList(score) {
 }
 
 function insertEventInList(event, list) {
-  console.log(event);
   if (event.duration === null && event.signature === null) {
     throw new Error(`A bar should have a either a duration or a signature defined`);
   }
@@ -367,8 +374,9 @@ export function parseScore(score) {
   const list = [];
 
   let currentEvent = {
-    bar: 1,
-    beat: 1,
+    // init with first event infos
+    bar: ir[0].bar,
+    beat: ir[0].beat,
     duration: null,
     signature: null,
     tempo: null,
@@ -378,8 +386,6 @@ export function parseScore(score) {
 
   for (let index = 0; index < ir.length; index++) {
     let event = ir[index];
-
-    console.log(event);
 
     if (event.bar !== currentEvent.bar || event.beat !== currentEvent.beat) {
       // store current event
@@ -404,7 +410,6 @@ export function parseScore(score) {
         if (event.duration) {
           currentEvent.duration = event.duration;
         }
-        // @todo - handle event duration
         break;
       case 'TEMPO':
         // these are mandatory in getEventList
@@ -420,7 +425,7 @@ export function parseScore(score) {
           // find next TEMPO event in list
           let nextTempoEvent = null;
 
-          for (j = index + 1; j < ir.length; j++) {
+          for (let j = index + 1; j < ir.length; j++) {
             if (ir[j].type === 'TEMPO') {
               nextTempoEvent = ir[j];
               break;
@@ -440,7 +445,26 @@ export function parseScore(score) {
         }
         break;
       case 'FERMATA':
-        currentEvent.fermata = event.duration;
+        currentEvent.fermata = {
+          basis: null,
+          absDuration: null,
+          relDuration: null,
+          suspended: null
+        };
+
+        currentEvent.fermata.basis = event.basis;
+
+        if ('absDuration' in event) {
+          currentEvent.fermata.absDuration = event.absDuration;
+        }
+
+        if ('relDuration' in event) {
+          currentEvent.fermata.relDuration = event.relDuration;
+        }
+
+        if ('suspended' in event) {
+          currentEvent.fermata.suspended = event.suspended;
+        }
         break;
       case 'LABEL':
         currentEvent.label = event.label;
