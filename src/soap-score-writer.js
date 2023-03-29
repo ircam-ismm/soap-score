@@ -1,10 +1,10 @@
-export function scoreFromEvent(eventList) {
+export function writeScore(eventList) {
   let output = ``;
   let currentBar = null;
   let currentLine = ``;
 
   eventList.forEach((event) => {
-    if (currentBar !== null && event.bar !== currentBar) {
+    if (event.bar !== currentBar) {
       output += currentLine + '\n';
 
       currentLine = ``;
@@ -12,17 +12,17 @@ export function scoreFromEvent(eventList) {
     }
 
     if (event.beat === 1) {
-      currentLine += `BAR ${event.bar}`;
+      currentLine += `BAR ${event.bar} `;
     } else {
       currentLine += `|${event.beat}`;
     }
 
     if (event.signature) {
-      currentLine += `[${event.signature.name}]`;
+      currentLine += `[${event.signature.name}] `;
     }
 
-    if (event.bpm) {
-      currentLine += `TEMPO ${event.basis.name}=${bpm}`;
+    if (event.tempo) {
+      currentLine += `TEMPO [${event.tempo.basis.name}]=${event.tempo.bpm} `;
     }
 
     if (event.label) {
@@ -30,23 +30,10 @@ export function scoreFromEvent(eventList) {
     }
 
     if (event.fermata) {
-      currentLine += `FERMATA ${event.fermata}`
-    }
-      case 'FERMATA':
-
-        if (lastWrittenBar !== e.bar) {
-          output += `\nBAR ${e.bar}\n`
-        }
-        output += `|${e.beat} FERMATA `
-
-        if (e.duration !== Infinity) {
-          output += `[${e.duration}s]`;
-        }
-
-        output += `\n`;
-        break;
-    }
+      // currentLine += `FERMATA ${event.fermata}`
     }
   });
+
+  output += currentLine + '\n';
   return output;
 }
