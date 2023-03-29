@@ -1,81 +1,22 @@
-import path from 'node:path';
-import fs from 'node:fs';
-
 import { assert } from 'chai';
-import parseDuration from 'parse-duration';
 
 import { parseScore } from '../src/soap-score-parser.js';
 import { writeScore } from '../src/soap-score-writer.js';
 
+import * as fixtures from './fixtures.js';
+
 describe('soap.writeScore', () => {
     describe('# Basics', () => {
       it(`## Example 1`, () => {
-        const data = [
-          {
-            bar: 1,
-            beat: 1,
-            duration: null,
-            signature: {
-              empty: false,
-              name: '4/4',
-              type: 'simple',
-              upper: 4,
-              lower: 4,
-              additive: []
-            },
-            tempo: {
-              basis: {
-                empty: false,
-                name: '1/4',
-                type: 'simple',
-                upper: 1,
-                lower: 4,
-                additive: []
-              },
-              bpm: 60,
-              curve: null,
-            },
-            fermata: null,
-            label: null,
-          },
-        ];
-        // const score = `BAR 1 [4/4] TEMPO [1/4]=60`;
+        const data = fixtures.basicExample1Data;
+
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
         assert.deepEqual(data, expected);
       });
       it(`## Example 2`, () => {
-        const data = [
-          {
-            bar: 1,
-            beat: 1,
-            duration: null,
-            signature: {
-              empty: false,
-              name: '6/8',
-              type: 'compound',
-              upper: 6,
-              lower: 8,
-              additive: []
-            },
-            tempo: {
-              basis: {
-                empty: false,
-                name: '3/8',
-                type: 'compound',
-                upper: 3,
-                lower: 8,
-                additive: []
-              },
-              bpm: 60,
-              curve: null,
-            },
-            fermata: null,
-            label: null
-          }
-        ];
+        const data = fixtures.basicExample2Data;
 
         const score = writeScore(data);
         const expected = parseScore(score);
@@ -85,89 +26,7 @@ describe('soap.writeScore', () => {
 
       });
       it(`## Example 3`, () => {
-        const data = [
-        {
-          bar: 1,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: null
-        },
-        {
-          bar: 3,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '6/4',
-            type: 'simple',
-            upper: 6,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: null
-        },
-        {
-          bar: 4,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: null
-        }
-        ];
+        const data = fixtures.basicExample3Data;
 
         const score = writeScore(data);
         const expected = parseScore(score);
@@ -176,370 +35,117 @@ describe('soap.writeScore', () => {
         assert.deepEqual(data, expected);
     });
       it(`## Example 4`, () => {
-      const data = [
-        {
-          bar: 1,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: null
-        },
-        {
-          bar: 3,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 50,
-            curve: null,
-          },
-          fermata: null,
-          label: null
-        },
-      ];
+        const data = fixtures.basicExample4Data;
 
-      const score = writeScore(data);
-      const expected = parseScore(score);
+        const score = writeScore(data);
+        const expected = parseScore(score);
 
-      console.log(score);
-      assert.deepEqual(data, expected);
+        console.log(score);
+        assert.deepEqual(data, expected);
       });
     });
+    describe('# Absolute measures', () => {
+      it('# Example 1', () => {
+        const data = fixtures.absExemple1Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
+
+        console.log(score);
+        assert.deepEqual(data, expected);
+      });
+      it('# Example 2', () => {
+        const data = fixtures.absExemple2Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
+
+        console.log(score);
+        assert.deepEqual(data, expected);
+      })
+    })
     describe('# Labels', () => {
       it(`## Example 1`, () => {
-        const data = [
-        {
-          bar: 1,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: "section A"
-        },
-        {
-          bar: 2,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: "section B"
-        },
-      ];
+        const data = fixtures.labelExample1Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
 
-      const score = writeScore(data);
-      const expected = parseScore(score);
-
-      console.log(score);
-      assert.deepEqual(data, expected);
+        console.log(score);
+        assert.deepEqual(data, expected);
 
       });
       it(`## Example 2`, () => {
-      const data = [
-        {
-          bar: 1,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: "section A"
-        },
-        {
-          bar: 2,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '3/4',
-            type: 'simple',
-            upper: 3,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: null
-        },
-        {
-          bar: 3,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '3/4',
-            type: 'simple',
-            upper: 3,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: "section B"
-        },
-      ];
+        const data = fixtures.labelExample2Data;
 
-      const score = writeScore(data);
-      const expected = parseScore(score);
+        const score = writeScore(data);
+        const expected = parseScore(score);
 
-      console.log(score);
-      assert.deepEqual(data, expected);
+        console.log(score);
+        assert.deepEqual(data, expected);
 
       });
     });
     describe('# Bar Subdivisions', () => {
       it(`## Example 1`, () => {
-      const data = [
-        {
-          bar: 1,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: "To Flute"
-        },
-        {
-          bar: 1,
-          beat: 3,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: "To Piccolo"
-        },
-      ];
+        const data = fixtures.subExample1Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
 
-      const score = writeScore(data);
-      const expected = parseScore(score);
-
-      console.log(score);
-      assert.deepEqual(data, expected);
+        console.log(score);
+        assert.deepEqual(data, expected);
 
 
 
       });
       it(`## Example 2`, () => {
-      const data = [
-        {
-          bar: 1,
-          beat: 1,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: null,
-        },
-        {
-          bar: 1,
-          beat: 4.5,
-          duration: null,
-          signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
-            upper: 4,
-            lower: 4,
-            additive: []
-          },
-          tempo: {
-            basis: {
-              empty: false,
-              name: '1/4',
-              type: 'simple',
-              upper: 1,
-              lower: 4,
-              additive: []
-            },
-            bpm: 120,
-            curve: null,
-          },
-          fermata: null,
-          label: "accent"
-        },
-      ];
-      const score = writeScore(data);
-      const expected = parseScore(score);
-      console.log(score);
-      assert.deepEqual(data, expected);
+        const data = fixtures.subExample2Data;
+
+        const score = writeScore(data);
+        const expected = parseScore(score);
+        console.log(score);
+        assert.deepEqual(data, expected);
 
 
 
       });
     });
     describe('# Fermata', () => {
-      it(`## Example`)
-    })
+      it(`## Example 1`, () => {
+        const data = fixtures.fermataExample1Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
+        console.log(score);
+        assert.deepEqual(data, expected);
+      });
+      it(`## Example 2`, () => {
+        const data = fixtures.fermataExample2Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
+        console.log(score);
+        assert.deepEqual(data, expected);
+      });
+      it(`## Example 3`, () => {
+        const data = fixtures.fermataExample3Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
+        console.log(score);
+        assert.deepEqual(data, expected);
+      });
+    });
+    describe('# CHIFFRAGE A NUMERATEUR MULTIPLES', () => {
+      it('## Example 1', () => {
+        const data = fixtures.composedExample1Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
+        console.log(score);
+        assert.deepEqual(data, expected);
+      });
+    });
+    describe('# Tempo Curves', () => {
+      it('## Example 1', () => {
+        const data = fixtures.tempoCurveExample1Data;
+        const score = writeScore(data);
+        const expected = parseScore(score);
+        console.log(score);
+        assert.deepEqual(data, expected);
+      });
+    });
 });
-
-
-// const score = writeScore(data);
-// const expected = parseScore(score);
-// console.log(score);
-// assert.deepEqual(data, expected);

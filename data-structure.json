@@ -1,23 +1,23 @@
 // Final representation
 const events = [
   {
-    bar: Integer,
-    beat: Float,
-    signature: TimeSignature { upper: Integer, lower: Number },
+    bar: Number,
+    beat: Number,
+    signature: TimeSignature { upper: Number, lower: Number },
     // is a duration is set, it takes precedance over tempo
     duration: null || Number
     tempo: null || {
-      basis: timeSignature { upper: Integer, lower: Number },
-      bpm: Float,
+      basis: TimeSignature { upper: Number, lower: Number },
+      bpm: Number,
       curve: null || {
         start: { bar, beat },
         end: { bar, beat },
-        exponent: Float
+        exponent: null || Number,
       },
     },
     fermata: null || {
-      basis: timeSignature { upper: Integer, lower: Number },
-      // onlt one of these should be non `null`
+      basis: TimeSignature { upper: Number, lower: Number },
+      // only one of these should be non `null`
       absDuration: null || Number,
       relDuration: null || Number,
       suspended: null || true,
