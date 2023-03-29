@@ -242,6 +242,38 @@ BAR 3 TEMPO [1/4]=50 \
     });
   });
 
+  describe(`# Bars w/ absolute duration`, () => {
+    it.only(`## Example 1`, () => {
+      const score = `\
+BAR 1 10s
+BAR 2 7.5s
+`;
+      const expected = [
+        {
+          bar: 1,
+          beat: 1,
+          duration: 10,
+          signature: null,
+          tempo: null,
+          fermata: null,
+          label: "section A"
+        },
+        {
+          bar: 2,
+          beat: 1,
+          duration: 7.5,
+          signature: null,
+          tempo: null,
+          fermata: null,
+          label: "section A"
+        }
+      ];
+
+      console.log(score);
+      assert.deepEqual(data, expected);
+    });
+  });
+
   describe(`# Labels`, () => {
     it(`## Example 1`, () => {
       const score = `\
