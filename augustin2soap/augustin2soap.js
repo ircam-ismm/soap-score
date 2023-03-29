@@ -96,12 +96,16 @@ function simpleParsing(line) {
   if (cmd.includes(line[1])) {
     switch (line[1]) {
       case 'fermata':
-        events.push({
-          type: 'FERMATA',
+        events.push( {
           bar: parseInt(line[0]),
           beat: 1,
-          duration: +Infinity
-        });
+          signature: null,
+          basis: null,
+          bpm: null,
+          bpmCurve: null,
+          fermata: +Infinity,
+          label: null,
+        } );
         break;
       case 'timer':
         const time = parseTime(line[2]);
@@ -109,26 +113,32 @@ function simpleParsing(line) {
         if (time === null) {
           console.log("cannot parse ", line);
         } else {
-          events.push({
-            type: 'BAR',
-            bar: parseInt(line[0]),
+          events.push( {
+            bar: parseInt( line[0] ),
             beat: 1,
             signature: null,
-            duration: parseTime(line[2]),
-          });
+            basis: null,
+            bpm: null,
+            bpmCurve: null,
+            fermata: parseTime(line[2]),
+            label: null,
+          } );
         }
         break;
     }
   } else {
     const thisSignature = line[1];
 
-    events.push({
-      type: 'BAR',
+    events.push( {
       bar: parseInt(line[0]),
       beat: 1,
       signature: TimeSignature.get(thisSignature),
+      basis:
+      type: 'BAR',
+
+      signature: TimeSignature.get(thisSignature),
       duration: null,
-    });
+    } );
 
     if (line.length === 3) {
       addTempoEvent(parseInt(line[0]), 1, parseFloat(line[2]));
