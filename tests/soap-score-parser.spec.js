@@ -243,11 +243,12 @@ BAR 3 TEMPO [1/4]=50 \
   });
 
   describe(`# Bars w/ absolute duration`, () => {
-    it.only(`## Example 1`, () => {
+    it(`## Example 1`, () => {
       const score = `\
 BAR 1 10s
 BAR 2 7.5s
 `;
+      const data = parseScore(score);
       const expected = [
         {
           bar: 1,
@@ -270,6 +271,7 @@ BAR 2 7.5s
       ];
 
       console.log(score);
+      console.log(data);
       assert.deepEqual(data, expected);
     });
   });

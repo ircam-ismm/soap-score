@@ -5,11 +5,12 @@ import cloneDeep from 'lodash.clonedeep';
 
 const splitWordsRegexp = / +(?=(?:(?:[^"]*"){2})*[^"]*$)/g;
 // @note - must accept composed signature 2+3+2/8
-export const signatureRegexp = /\[[0-9\+]+\/[0-9]+\]/;
-export const absDurationRegexp = /\[[0-9hms]+\]/;
-export const bracketDefaultRegExp = /\[.*\]/;
-export const tempoEquivalenceRegexp = /\[[0-9]+\/[0-9]+\]\=\[[0-9]+\/[0-9]+\]/;
-export const tempoSyntaxRegexp = /\[[0-9]+\/[0-9]+\]\=[0-9]+/;
+export const signatureRegexp = /^\[([0-9\+]+)\/([0-9]+)\]$/;
+export const absDurationRegexp = /^([0-9hms\.]+)$/;
+export const bracketDefaultRegExp = /^\[.*\]$/;
+export const tempoEquivalenceRegexp = /^\[([0-9]+\/[0-9]+)\]\=\[([0-9]+\/[0-9]+)\]/;
+export const tempoSyntaxRegexp = /^\[([0-9]+\/[0-9]+)\]\=([0-9\.]+)$/;
+export const fermataSyntaxRegexp = /^\[([0-9]+\/[0-9]+)\]\=([0-9hms\?\*\.]+)$/;
 
 
 /**
@@ -178,7 +179,6 @@ export function getEventList(score) {
       .map(parts => parts.split(splitWordsRegexp).map(word => word.trim()));
 
     const bar = parts.shift();
-    let currentBar = index === 0 ? 1 : null;
 
     // parse bar
     const event = {
@@ -189,32 +189,29 @@ export function getEventList(score) {
       duration: null,
     };
 
-    // @todo - refactor to enforce positionnal
-    for (let i = 1; i < bar.length; i++) {
-      const el = bar[i];
-
-      // bar has a time signature
-      if (signatureRegexp.test(el)) {
-        const sig = el.slice(1, -1);
-        event.signature = TimeSignature.get(sig);
-      // bar is expressed in absolute time
-      } else if (absDurationRegexp.test(el)) {
-        const dur = el.slice(1, -1); // remove brackets
-        event.duration = parseDuration(dur, 's');
-      // this is the bar number
-      } else if (bracketDefaultRegExp.test(el)) {
-        throw new Error(`Invalid bracket syntax for signature or absolute duration in line ${line}`);
-      } else {
-        // this is a bar number
-        currentBar = parseInt(el);
-      }
-    }
-
-    if (currentBar === null) {
+    // first index is bar number
+    const barNumber = bar[1];
+    if (barNumber === undefined) {
       throw new Error(`Invalid syntax for BAR in line, no bar number given: ${line}`);
     }
 
+    const currentBar = parseInt(barNumber);
+
+    if (Number.isNaN(currentBar) || currentBar < 1) {
+      throw new Error(`Invalid syntax for BAR in line, number given is not a number or is below 1`);
+    }
+
     event.bar = currentBar;
+
+    // second index (if present) is duration or signature
+    if (bar[2] !== undefined) {
+      if (signatureRegexp.test(bar[2])) {
+        const sig = bar[2].slice(1, -1);
+        event.signature = TimeSignature.get(sig);
+      } else {
+        event.duration = parseDuration(bar[2], 's');
+      }
+    }
 
     ir.push(event);
 
@@ -235,14 +232,23 @@ export function getEventList(score) {
           event.label = part[2].slice(1, -1); // remove quotes
           break;
         case 'FERMATA':
-          if (part[2]) {
-            if (absDurationRegexp.test(part[2])) {
-              event.duration = parseDuration(part[2].slice(1, -1), 's');
+          const value = part[2];
+
+          console.log(value);
+
+          if (fermataSyntaxRegexp.test(value)) {
+            const parts = value.split('=');
+            event.basis = TimeSignature.get(parts[0].slice(1, -1));
+
+            if (parts[1] === '?') {
+              event.suspended = true;
+            } else if (parts[1].endsWith('*')) {
+              event.relDuration = parseFloat(parts[1].slice(0, -1));
             } else {
-              throw new Error(`Invalid absolute time syntax for FERMATA in line: ${line}`);
+              event.absDuration = parseDuration(parts[1], 's');
             }
           } else {
-            event.duration = +Infinity;
+            throw new Error(`Invalid syntax for FERMATA in line: ${line}`);
           }
           break;
         case 'TEMPO':
@@ -313,14 +319,13 @@ export function getEventList(score) {
 }
 
 function insertEventInList(event, list) {
-  if (list.length === 0) {
-    if (event.signature === null) {
-      throw new Error(`First bar should have a signature defined`);
-    }
+  console.log(event);
+  if (event.duration === null && event.signature === null) {
+    throw new Error(`A bar should have a either a duration or a signature defined`);
+  }
 
-    if (event.bpm === null) {
-      throw new Error(`First bar should have a tempo defined`);
-    }
+  if (event.signature !== null && event.tempo === null) {
+    throw new Error(`A bar with a signature should have a tempo defined`);
   }
 
   list.push(event);
@@ -364,8 +369,8 @@ export function parseScore(score) {
   let currentEvent = {
     bar: 1,
     beat: 1,
-    signature: null,
     duration: null,
+    signature: null,
     tempo: null,
     fermata: null,
     label: null,
@@ -373,6 +378,8 @@ export function parseScore(score) {
 
   for (let index = 0; index < ir.length; index++) {
     let event = ir[index];
+
+    console.log(event);
 
     if (event.bar !== currentEvent.bar || event.beat !== currentEvent.beat) {
       // store current event
