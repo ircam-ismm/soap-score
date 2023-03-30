@@ -31,6 +31,7 @@ function parseTime(str) {
 }
 
 function curveParsing(line) {
+  let e = null;
   line.pop();
   const bar = parseInt(line[0]);
   const signature = TimeSignature.get(line[1]);
@@ -40,26 +41,20 @@ function curveParsing(line) {
     line.push('1');
   }
   line = chunk(line,4);
-  console.log("end",line);
-// si on a ça
-  // sig, tempoBegin, tempoEnd, timeToInterpolate
-// ajoute 1
-// si on a ça
-  // sig, tempoBegin, tempoEnd, timeToInterpolate, firstInterpolationTime
-// niquel
-// si on a ça
-  // sig, tempoBegin, tempoEnd, timeToInterpolate, firstInterpolationTime, [tempoBegin, tempo...]
-// divise en triplet
-
-}
+  console.log(line);
+  line.forEach(curve => {
+    // curve[0] is tempo of begin - curve[1] tempo of end - curve[2] duration - curve[3] first beat to start
+  });
+  return e;
+};
 
 function simpleParsing(line) {
-  let events = null;
+  let e = [];
   const command = line[1];
   const bar = parseInt(line[0]);
   switch (command) {
     case 'fermata':
-      events = {
+      e.push({
         bar: bar,
         beat: 1,
         signature: TimeSignature.get('4/4'),
@@ -72,12 +67,12 @@ function simpleParsing(line) {
           suspended: true,
         },
         label: null,
-      };
+      });
       break;
     case 'timer':
       const timer = parseTime(line[2]);
       if (timer !== null) {
-        events = {
+        e.push({
           bar: bar,
           beat: 1,
           duration: timer,
@@ -85,7 +80,7 @@ function simpleParsing(line) {
           tempo: null,
           fermata: null,
           label: null,
-        };
+        });
       } else {
         console.log("cannot parse ", line);
       };
@@ -100,17 +95,17 @@ function simpleParsing(line) {
         tempo.bpm = parseFloat(line[2]);
         tempo.basis = TimeSignature.get(`1/${signature.lower}`);
       };
-      events = {
+      e.push({
         bar: bar,
         beat: 1,
         signature: signature,
         tempo: tempo,
         fermata: null,
         label: null,
-      };
+      });
       break;
   };
-  return events;
+  return e;
 };
 
 // ----------------------------------------------------------
@@ -135,6 +130,7 @@ const augustin2soap = {
     data = data.split("\n");
     let array = [];
     let events = [];
+    let el = null;
 
     data.forEach(line => {
       line = line.replace(",", "");
@@ -149,17 +145,26 @@ const augustin2soap = {
         case 1:
           break;
         case 2:
-          events.push(simpleParsing(line));
+          el = simpleParsing(line);
+          el.forEach(e => {
+            events.push(e);
+          });
           break;
         case 3:
-          events.push(simpleParsing(line));
+          el = simpleParsing(line);
+          el.forEach(e => {
+            events.push(e);
+          });
           break;
         default:
-          events.push(curveParsing(line));
+          el = curveParsing(line);
+          el.forEach(e => {
+            events.push(e);
+          });
           break
       }
     });
-    console.log(events);
+    // console.log(events);
     const output = writeScore(events);
     return output;
   },

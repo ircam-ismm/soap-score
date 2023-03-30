@@ -8,10 +8,11 @@ const events = [
     duration: null || Number
     tempo: null || {
       basis: TimeSignature { upper: Number, lower: Number },
-      bpm: Number,
+      bpm: null || Number, // null si curve
       curve: null || {
-        start: { bar, beat },
-        end: { bar, beat },
+        start: { bar, beat, bpm },
+        end: { bar, beat, bpm },
+
         exponent: null || Number,
       },
     },

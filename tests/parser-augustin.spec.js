@@ -105,7 +105,7 @@ BAR 32 [6/8] \
       assert.deepEqual(outputData, expectedData);
     })
   });
-  describe.only('# Curve Examples', () => {
+  describe('# Curve Examples', () => {
     it('# Curve begin on first beat', () => {
       const input = `\
 1, 4/4 60;
