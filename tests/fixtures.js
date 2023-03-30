@@ -1,4 +1,6 @@
-// ## Basics
+// ----------------------------------------------------------
+// # BASICS
+// ----------------------------------------------------------
 // # Example 1
 
 export const basicExample1Score = `BAR 1 [4/4] TEMPO [1/4]=60`;
@@ -215,8 +217,9 @@ export const basicExample4Data = [
     label: null
   },
 ];
-
+// ----------------------------------------------------------
 // ## Mesures à durées absolues
+// ----------------------------------------------------------
 // # Example 1
 export const absExemple1Score = `\
 BAR 1 10s
@@ -335,7 +338,9 @@ export const absExemple2Data = [
     label: null
   }
 ];
+// ----------------------------------------------------------
 // ## Labels
+// ----------------------------------------------------------
 // # Example 1
 export const labelExample1Score = `\
 BAR 1 [4/4] TEMPO [1/4]=120 "section A"
@@ -552,8 +557,9 @@ export const labelExample2Data = [
   },
 ];
 
-
+// ----------------------------------------------------------
 // # Sub-divisions
+// ----------------------------------------------------------
 // # Example 1
 
 export const subExample1Score = `\
@@ -737,6 +743,36 @@ export const subTips2Score2 = `\
 BAR 1 [4/4]
 | TEMPO [1/4]=120 "début du morceau" \
 `;
+
+export const subTips2Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 120,
+      curve: null,
+    },
+    fermata: null,
+    label: "début du morceau",
+  },
+];
 
 
 // ----------------------------------------------------------
@@ -996,7 +1032,7 @@ export const fermataExample3Data = [
 
 
 // ----------------------------------------------------------
-// # MESURES COMPOSÉES
+// # CHIFFRAGE A NUMERATEUR MULTIPLES
 // ----------------------------------------------------------
 
 export const composedExample1Score = `\
