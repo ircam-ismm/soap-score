@@ -1,37 +1,28 @@
-
+import { parseScore } from './soap-score-parser.js';
 
 class SoapScoreInterpreter {
   constructor(score) {
-    this.score = score;
-
+    this.score = parseScore(score);
     // should never change at this point
-    this._labels = score.filter(e => e.type === 'LABEL').map(e => e.label);
+    this._labels = this.score.filter(e => e.type === 'LABEL').map(e => e.label);
   }
 
-  _computeDurationFromPosition(
-    lastBar,
-    lastBeat,
-    nextBar,
-    nextBeat,
-    barSignature,
-    tempoBpm,
-    tempoBasis
-  ) {
-    // no need to do anything, we are at the same location
-    if (lastBar === nextBar && lastBeat === nextBeat) {
-      return 0;
+  _computeDurationFromEventToPosition(event, nextBar, nextBeat) {
+    const basisDuration = 60 / event.tempo.bpm;
+
+    // bar with absolute duration
+    if (event.duration) {
+      return event.duration;
     }
 
-    const basisDuration = 60 / tempoBpm;
-
-    const numBasisInBar = (barSignature.upper / barSignature.lower) /
-      (tempoBasis.upper / tempoBasis.lower);
+    const numBasisInBar = (event.signature.upper / event.signature.lower) /
+      (event.tempo.basis.upper / event.tempo.basis.lower);
 
     const barDuration = numBasisInBar * basisDuration;
 
-    const numBarNormalized = (nextBar - (lastBar + 1))
-      + (1 - (lastBeat - 1) / barSignature.upper)
-      + ((nextBeat - 1) / barSignature.upper);
+    const numBarNormalized = (nextBar - (event.bar + 1))
+      + (1 - (event.beat - 1) / event.signature.upper)
+      + ((nextBeat - 1) / event.signature.upper);
 
     return numBarNormalized * barDuration;
   }
@@ -57,114 +48,59 @@ class SoapScoreInterpreter {
     }
 
     let position = 0;
-    // compute position of each events until we got the event that is just before
-
-    let lastBar = 1;
-    let lastBeat = 1;
-
-    let barDuration = null;
-    let barSignature = null;
-    let tempoBpm = null;
-    let tempoBasis = null;
-
-    let nextBarDuration = null;
-    let nextBarSignature = null;
-    let nextTempoBpm = null;
-    let nextTempoBasis = null;
+    // compute position of each events until we got the event that is just
+    // before targetPosition
+    let event = null;
 
     for (let i = 0; i < this.score.length; i++) {
-      const event = this.score[i];
+      event = this.score[i];
 
-      switch (event.type) {
-        case 'BAR': {
-          if (event.signature) {
-            nextBarDuration = null;
-            nextBarSignature = event.signature;
-          } else if (event.duration) {
-            nextBarSignature = null;
-            nextBarDuration = event.duration;
-          }
-          break;
-        }
-        case 'TEMPO': {
-          nextTempoBpm = event.bpm;
+      if (this.score[i + 1]) {
+        let next = this.score[i + 1];
+        let nextBar = next.bar;
+        let nextBeat = next.beat;
 
-          if (event.basis) {
-            nextTempoBasis = event.basis
-          }
+        const delta = this._computeDurationFromEventToPosition(event, nextBar, nextBeat);
+
+        if (position + delta >= targetPosition) {
           break;
-        }
-        case 'LABEL':
-        case 'FERMATA': {
-          // do nothing:
-          // - labels don't carry timing informations
-          // - fermata are kind of deformations of the timeline
-          break;
+        } else {
+          position += delta;
         }
       }
-
-      if (barDuration !== null
-        || (barSignature !== null
-          && tempoBpm !== null
-          && tempoBasis !== null
-        )
-      ) {
-        const delta = this._computeDurationFromPosition(
-          lastBar,
-          lastBeat,
-          event.bar,
-          event.beat,
-          barSignature,
-          tempoBpm,
-          tempoBasis,
-        );
-
-        if (position + delta > targetPosition) {
-          break;
-        }
-
-        position += delta;
-      }
-
-      barDuration = nextBarDuration;
-      barSignature = nextBarSignature;
-      tempoBpm = nextTempoBpm;
-      tempoBasis = nextTempoBasis;
-      lastBar = event.bar;
-      lastBeat = event.beat;
     }
 
     // position is right on the
     if (position === targetPosition) {
-      return { bar: lastBar, beat: lastBeat };
+      return { bar: event.bar, beat: event.beat };
     } else {
       // we must compute the location from the last event
       const delta = targetPosition - position;
-      const basisDuration = 60 / tempoBpm;
+      const basisDuration = 60 / event.tempo.bpm;
       const numBasis = delta / basisDuration;
 
-      const numBasisInBar = (barSignature.upper / barSignature.lower) /
-        (tempoBasis.upper / tempoBasis.lower);
+      const numBasisInBar = (event.signature.upper / event.signature.lower) /
+        (event.tempo.basis.upper / event.tempo.basis.lower);
 
       const numBarNormalized = numBasis / numBasisInBar;
 
-      const numBeatsFull = numBarNormalized * barSignature.upper;
-      const numBars = Math.floor(numBeatsFull / barSignature.upper);
-      const numBeats = numBeatsFull % barSignature.upper;
+      const numBeatsFull = numBarNormalized * event.signature.upper;
+      const numBars = Math.floor(numBeatsFull / event.signature.upper);
+      const numBeats = numBeatsFull % event.signature.upper;
 
-      let bar = lastBar + numBars;
-      let beat = lastBeat + numBeats;
+      let bar = event.bar + numBars;
+      let beat = event.beat + numBeats;
 
-      if (beat > barSignature.upper) {
+      if (beat > event.signature.upper) {
         bar += 1;
-        beat -= barSignature.upper;
+        beat -= event.signature.upper;
       }
 
       return { bar, beat };
     }
   }
 
-  // return a timeline position accroding to a given bar and beat
+  // return a timeline position according to a given bar and beat
   // fermata are ignored in this computation
   getPositionAtLocation(bar, beat = 1) {
     if (bar < 1) {
@@ -176,89 +112,29 @@ class SoapScoreInterpreter {
     }
 
     let position = 0;
-
-    let lastBar = 1;
-    let lastBeat = 1;
-
-    let barDuration = null;
-    let barSignature = null;
-    let tempoBpm = null;
-    let tempoBasis = null;
+    let event = null;
 
     for (let i = 0; i < this.score.length; i++) {
-      let event = this.score[i];
+      event = this.score[i];
 
-      // we have all information to compute the position
-      if (event.bar > bar || (event.bar === bar && event.beat >= beat)) {
-        // we want to fully parse the first beat in any case
-        if (event.bar === 1 && event.beat === 1) {
-          continue;
-        } else {
+      if (this.score[i + 1]) {
+        let next = this.score[i + 1];
+        let nextBar = next.bar;
+        let nextBeat = next.beat;
+
+        // next event is at same position or after the given limit,
+        // keep event as last interesting event and jump to the end of the function
+        if (nextBar > bar || (nextBar === bar && nextBeat >= beat)) {
           break;
         }
-      }
 
-      if (barDuration !== null
-        || (barSignature !== null
-          && tempoBpm !== null
-          && tempoBasis !== null
-        )
-      ) {
-        const delta = this._computeDurationFromPosition(
-          lastBar,
-          lastBeat,
-          event.bar,
-          event.beat,
-          barSignature,
-          tempoBpm,
-          tempoBasis,
-        );
-
+        const delta = this._computeDurationFromEventToPosition(event, nextBar, nextBeat);
         position += delta;
       }
-
-      switch (event.type) {
-        case 'BAR': {
-          if (event.signature) {
-            barDuration = null;
-            barSignature = event.signature;
-          } else if (event.duration) {
-            barSignature = null;
-            barDuration = event.duration;
-          }
-          break;
-        }
-        case 'TEMPO': {
-          tempoBpm = event.bpm;
-
-          if (event.basis) {
-            tempoBasis = event.basis
-          }
-          break;
-        }
-        case 'LABEL':
-        case 'FERMATA': {
-          // do nothing:
-          // - labels don't carry timing informations
-          // - fermata are kind of deformations of the timeline
-          break;
-        }
-      }
-
-      lastBar = event.bar;
-      lastBeat = event.beat;
     }
 
-    const delta = this._computeDurationFromPosition(
-      lastBar,
-      lastBeat,
-      bar,
-      beat,
-      barSignature,
-      tempoBpm,
-      tempoBasis,
-    );
-
+    // compute from last event until given location
+    const delta = this._computeDurationFromEventToPosition(event, bar, beat);
     position += delta;
 
     return position;

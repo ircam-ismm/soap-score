@@ -1,4 +1,4 @@
-// Final representation
+// Score representation after parsing
 const events = [
   {
     bar: Integer,
@@ -24,6 +24,7 @@ const events = [
     },
     label: null || String,
   }
+  // ...
 ];
 
 
