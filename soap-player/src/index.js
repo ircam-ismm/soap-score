@@ -11,6 +11,8 @@ import '@ircam/simple-components/sc-transport.js';
 import '@ircam/simple-components/sc-number.js';
 import '@ircam/simple-components/sc-editor.js';
 import '@ircam/simple-components/sc-button.js';
+import '@ircam/simple-components/sc-text.js';
+import '@ircam/simple-components/sc-toggle.js';
 import './sc-clock.js';
 
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
@@ -34,7 +36,7 @@ const getAudioTime = () => audioContext.currentTime;
 const scheduler = new Scheduler(getAudioTime);
 const transport = new Transport(scheduler);
 
-let score = `BAR 1 [5/8] TEMPO [1/4]=60`;
+let score = `BAR 1 [3+3+2+2/8] TEMPO [1/4]=60`;
 
 let soapEngine = null;
 
@@ -45,6 +47,7 @@ class SoapEngine {
     this.beat = 1;
     this.current = null;
     this.next = null;
+    this.sonifyInnerBeats = false;
   }
 
   onTransportEvent(event, position, audioTime, dt) {
@@ -157,7 +160,7 @@ function renderScreen(active = false) {
 
     <sc-clock
       style="margin: 4px 0; display: block;"
-      .getTimeFunction="${() => transport.getPositionAtTime(getTime())}"
+      .getTimeFunction=${() => transport.getPositionAtTime(getTime())}
       font-size="20"
       twinkle="[0, 0.5]"
     ></sc-clock>
@@ -181,6 +184,16 @@ function renderScreen(active = false) {
     </div>
 
     <div style="margin: 4px 0;">
+      <sc-text
+        value="sonifyInnerBeats"
+        readonly
+      >
+      <sc-toggle
+        @change=${e => soapEngine.sonifyInnerBeats = e.detail.value}
+      ></sc-toggle>
+    </div>
+
+    <div style="margin: 4px 0;">
       <sc-editor
         value="${score}"
         @change="${e => setScore(e.detail.value)}"
@@ -191,7 +204,7 @@ function renderScreen(active = false) {
       ${Object.keys(scores).map(name => {
         return html`<sc-button
           value="${name}"
-          @input="${e => setScore(scores[name])}"
+          @input=${e => setScore(scores[name])}
         ></sc-button>
         `;
       })}

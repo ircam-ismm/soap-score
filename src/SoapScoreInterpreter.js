@@ -141,42 +141,64 @@ class SoapScoreInterpreter {
     const event = this.getEventAtLocation(bar, beat);
     const position = this.getPositionAtLocation(bar, beat);
 
-    // @todo - handle composed signatures
     let { basis, bpm }  = event.tempo;
     const signature = event.signature;
     const basisDuration = 60 / event.tempo.bpm;
-    // normalized bar according to basis unit
-    const normBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
-    // beat duration accroding to basis unit
-    const normBeatDuration = Math.min(normBar - (beat - 1), 1);
-    const duration = basisDuration * normBeatDuration;
-    // let's just hope this stays rationnal
-    // normBeatDuration should be between 0 and 1
-    if (normBeatDuration !== 1) {
-      basis = TimeSignature.get([basis.upper, basis.lower / normBeatDuration]);
+
+    let duration;
+    // complex/irregular measures, e.g. BAR 1 [3+2+2/8] TEMPO [3/8]=60
+    if (signature.additive.length > 0) {
+      const localBasis = TimeSignature.get([signature.additive[beat - 1], signature.lower]);
+      const basisRatio = (localBasis.upper / localBasis.lower) / (basis.upper / basis.lower);
+
+      duration = basisRatio * basisDuration;
+      basis = localBasis;
+
+    // general case, also handle cases when signture is not a integer mutliple of
+    // tempo basis: e.g. BAR 1 [5/8] TEMPO [1/4]=60 -> 1, 1, 0.5
+    } else {
+      // normalized bar according to basis unit
+      const normBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
+      // beat duration according to basis unit
+      const normBeatDuration = Math.min(normBar - (beat - 1), 1);
+
+      duration = basisDuration * normBeatDuration;
+      // let's just hope this stays rationnal
+      // normBeatDuration should be between 0 and 1
+      if (normBeatDuration !== 1) {
+        basis = TimeSignature.get([basis.upper, basis.lower / normBeatDuration]);
+      }
     }
 
     return { bar, beat, event, position, basis, duration };
   }
 
+  // @todo - do not assume input input beat is consistent (e.g. beat 5 in a [4/4] mesures)
   getNextLocationInfos(bar, beat) {
     const currentEvent = this.getEventAtLocation(bar, beat);
 
     const currentBasis = currentEvent.tempo.basis;
     const currentSignature = currentEvent.signature;
-    // define number of beat basis in the coordinates of the bar signature
-    // const sigBeats = (basis.upper / basis.lower) / (1 / signature.lower);
-
     // if given beat is a float, we just want the next integer beat
     beat = Math.floor(beat + 1);
 
-    // express beats in signature coordinates
-    const sigBeats = (beat - 1) * (currentBasis.upper / currentBasis.lower) / (1 / currentSignature.lower);
+    // handle additive signature
+    if (currentSignature.additive.length > 0) {
+      if (beat > currentSignature.additive.length) {
+        bar += 1;
+        beat = 1;
+      }
+    // general case, also handle cases when signture is not a integer multiple of
+    // tempo basis: e.g. BAR 1 [5/8] TEMPO [1/4]=60 -> 1, 1, 0.5
+    } else {
+      // express beats in signature coordinates
+      const sigBeat = (beat - 1) * (currentBasis.upper / currentBasis.lower)
+        / (1 / currentSignature.lower);
 
-    // @todo - do not assume input bar and beat are consistent (e.g. 1, 5 in a [4/4] mesures)
-    if (sigBeats >= currentEvent.signature.upper) {
-      bar += 1;
-      beat = 1;
+      if (sigBeat >= currentEvent.signature.upper) {
+        bar += 1;
+        beat = 1;
+      }
     }
 
     return this.getLocationInfos(bar, beat);
