@@ -374,13 +374,12 @@ describe('# SoapScoreInterpreter', () => {
       }
     });
 
-    it.only('should work with complex measures', () => {
+    it('should work with complex measures', () => {
       const score = `BAR 1 [3+2+2/8] TEMPO [3/8]=60`;
       const interpreter = new SoapScoreInterpreter(score);
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 1);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 1);
         assert.equal(beat, 1);
         assert.equal(basis.upper, 3);
@@ -390,7 +389,6 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 2);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 1);
         assert.equal(beat, 2);
         assert.equal(basis.upper, 2);
@@ -400,7 +398,6 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 3);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 1);
         assert.equal(beat, 3);
         assert.equal(basis.upper, 2);
@@ -410,12 +407,25 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(2, 1);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 2);
         assert.equal(beat, 1);
         assert.equal(basis.upper, 3);
         assert.equal(basis.lower, 8);
         assert.equal(duration, 1);
+      }
+    });
+
+    it.only('asbolute duration measures', () => {
+      const score = `BAR 1 2s`;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 2);
+        assert.equal(bar, 1);
+        assert.equal(beat, 1);
+        assert.equal(basis.upper, 1);
+        assert.equal(basis.lower, 1);
+        assert.equal(duration, 2);
       }
     });
   });

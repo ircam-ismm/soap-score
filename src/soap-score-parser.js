@@ -188,6 +188,8 @@ export function getEventList(score) {
       beat: 1,
       signature: null,
       duration: null,
+      // for usage in error messages
+      source: line,
     };
 
     // first index is bar number
@@ -327,13 +329,13 @@ export function getEventList(score) {
   return ir;
 }
 
-function insertEventInList(event, list) {
+function insertEventInList(event, list, source) {
   if (event.duration === null && event.signature === null) {
-    throw new Error(`A bar should have a either a duration or a signature defined`);
+    throw new Error(`Invalid bar definition: a bar should have a either a duration or a signature defined: "${source}"`);
   }
 
   if (event.signature !== null && event.tempo === null) {
-    throw new Error(`A bar with a signature should have a tempo defined`);
+    throw new Error(`Invalid bar definition: a bar with a signature should have a tempo defined: "${source}"`);
   }
 
   list.push(event);
@@ -389,26 +391,33 @@ export function parseScore(score) {
     label: null,
   };
 
+  let source = ir[0].source;
+
   for (let index = 0; index < ir.length; index++) {
     let event = ir[index];
 
     if (event.bar !== currentEvent.bar || event.beat !== currentEvent.beat) {
       // store current event
-      insertEventInList(currentEvent, list);
+      insertEventInList(currentEvent, list, source);
       // deep copy current event and re-initialize
       currentEvent = cloneDeep(currentEvent);
       currentEvent.bar = event.bar;
       currentEvent.beat = event.beat;
       // reset field that are not persisted
-      currentEvent.duration = null,
       currentEvent.label = null;
       currentEvent.fermata = null;
-      // keep other fields untouched, bpmCurve is reset to null when only needed
+      // keep other fields untouched,
+      // - `tempo.curve` is reset to null when only needed
+      // - `duration` is reset to null only when a signature is set
+
+      // for cleaner error messages
+      source = event.source;
     }
 
     switch (event.type) {
       case 'BAR':
         if (event.signature) {
+          currentEvent.duration = null;
           currentEvent.signature = event.signature;
         }
 
@@ -477,7 +486,7 @@ export function parseScore(score) {
     }
   }
   // push last event into list
-  insertEventInList(currentEvent, list);
+  insertEventInList(currentEvent, list, source);
 
   return list;
 }

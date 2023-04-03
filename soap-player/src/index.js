@@ -36,7 +36,7 @@ const getAudioTime = () => audioContext.currentTime;
 const scheduler = new Scheduler(getAudioTime);
 const transport = new Transport(scheduler);
 
-let score = `BAR 1 [3+3+2+2/8] TEMPO [1/4]=60`;
+let score = `BAR 1 [4/4] TEMPO [1/4]=60`;
 
 let soapEngine = null;
 
@@ -47,7 +47,7 @@ class SoapEngine {
     this.beat = 1;
     this.current = null;
     this.next = null;
-    this.sonifyInnerBeats = false;
+    this.sonifySubBeats = false;
   }
 
   onTransportEvent(event, position, audioTime, dt) {
@@ -75,7 +75,7 @@ class SoapEngine {
     }
   }
 
-  advanceTime(position, currentTime, dt) {
+  advanceTime(position, audioTime, dt) {
     if (this.next) {
       this.current = this.next;
       this.bar = this.next.bar;
@@ -83,19 +83,25 @@ class SoapEngine {
       this.next = null;
     }
 
-    // audio feeedback
-    const env = audioContext.createGain();
-    env.connect(audioContext.destination);
-    env.gain.value = 0;
-    env.gain.setValueAtTime(0, currentTime);
-    env.gain.linearRampToValueAtTime(1, currentTime + 0.002);
-    env.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.100);
+    const freq = this.beat === 1 ? 900 : 600
+    this._triggerBeat(audioTime, freq, 1);
 
-    const src = audioContext.createOscillator();
-    src.connect(env);
-    src.frequency.value = this.beat === 1 ? 900 : 600;
-    src.start(currentTime);
-    src.stop(currentTime + 0.100);
+    if (this.sonifySubBeats === true) {
+      // if tempo basis is one unit, e.g. [1/4], just devide it by 2, i.e. [1/8]
+      // don't see what could go wrong here
+      let { upper, lower } = this.current.basis;
+
+      if (upper === 1) {
+        upper = 2;
+      }
+
+      const delta = this.current.duration / upper;
+
+      for (let i = 1; i < upper; i++) {
+        const subBeatTime = audioTime + i * delta;
+        this._triggerBeat(subBeatTime, 1200, 0.5);
+      }
+    }
 
     // this is weird...
     setTimeout(() => {
@@ -108,6 +114,22 @@ class SoapEngine {
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
     return position + this.current.duration;
+  }
+
+  _triggerBeat(audioTime, freq, gain) {
+    // audio feeedback
+    const env = audioContext.createGain();
+    env.connect(audioContext.destination);
+    env.gain.value = 0;
+    env.gain.setValueAtTime(0, audioTime);
+    env.gain.linearRampToValueAtTime(gain, audioTime + 0.002);
+    env.gain.exponentialRampToValueAtTime(0.001, audioTime + 0.100);
+
+    const src = audioContext.createOscillator();
+    src.connect(env);
+    src.frequency.value = freq;
+    src.start(audioTime);
+    src.stop(audioTime + 0.100);
   }
 };
 
@@ -185,11 +207,12 @@ function renderScreen(active = false) {
 
     <div style="margin: 4px 0;">
       <sc-text
-        value="sonifyInnerBeats"
+        value="sonify sub-beats"
         readonly
-      >
+      ></sc-text>
       <sc-toggle
-        @change=${e => soapEngine.sonifyInnerBeats = e.detail.value}
+        <!-- ?active=${soapEngine.sonifySubBeats} -->
+        @change=${e => soapEngine.sonifySubBeats = e.detail.value}
       ></sc-toggle>
     </div>
 

@@ -9,12 +9,12 @@ class SoapScoreInterpreter {
   }
 
   _computeDurationFromEventToPosition(event, nextBar, nextBeat) {
-    const basisDuration = 60 / event.tempo.bpm;
-
     // bar with absolute duration
     if (event.duration) {
       return event.duration;
     }
+
+    const basisDuration = 60 / event.tempo.bpm;
 
     const numBasisInBar = (event.signature.upper / event.signature.lower) /
       (event.tempo.basis.upper / event.tempo.basis.lower);
@@ -69,11 +69,17 @@ class SoapScoreInterpreter {
       }
     }
 
-    // position is right on the
+    // position is right on the target position,
     if (position === targetPosition) {
       return { bar: event.bar, beat: event.beat };
-    } else {
-      // we must compute the location from the last event
+    // bars are defined by absolute duration, just find the closest bar
+    } else if (event.duration) {
+      const delta = targetPosition - position;
+      const numFullBars = Math.floor(delta / event.duration);
+      return { bar: event.bar + numFullBars, beat: 1 };
+    }
+    // we must compute the location from the last event
+    else {
       const delta = targetPosition - position;
       const basisDuration = 60 / event.tempo.bpm;
       const numBasis = delta / basisDuration;
@@ -131,14 +137,28 @@ class SoapScoreInterpreter {
     }
 
     // compute from last event until given location
-    const delta = this._computeDurationFromEventToPosition(event, bar, beat);
-    position += delta;
+    // ignore absolute duration event (@todo tbc)
+    if (event.duration === null) {
+      const delta = this._computeDurationFromEventToPosition(event, bar, beat);
+      position += delta;
+    }
 
     return position;
   }
 
   getLocationInfos(bar, beat) {
     const event = this.getEventAtLocation(bar, beat);
+
+    // if event has an obsolute duration, beat can only be '1'
+    if (event.duration) {
+      beat = 1;
+      const position = this.getPositionAtLocation(bar, beat);
+      const basis = TimeSignature.get('1/1');
+      const duration = event.duration;
+
+      return { bar, beat, event, position, basis, duration };
+    }
+
     const position = this.getPositionAtLocation(bar, beat);
 
     let { basis, bpm }  = event.tempo;
@@ -174,9 +194,22 @@ class SoapScoreInterpreter {
   }
 
   // @todo - do not assume input input beat is consistent (e.g. beat 5 in a [4/4] mesures)
+  // or thow error
   getNextLocationInfos(bar, beat) {
     const currentEvent = this.getEventAtLocation(bar, beat);
 
+    // when event has an absolute duration, beat can only be one
+    if (currentEvent.duration) {
+      if (beat !== 1) {
+        throw new Error(`Invalid beat, bar is defined with absolute duration so it has only 1 beat`);
+      }
+
+      bar += 1;
+      beat = 1;
+      return this.getLocationInfos(bar, beat);
+    }
+
+    // no absolute duration
     const currentBasis = currentEvent.tempo.basis;
     const currentSignature = currentEvent.signature;
     // if given beat is a float, we just want the next integer beat
