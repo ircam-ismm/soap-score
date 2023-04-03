@@ -1,4 +1,5 @@
 // import fs from 'node:fs';
+import { isString } from '@ircam/sc-utils';
 import TimeSignature from '@tonaljs/time-signature';
 import parseDuration from 'parse-duration';
 import cloneDeep from 'lodash.clonedeep';
@@ -370,6 +371,10 @@ function insertEventInList(event, list) {
  * ```
  */
 export function parseScore(score) {
+  if (!isString(score)) {
+    throw new Error(`Invalid soap score, ${score} is not a string`);
+  }
+
   const ir = getEventList(score);
   const list = [];
 

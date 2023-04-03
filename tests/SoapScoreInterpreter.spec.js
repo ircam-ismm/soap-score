@@ -252,7 +252,7 @@ describe('# SoapScoreInterpreter', () => {
     });
   });
 
-  describe('getEventAtLocation(bar, beat)', () => {
+  describe('## getEventAtLocation(bar, beat)', () => {
     it(`should retrieve closest event`, () => {
       const score = `
         BAR 1 [13/8] TEMPO [1/8]=60
@@ -265,6 +265,72 @@ describe('# SoapScoreInterpreter', () => {
       assert.equal(event.bar, 2);
       assert.equal(event.beat, 1);
 
+    });
+  });
+
+  describe.only(`## getNextLocationInfos(bar, beat)`, () => {
+    it(`should work with compound beats`, () => {
+      const score = `BAR 1 [6/8] TEMPO [3/8]=60`;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 1);
+        assert.equal(bar, 1);
+        assert.equal(beat, 2);
+      }
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 2);
+        assert.equal(bar, 2);
+        assert.equal(beat, 1);
+      }
+    });
+
+    it(`should work with compound beats`, () => {
+      const score = `BAR 1 [6/8] TEMPO [1/8]=60`;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 1);
+        assert.equal(bar, 1);
+        assert.equal(beat, 2);
+      }
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 5);
+        assert.equal(bar, 1);
+        assert.equal(beat, 6);
+      }
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 6);
+        assert.equal(bar, 2);
+        assert.equal(beat, 1);
+      }
+    });
+
+    it(`should work with compound beats`, () => {
+      const score = `BAR 1 [6/8] TEMPO [1/4]=60`;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 1);
+        assert.equal(bar, 1);
+        assert.equal(beat, 2);
+      }
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 2);
+        assert.equal(bar, 1);
+        assert.equal(beat, 3);
+      }
+
+      {
+        let { bar, beat } = interpreter.getNextLocationInfos(1, 3);
+        console.log(bar, beat)
+        assert.equal(bar, 2);
+        assert.equal(beat, 1);
+      }
     });
   });
 });
