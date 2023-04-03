@@ -1,6 +1,0 @@
-{
-  "type": "module",
-  "dependencies": {
-    "@tonaljs/time-signature": "^4.6.10"
-  }
-}

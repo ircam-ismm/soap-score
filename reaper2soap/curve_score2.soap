@@ -1,9 +1,0 @@
-
-BAR 1 [4/4]
-|1 TEMPO 60 [1/4]
-
-BAR 2
-|1 TEMPO 60 [1/4] curve 1
-
-BAR 3
-|1 TEMPO 120 [1/4]
