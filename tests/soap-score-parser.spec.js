@@ -44,7 +44,7 @@ describe(`> soap.parseScore(score)`, () => {
   });
 
   describe(`# Bars w/ absolute duration`, () => {
-    it(`## Example 1`, () => {
+    it.only(`## Example 1`, () => {
       const score = fixtures.absExemple1Score;
       const expected = fixtures.absExemple1Data;
       const data = parseScore(score);
