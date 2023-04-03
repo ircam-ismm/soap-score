@@ -144,7 +144,7 @@ class SoapScoreInterpreter {
     const basis = event.tempo.basis;
     const duration = 60 / event.tempo.bpm;
 
-    return { bar, beat, event, position, basis, durations };
+    return { bar, beat, event, position, basis, duration };
   }
 
   getNextLocationInfos(bar, beat) {
