@@ -57,27 +57,31 @@ const soap2asco = {
       }
 
       const { bar, beat, event, position, basis, duration } = infos;
-      console.log(event);
+      // console.log(bar, beat, basis);
 
       if (event.label === 'end-of-score') {
         return output;
       }
+      // console.log(event);
 
       // check if tempo has changed
       if (event !== currentEvent && event.tempo.bpm !== currentEvent.tempo.bpm) {
-        output += `BPM ${event.tempo.bpm}\n`;
+        const normalizedBPM = event.tempo.bpm * (event.tempo.basis.upper / event.tempo.basis.lower) / 0.25;
+        output += `BPM ${normalizedBPM}\n`;
       };
 
       if (bar !== currentBar) {
         // output += `; ----------- measure ${bar} --- time signature ${event.signature.name}\n`
-        output += `NOTE ${beat+59} 1 MEASURE_${bar}\n`;
+        output += `NOTE ${beat+59} ${basis.upper/basis.lower*4} MEASURE_${bar}`;
       } else {
-        output += `NOTE ${beat+59} 1\n`;
+        output += `NOTE ${beat+59} ${basis.upper/basis.lower*4}`;
       }
 
       // check for a label
       if (event !== currentEvent && event.label) {
-          output += `label "${event.label}"\n`;
+          output += ` "${event.label}"\n`;
+      } else {
+          output += `\n`;
       };
 
       if (event !== currentEvent) {
