@@ -332,6 +332,66 @@ describe('# SoapScoreInterpreter', () => {
         assert.equal(beat, 1);
       }
     });
+
+    it.only(`should work with compound beats`, () => {
+      const score = `BAR 1 [5/8] TEMPO [1/4]=60`;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        const { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 1);
+        console.log(bar, beat, duration, basis)
+        assert.equal(bar, 1);
+        assert.equal(beat, 1);
+        assert.equal(duration, 1);
+        assert.equal(basis.upper, 1);
+        assert.equal(basis.lower, 4);
+      }
+
+      {
+        const { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 2);
+        console.log(bar, beat, duration, basis)
+        assert.equal(bar, 1);
+        assert.equal(beat, 2);
+        assert.equal(duration, 1);
+        assert.equal(basis.upper, 1);
+        assert.equal(basis.lower, 4);
+      }
+
+      {
+        const { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 3);
+        console.log(bar, beat, duration, basis)
+        assert.equal(bar, 1);
+        assert.equal(beat, 3);
+        assert.equal(duration, 0.5);
+        assert.equal(basis.upper, 1);
+        assert.equal(basis.lower, 8);
+      }
+    });
+
+    // it.only('should work with conposed measures', () => {
+    //   const score = `BAR 1 [3+2+2/8] TEMPO [3/8]=60`;
+    //   const interpreter = new SoapScoreInterpreter(score);
+
+    //   {
+    //     let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 1);
+    //     console.log(bar, beat, basis, duration);
+    //     assert.equal(bar, 1);
+    //     assert.equal(beat, 1);
+    //     assert.equal(basis.upper, 3);
+    //     assert.equal(basis.lower, 8);
+    //     assert.equal(duration, 1);
+    //   }
+
+    //   {
+    //     let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 1);
+    //     console.log(bar, beat, basis, duration);
+    //     assert.equal(bar, 1);
+    //     assert.equal(beat, 1);
+    //     assert.equal(basis.upper, 2);
+    //     assert.equal(basis.lower, 8);
+    //     assert.equal(duration, 1);
+    //   }
+    // });
   });
 });
 

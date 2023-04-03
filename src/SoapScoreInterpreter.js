@@ -1,4 +1,5 @@
 import { parseScore } from './soap-score-parser.js';
+import TimeSignature from '@tonaljs/time-signature';
 
 class SoapScoreInterpreter {
   constructor(score) {
@@ -141,8 +142,19 @@ class SoapScoreInterpreter {
     const position = this.getPositionAtLocation(bar, beat);
 
     // @todo - handle composed signatures
-    const basis = event.tempo.basis;
-    const duration = 60 / event.tempo.bpm;
+    let { basis, bpm }  = event.tempo;
+    const signature = event.signature;
+    const basisDuration = 60 / event.tempo.bpm;
+    // normalized bar according to basis unit
+    const normBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
+    // beat duration accroding to basis unit
+    const normBeatDuration = Math.min(normBar - (beat - 1), 1);
+    const duration = basisDuration * normBeatDuration;
+    // let's just hope this stays rationnal
+    // normBeatDuration should be between 0 and 1
+    if (normBeatDuration !== 1) {
+      basis = TimeSignature.get([basis.upper, basis.lower / normBeatDuration]);
+    }
 
     return { bar, beat, event, position, basis, duration };
   }
@@ -167,14 +179,7 @@ class SoapScoreInterpreter {
       beat = 1;
     }
 
-    const event = this.getEventAtLocation(bar, beat);
-    const position = this.getPositionAtLocation(bar, beat);
-
-    // @todo - handle composed signatures
-    const basis = event.tempo.basis;
-    const duration = 60 / event.tempo.bpm;
-
-    return { bar, beat, event, position, basis, duration };
+    return this.getLocationInfos(bar, beat);
   }
 
   // get score event just before given bar and beat

@@ -34,7 +34,7 @@ const getAudioTime = () => audioContext.currentTime;
 const scheduler = new Scheduler(getAudioTime);
 const transport = new Transport(scheduler);
 
-let score = `BAR 1 [4/4] TEMPO [1/4]=60`;
+let score = `BAR 1 [5/8] TEMPO [1/4]=60`;
 
 let soapEngine = null;
 
