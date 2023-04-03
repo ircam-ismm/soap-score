@@ -43,7 +43,7 @@ class SoapEngine {
     this.interpreter = new SoapScoreInterpreter(score);
     this.bar = 1;
     this.beat = 1;
-    this.event = null;
+    this.current = null;
     this.next = null;
   }
 
@@ -74,14 +74,11 @@ class SoapEngine {
 
   advanceTime(position, currentTime, dt) {
     if (this.next) {
+      this.current = this.next;
       this.bar = this.next.bar;
       this.beat = this.next.beat;
-      this.event = this.next.event;
       this.next = null;
     }
-
-    const basisDuration = 60 / this.event.tempo.bpm;
-    const nextPosition = position + basisDuration;
 
     // audio feeedback
     const env = audioContext.createGain();
@@ -107,7 +104,7 @@ class SoapEngine {
     // display the right infos
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
-    return nextPosition;
+    return position + this.current.duration;
   }
 };
 
