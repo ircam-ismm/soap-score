@@ -41,7 +41,8 @@ class SoapScoreInterpreter {
     }
   }
 
-  // return bar and beat just before the given position
+  // return bar and beat at just before the given position, if target position
+  // is between 2 beats, beat will be a floating point value
   getLocationAtPosition(targetPosition) {
     if (targetPosition < 0) {
       throw new Error('Invalid target position, cannot be negative');
@@ -57,10 +58,7 @@ class SoapScoreInterpreter {
 
       if (this.score[i + 1]) {
         let next = this.score[i + 1];
-        let nextBar = next.bar;
-        let nextBeat = next.beat;
-
-        const delta = this._computeDurationFromEventToPosition(event, nextBar, nextBeat);
+        const delta = this._computeDurationFromEventToPosition(event, next.bar, next.beat);
 
         if (position + delta >= targetPosition) {
           break;
@@ -119,16 +117,14 @@ class SoapScoreInterpreter {
 
       if (this.score[i + 1]) {
         let next = this.score[i + 1];
-        let nextBar = next.bar;
-        let nextBeat = next.beat;
 
-        // next event is at same position or after the given limit,
-        // keep event as last interesting event and jump to the end of the function
-        if (nextBar > bar || (nextBar === bar && nextBeat >= beat)) {
+        // if next event is at same position or after the given limit,
+        // we keep previous event as last interesting event and jump to the end of the function
+        if (next.bar > bar || (next.bar === bar && next.beat >= beat)) {
           break;
         }
 
-        const delta = this._computeDurationFromEventToPosition(event, nextBar, nextBeat);
+        const delta = this._computeDurationFromEventToPosition(event, next.bar, next.beat);
         position += delta;
       }
     }
@@ -138,6 +134,50 @@ class SoapScoreInterpreter {
     position += delta;
 
     return position;
+  }
+
+  getLocationInfos(bar, beat) {
+    const event = this.getEventAtLocation(bar, beat);
+    const position = this.getPositionAtLocation(bar, beat);
+
+    return { bar, beat, event, position };
+  }
+
+  getNextLocationInfos(bar, beat) {
+    const currentEvent = this.getEventAtLocation(bar, beat);
+    // if beat is a float, we just want the next integer beat
+    beat = Math.floor(beat + 1);
+
+    if (beat > currentEvent.signature.upper) {
+      bar += 1;
+      beat -= currentEvent.signature.upper;
+    }
+
+    // we may
+    const event = this.getEventAtLocation(bar, beat);
+    const position = this.getPositionAtLocation(bar, beat);
+
+    return { bar, beat, event, position };
+  }
+
+  // get score event just before given bar and beat
+  getEventAtLocation(bar, beat = 1) {
+    let event = null;
+
+    for (let i = 0; i < this.score.length; i++) {
+      event = this.score[i];
+
+      if (this.score[i + 1]) {
+        let next = this.score[i + 1];
+
+        // break only if event is strictly after given location
+        if (next.bar > bar || (next.bar === bar && next.beat > beat)) {
+          break;
+        }
+      }
+    }
+
+    return event;
   }
 }
 

@@ -251,5 +251,21 @@ describe('# SoapScoreInterpreter', () => {
       }
     });
   });
+
+  describe('getEventAtLocation(bar, beat)', () => {
+    it(`should retrieve closest event`, () => {
+      const score = `
+        BAR 1 [13/8] TEMPO [1/8]=60
+        BAR 2 [1/3] TEMPO [1/8]=30
+      `;
+
+      const interpreter = new SoapScoreInterpreter(score);
+
+      const event = interpreter.getEventAtLocation(2, 1);
+      assert.equal(event.bar, 2);
+      assert.equal(event.beat, 1);
+
+    });
+  });
 });
 
