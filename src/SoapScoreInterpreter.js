@@ -140,7 +140,11 @@ class SoapScoreInterpreter {
     const event = this.getEventAtLocation(bar, beat);
     const position = this.getPositionAtLocation(bar, beat);
 
-    return { bar, beat, event, position };
+    // @todo - handle composed signatures
+    const basis = event.tempo.basis;
+    const duration = 60 / event.tempo.bpm;
+
+    return { bar, beat, event, position, basis, durations };
   }
 
   getNextLocationInfos(bar, beat) {
@@ -165,6 +169,8 @@ class SoapScoreInterpreter {
 
     const event = this.getEventAtLocation(bar, beat);
     const position = this.getPositionAtLocation(bar, beat);
+
+    // @todo - handle composed signatures
     const basis = event.tempo.basis;
     const duration = 60 / event.tempo.bpm;
 
