@@ -197,6 +197,21 @@ describe(`> soap.parseScore(score)`, () => {
   });
 
   describe('# Contraints', () => {
+    it(`#@ should throw if given score is not a string`, () => {
+      let errored = false;
+
+      try {
+        const data = parseScore(undefined);
+      } catch (err) {
+        errored = true;
+        console.log(err.message);
+      }
+
+      if (!errored) {
+        assert.fail('should have failed');
+      }
+    });
+
     it(`## should fail if first bar has no signature`, () => {
       const score = `BAR 1`;
 

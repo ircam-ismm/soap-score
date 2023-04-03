@@ -140,24 +140,41 @@ class SoapScoreInterpreter {
     const event = this.getEventAtLocation(bar, beat);
     const position = this.getPositionAtLocation(bar, beat);
 
-    return { bar, beat, event, position };
+    // @todo - handle composed signatures
+    const basis = event.tempo.basis;
+    const duration = 60 / event.tempo.bpm;
+
+    return { bar, beat, event, position, basis, durations };
   }
 
   getNextLocationInfos(bar, beat) {
     const currentEvent = this.getEventAtLocation(bar, beat);
-    // if beat is a float, we just want the next integer beat
+
+    const currentBasis = currentEvent.tempo.basis;
+    const currentSignature = currentEvent.signature;
+    // define number of beat basis in the coordinates of the bar signature
+    // const sigBeats = (basis.upper / basis.lower) / (1 / signature.lower);
+
+    // if given beat is a float, we just want the next integer beat
     beat = Math.floor(beat + 1);
 
-    if (beat > currentEvent.signature.upper) {
+    // express beats in signature coordinates
+    const sigBeats = (beat - 1) * (currentBasis.upper / currentBasis.lower) / (1 / currentSignature.lower);
+
+    // @todo - do not assume input bar and beat are consistent (e.g. 1, 5 in a [4/4] mesures)
+    if (sigBeats >= currentEvent.signature.upper) {
       bar += 1;
-      beat -= currentEvent.signature.upper;
+      beat = 1;
     }
 
-    // we may
     const event = this.getEventAtLocation(bar, beat);
     const position = this.getPositionAtLocation(bar, beat);
 
-    return { bar, beat, event, position };
+    // @todo - handle composed signatures
+    const basis = event.tempo.basis;
+    const duration = 60 / event.tempo.bpm;
+
+    return { bar, beat, event, position, basis, duration };
   }
 
   // get score event just before given bar and beat

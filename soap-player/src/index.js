@@ -9,9 +9,20 @@ import { Scheduler, Transport } from '@ircam/sc-scheduling';
 import '@ircam/simple-components/sc-bang.js';
 import '@ircam/simple-components/sc-transport.js';
 import '@ircam/simple-components/sc-number.js';
+import '@ircam/simple-components/sc-editor.js';
+import '@ircam/simple-components/sc-button.js';
 import './sc-clock.js';
 
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
+import * as fixtures from '../../tests/fixtures.js';
+
+const scores = {};
+for (let name in fixtures) {
+  if (name.endsWith('Score')) {
+    scores[name] = fixtures[name];
+  }
+}
+// console.log(scores);
 
 console.info('> self.crossOriginIsolated', self.crossOriginIsolated);
 
@@ -23,30 +34,30 @@ const getAudioTime = () => audioContext.currentTime;
 const scheduler = new Scheduler(getAudioTime);
 const transport = new Transport(scheduler);
 
-const score = `
-  BAR 1 [4/4] TEMPO [1/4]=90
-  BAR 2 [3/4] TEMPO [1/4]=127
-  BAR 3 [2/8] TEMPO [1/8]=30
-`;
-const soapScoreInterpreter = new SoapScoreInterpreter(score);
+let score = `BAR 1 [4/4] TEMPO [1/4]=60`;
 
-const soapEngine = {
-  bar: 1,
-  beat: 1,
-  event: null,
-  next: null,
+let soapEngine = null;
+
+class SoapEngine {
+  constructor(score) {
+    this.interpreter = new SoapScoreInterpreter(score);
+    this.bar = 1;
+    this.beat = 1;
+    this.event = null;
+    this.next = null;
+  }
 
   onTransportEvent(event, position, audioTime, dt) {
     // to do - handle stop / seek correctly for display
-    const { bar, beat } = soapScoreInterpreter.getLocationAtPosition(position);
+    const { bar, beat } = this.interpreter.getLocationAtPosition(position);
 
     if (event.speed > 0) {
       let infos;
 
       if (Math.floor(beat) === beat) {
-        infos = soapScoreInterpreter.getLocationInfos(bar, beat);
+        infos = this.interpreter.getLocationInfos(bar, beat);
       } else {
-        infos = soapScoreInterpreter.getNextLocationInfos(bar, beat);
+        infos = this.interpreter.getNextLocationInfos(bar, beat);
       }
 
       this.next = infos;
@@ -59,7 +70,7 @@ const soapEngine = {
 
       return Infinity;
     }
-  },
+  }
 
   advanceTime(position, currentTime, dt) {
     if (this.next) {
@@ -94,14 +105,30 @@ const soapEngine = {
 
     // update values for next call, we don't update right now as we want to
     // display the right infos
-    this.next = soapScoreInterpreter.getNextLocationInfos(this.bar, this.beat);
+    this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
     return nextPosition;
-  },
+  }
 };
 
-transport.add(soapEngine);
+function setScore(newScore) {
+  score = newScore;
 
+  // reset transport
+  const now = getTime();
+  transport.pause(now);
+  transport.seek(now, 0);
+
+  if (transport.has(soapEngine)) {
+    transport.remove(soapEngine);
+  }
+
+  console.log(score);
+  soapEngine = new SoapEngine(score);
+  transport.add(soapEngine);
+
+  renderScreen();
+}
 
 function renderScreen(active = false) {
   render(html`
@@ -132,13 +159,13 @@ function renderScreen(active = false) {
     ></sc-transport>
 
     <sc-clock
-      style="margin: 4px auto; display: block;"
+      style="margin: 4px 0; display: block;"
       .getTimeFunction="${() => transport.getPositionAtTime(getTime())}"
       font-size="20"
       twinkle="[0, 0.5]"
     ></sc-clock>
 
-    <div style="margin-top: 4px;">
+    <div style="margin: 4px 0;">
       <sc-number
         integer
         min="0"
@@ -156,11 +183,29 @@ function renderScreen(active = false) {
       ></sc-bang>
     </div>
 
+    <div style="margin: 4px 0;">
+      <sc-editor
+        value="${score}"
+        @change="${e => setScore(e.detail.value)}"
+      ></sc-editor>
+    </div>
+
+    <div style="margin: 4px 0;">
+      ${Object.keys(scores).map(name => {
+        return html`<sc-button
+          value="${name}"
+          @input="${e => setScore(scores[name])}"
+        ></sc-button>
+        `;
+      })}
+    </div>
+
   `, document.body);
 }
 
 (async function main() {
   await resumeAudioContext(audioContext);
 
-  renderScreen();
+  setScore(score);
+  // renderScreen();
 }());
