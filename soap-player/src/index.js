@@ -13,6 +13,7 @@ import '@ircam/simple-components/sc-editor.js';
 import '@ircam/simple-components/sc-button.js';
 import '@ircam/simple-components/sc-text.js';
 import '@ircam/simple-components/sc-toggle.js';
+import '@ircam/simple-components/sc-slider.js';
 import './sc-clock.js';
 
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
@@ -36,7 +37,11 @@ const getAudioTime = () => audioContext.currentTime;
 const scheduler = new Scheduler(getAudioTime);
 const transport = new Transport(scheduler);
 
-let score = `BAR 1 [3+3+2+2/8] TEMPO [1/4]=60`;
+let score = `\
+BAR 1 [4/4] TEMPO [1/4]=60
+BAR 2 |2.5 "coucou"
+BAR 3 "next bar is 120"
+BAR 4 [4/4] TEMPO [1/4]=120`;
 
 let soapEngine = null;
 
@@ -47,7 +52,7 @@ class SoapEngine {
     this.beat = 1;
     this.current = null;
     this.next = null;
-    this.sonifyInnerBeats = false;
+    this.sonifySubBeats = false;
   }
 
   onTransportEvent(event, position, audioTime, dt) {
@@ -75,7 +80,7 @@ class SoapEngine {
     }
   }
 
-  advanceTime(position, currentTime, dt) {
+  advanceTime(position, audioTime, dt) {
     if (this.next) {
       this.current = this.next;
       this.bar = this.next.bar;
@@ -83,31 +88,58 @@ class SoapEngine {
       this.next = null;
     }
 
-    // audio feeedback
-    const env = audioContext.createGain();
-    env.connect(audioContext.destination);
-    env.gain.value = 0;
-    env.gain.setValueAtTime(0, currentTime);
-    env.gain.linearRampToValueAtTime(1, currentTime + 0.002);
-    env.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.100);
+    // do not sonify event in between beats
+    if (Math.floor(this.beat) === this.beat) {
+      const freq = this.beat === 1 ? 900 : 600;
+      this._triggerBeat(audioTime, freq, 1);
 
-    const src = audioContext.createOscillator();
-    src.connect(env);
-    src.frequency.value = this.beat === 1 ? 900 : 600;
-    src.start(currentTime);
-    src.stop(currentTime + 0.100);
+      if (this.sonifySubBeats === true) {
+        // if tempo basis is one unit, e.g. [1/4], just devide it by 2, i.e. [1/8]
+        // don't see what could go wrong here
+        let { upper, lower } = this.current.basis;
 
-    // this is weird...
-    setTimeout(() => {
-      renderScreen(true);
-      setTimeout(() => renderScreen(false), 20);
-    }, dt);
+        if (upper === 1) {
+          upper = 2;
+        }
+
+        const delta = this.current.duration / upper;
+
+        for (let i = 1; i < upper; i++) {
+          const subBeatTime = audioTime + i * delta;
+          this._triggerBeat(subBeatTime, 1200, 0.5);
+        }
+      }
+
+      // this is weird...
+      setTimeout(() => {
+        renderScreen(true);
+        setTimeout(() => renderScreen(false), 20);
+      }, dt);
+    } else {
+      setTimeout(() => renderScreen(false), dt);
+    }
 
     // update values for next call, we don't update right now as we want to
     // display the right infos
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
     return position + this.current.duration;
+  }
+
+  _triggerBeat(audioTime, freq, gain) {
+    // audio feeedback
+    const env = audioContext.createGain();
+    env.connect(audioContext.destination);
+    env.gain.value = 0;
+    env.gain.setValueAtTime(0, audioTime);
+    env.gain.linearRampToValueAtTime(gain, audioTime + 0.002);
+    env.gain.exponentialRampToValueAtTime(0.001, audioTime + 0.100);
+
+    const src = audioContext.createOscillator();
+    src.connect(env);
+    src.frequency.value = freq;
+    src.start(audioTime);
+    src.stop(audioTime + 0.100);
   }
 };
 
@@ -183,13 +215,25 @@ function renderScreen(active = false) {
       ></sc-bang>
     </div>
 
+    <div>
+      <sc-text
+        value="labels:"
+        readonly
+      ></sc-text>
+      <sc-text
+        value="${soapEngine.current && soapEngine.current.event ? soapEngine.current.event.label : ''}"
+        readonly
+      ></sc-text>
+    </div>
+
     <div style="margin: 4px 0;">
       <sc-text
-        value="sonifyInnerBeats"
+        value="sonify sub-beats"
         readonly
-      >
+      ></sc-text>
       <sc-toggle
-        @change=${e => soapEngine.sonifyInnerBeats = e.detail.value}
+        ?active=${soapEngine.sonifySubBeats}
+        @change=${e => soapEngine.sonifySubBeats = e.detail.value}
       ></sc-toggle>
     </div>
 
@@ -203,6 +247,7 @@ function renderScreen(active = false) {
     <div style="margin: 4px 0;">
       ${Object.keys(scores).map(name => {
         return html`<sc-button
+          style="padding-bottom: 2px;"
           value="${name}"
           @input=${e => setScore(scores[name])}
         ></sc-button>
@@ -210,6 +255,14 @@ function renderScreen(active = false) {
       })}
     </div>
 
+<!--     <sc-slider
+      width="800"
+      height="100"
+      min="0"
+      max="1"
+      value="0"
+    ></sc-slider>
+ -->
   `, document.body);
 }
 
@@ -218,4 +271,22 @@ function renderScreen(active = false) {
 
   setScore(score);
   // renderScreen();
+
+
+  // const $slider = document.querySelector('sc-slider');
+  // let value = 0;
+  // const duration = 4;
+  // const start = getTime();
+
+  // function updateSlider() {
+  //   const now = getTime();
+  //   const delta = now - start;
+  //   const value = (delta % duration) / duration;
+
+  //   $slider.value = value;
+
+  //   requestAnimationFrame(updateSlider);
+  // }
+
+  // requestAnimationFrame(updateSlider);
 }());

@@ -205,6 +205,7 @@ BAR [4/4]
             lower: 4,
             additive: []
           },
+          source: 'BAR 1 [4/4]'
         }];
         assert.deepEqual(ir, expected);
       }
@@ -225,6 +226,7 @@ BAR [4/4]
             lower: 4,
             additive: []
           },
+          source: 'BAR 2 [3/4]'
         }];
         assert.deepEqual(ir, expected);
       }
@@ -238,6 +240,7 @@ BAR [4/4]
           beat: 1,
           duration: 2.5,
           signature: null,
+          source: 'BAR 19 [2s500ms]'
         }];
         assert.deepEqual(ir, expected);
       }
@@ -249,6 +252,7 @@ BAR [4/4]
       const expected = [
         {
           type: 'BAR',
+          bar: 12,
           beat: 1,
           duration: null,
           signature: {
@@ -259,7 +263,7 @@ BAR [4/4]
             lower: 8,
             additive: [2, 2, 3],
           },
-          bar: 12
+          source: 'BAR 12 [2+2+3/8] |1 LABEL "cou cou" |2 TEMPO [1/8]=60 |3 FERMATA [1/4]=2s'
         },
         { type: 'LABEL', bar: 12, beat: 1, label: "cou cou" },
         {

@@ -9,12 +9,12 @@ class SoapScoreInterpreter {
   }
 
   _computeDurationFromEventToPosition(event, nextBar, nextBeat) {
-    const basisDuration = 60 / event.tempo.bpm;
-
     // bar with absolute duration
     if (event.duration) {
       return event.duration;
     }
+
+    const basisDuration = 60 / event.tempo.bpm;
 
     const numBasisInBar = (event.signature.upper / event.signature.lower) /
       (event.tempo.basis.upper / event.tempo.basis.lower);
@@ -69,11 +69,17 @@ class SoapScoreInterpreter {
       }
     }
 
-    // position is right on the
+    // position is right on the target position,
     if (position === targetPosition) {
       return { bar: event.bar, beat: event.beat };
-    } else {
-      // we must compute the location from the last event
+    // bars are defined by absolute duration, just find the closest bar
+    } else if (event.duration) {
+      const delta = targetPosition - position;
+      const numFullBars = Math.floor(delta / event.duration);
+      return { bar: event.bar + numFullBars, beat: 1 };
+    }
+    // we must compute the location from the last event
+    else {
       const delta = targetPosition - position;
       const basisDuration = 60 / event.tempo.bpm;
       const numBasis = delta / basisDuration;
@@ -131,14 +137,28 @@ class SoapScoreInterpreter {
     }
 
     // compute from last event until given location
-    const delta = this._computeDurationFromEventToPosition(event, bar, beat);
-    position += delta;
+    // ignore absolute duration event (@todo tbc)
+    if (event.duration === null) {
+      const delta = this._computeDurationFromEventToPosition(event, bar, beat);
+      position += delta;
+    }
 
     return position;
   }
 
   getLocationInfos(bar, beat) {
     const event = this.getEventAtLocation(bar, beat);
+
+    // if event has an obsolute duration, beat can only be '1'
+    if (event.duration) {
+      beat = 1;
+      const position = this.getPositionAtLocation(bar, beat);
+      const basis = TimeSignature.get('1/1');
+      const duration = event.duration;
+
+      return { bar, beat, event, position, basis, duration };
+    }
+
     const position = this.getPositionAtLocation(bar, beat);
 
     let { basis, bpm }  = event.tempo;
@@ -170,38 +190,101 @@ class SoapScoreInterpreter {
       }
     }
 
+    // if there is an event within the next beat, we want to adapt the duration
+    const { nextBar, nextBeat } = this.getNextLocation(bar, beat);
+    const inBetweenEvent = this.hasEventBetweenLocations(bar, beat, nextBar, nextBeat);
+
+    if (inBetweenEvent !== null) {
+      const ratio = inBetweenEvent.beat - beat;
+      duration *= ratio;
+    }
+
     return { bar, beat, event, position, basis, duration };
   }
 
   // @todo - do not assume input input beat is consistent (e.g. beat 5 in a [4/4] mesures)
+  // or thow error
   getNextLocationInfos(bar, beat) {
+    let { nextBar, nextBeat } = this.getNextLocation(bar, beat);
+
+    // check if we have an event between the two locations
+    const inBetweenEvent = this.hasEventBetweenLocations(bar, beat, nextBar, nextBeat);
+
+    if (inBetweenEvent !== null) {
+      nextBar = inBetweenEvent.bar;
+      nextBeat = inBetweenEvent.beat;
+    }
+
+    const values = this.getLocationInfos(nextBar, nextBeat);
+
+    // we need to adapt duration
+    if (inBetweenEvent !== null) {
+      const remaining = 1 - (values.beat % 1);
+      values.duration *= remaining;
+    }
+
+    return values;
+  }
+
+  getNextLocation(bar, beat) {
     const currentEvent = this.getEventAtLocation(bar, beat);
 
-    const currentBasis = currentEvent.tempo.basis;
-    const currentSignature = currentEvent.signature;
-    // if given beat is a float, we just want the next integer beat
-    beat = Math.floor(beat + 1);
+    let nextBar;
+    let nextBeat;
 
-    // handle additive signature
-    if (currentSignature.additive.length > 0) {
-      if (beat > currentSignature.additive.length) {
-        bar += 1;
-        beat = 1;
+    // when event has an absolute duration, beat can only be one
+    if (currentEvent.duration) {
+      if (beat !== 1) {
+        throw new Error(`Invalid beat, bar is defined with absolute duration so it has only 1 beat`);
       }
-    // general case, also handle cases when signture is not a integer multiple of
-    // tempo basis: e.g. BAR 1 [5/8] TEMPO [1/4]=60 -> 1, 1, 0.5
-    } else {
-      // express beats in signature coordinates
-      const sigBeat = (beat - 1) * (currentBasis.upper / currentBasis.lower)
-        / (1 / currentSignature.lower);
 
-      if (sigBeat >= currentEvent.signature.upper) {
-        bar += 1;
-        beat = 1;
+      nextBar = bar + 1;
+      nextBeat = 1;
+
+    } else {
+      // no absolute duration
+      const currentBasis = currentEvent.tempo.basis;
+      const currentSignature = currentEvent.signature;
+      // if given beat is a float, we just want the next integer beat
+      nextBar = bar;
+      nextBeat = Math.floor(beat + 1);
+
+      // handle additive signature
+      if (currentSignature.additive.length > 0) {
+        if (beat > currentSignature.additive.length) {
+          nextBar = bar + 1;
+          nextBeat = 1;
+        }
+      // general case, also handle cases when signture is not a integer multiple of
+      // tempo basis: e.g. BAR 1 [5/8] TEMPO [1/4]=60 -> 1, 1, 0.5
+      } else {
+        // express beats in signature coordinates
+        const sigBeat = (nextBeat - 1) * (currentBasis.upper / currentBasis.lower)
+          / (1 / currentSignature.lower);
+
+        if (sigBeat >= currentEvent.signature.upper) {
+          nextBar = bar + 1;
+          nextBeat = 1;
+        }
       }
     }
 
-    return this.getLocationInfos(bar, beat);
+    return { nextBar, nextBeat };
+  }
+
+  // return the first found event between two locations (excluded, ]pre, post[)
+  // returns null otherwise
+  hasEventBetweenLocations(preBar, preBeat, postBar, postBeat) {
+    for (let i = 0; i < this.score.length; i++) {
+      const event = this.score[i];
+      const { bar, beat } = event;
+
+      if (bar >= preBar && beat > preBeat && bar <= postBar && beat < postBeat) {
+        return event;
+      }
+    }
+
+    return null;
   }
 
   // get score event just before given bar and beat

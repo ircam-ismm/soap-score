@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import SoapScoreInterpreter from '../src/SoapScoreInterpreter.js';
 
 describe('# SoapScoreInterpreter', () => {
-  describe('## SoapScoreInterpreter#getPositionAtLocation(bar, beat)', () => {
+  describe('## getPositionAtLocation(bar, beat)', () => {
     it('should work with simplest score', () => {
       const score = `
         BAR 1 [4/4] TEMPO [1/4]=60
@@ -126,7 +126,7 @@ describe('# SoapScoreInterpreter', () => {
     });
   });
 
-  describe('SoapScoreInterpreter#getLocationAtPosition', () => {
+  describe('## getLocationAtPosition(position)', () => {
     it('should work with simplest score', () => {
       const score = `
         BAR 1 [4/4] TEMPO [1/4]=60
@@ -268,7 +268,7 @@ describe('# SoapScoreInterpreter', () => {
     });
   });
 
-  describe.only(`## getNextLocationInfos(bar, beat)`, () => {
+  describe(`## getNextLocationInfos(bar, beat)`, () => {
     it(`should work with compound beats`, () => {
       const score = `BAR 1 [6/8] TEMPO [3/8]=60`;
       const interpreter = new SoapScoreInterpreter(score);
@@ -327,7 +327,6 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat } = interpreter.getNextLocationInfos(1, 3);
-        console.log(bar, beat)
         assert.equal(bar, 2);
         assert.equal(beat, 1);
       }
@@ -374,13 +373,12 @@ describe('# SoapScoreInterpreter', () => {
       }
     });
 
-    it.only('should work with complex measures', () => {
+    it('should work with complex measures', () => {
       const score = `BAR 1 [3+2+2/8] TEMPO [3/8]=60`;
       const interpreter = new SoapScoreInterpreter(score);
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 1);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 1);
         assert.equal(beat, 1);
         assert.equal(basis.upper, 3);
@@ -390,7 +388,6 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 2);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 1);
         assert.equal(beat, 2);
         assert.equal(basis.upper, 2);
@@ -400,7 +397,6 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 3);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 1);
         assert.equal(beat, 3);
         assert.equal(basis.upper, 2);
@@ -410,12 +406,116 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, basis, duration } = interpreter.getLocationInfos(2, 1);
-        console.log(bar, beat, basis, duration);
         assert.equal(bar, 2);
         assert.equal(beat, 1);
         assert.equal(basis.upper, 3);
         assert.equal(basis.lower, 8);
         assert.equal(duration, 1);
+      }
+    });
+
+    it('absolute duration measures', () => {
+      const score = `BAR 1 2s`;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 2);
+        assert.equal(bar, 1);
+        assert.equal(beat, 1);
+        assert.equal(basis.upper, 1);
+        assert.equal(basis.lower, 1);
+        assert.equal(duration, 2);
+      }
+    });
+
+    it('events in between beats', () => {
+      const score = `
+        BAR 1 [4/4] TEMPO [1/4]=60
+        |1.5 "label"
+      `;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat, event, position, basis, duration } = interpreter.getLocationInfos(1, 1);
+        assert.equal(bar, 1);
+        assert.equal(beat, 1);
+        assert.equal(position, 0);
+        assert.equal(duration, 0.5);
+      }
+
+      {
+        let { bar, beat, event, position, basis, duration } = interpreter.getNextLocationInfos(1, 1);
+        assert.equal(bar, 1);
+        assert.equal(beat, 1.5);
+        assert.equal(position, 0.5);
+        assert.equal(duration, 0.5);
+      }
+
+      {
+        let { bar, beat, event, position, basis, duration } = interpreter.getNextLocationInfos(1, 1.5);
+        assert.equal(bar, 1);
+        assert.equal(beat, 2);
+        assert.equal(position, 1);
+        assert.equal(duration, 1);
+      }
+    });
+
+    it('events in between beats', () => {
+      const score = `
+        BAR 1 [4/4] TEMPO [1/4]=60
+        |1.6 "label"
+      `;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat, event, position, basis, duration } = interpreter.getLocationInfos(1, 1);
+        assert.equal(bar, 1);
+        assert.equal(beat, 1);
+        assert.equal(position, 0);
+        assert.isBelow(Math.abs(duration - 0.6), 1e-9); // 0.6000000000000001
+      }
+
+      {
+        let { bar, beat, event, position, basis, duration } = interpreter.getNextLocationInfos(1, 1);
+        assert.equal(bar, 1);
+        assert.equal(beat, 1.6);
+        assert.isBelow(Math.abs(position - 0.6), 1e-9); // 0.6000000000000001
+        assert.isBelow(Math.abs(duration - 0.4), 1e-9);
+      }
+
+      {
+        let { bar, beat, event, position, basis, duration } = interpreter.getNextLocationInfos(1, 1.6);
+        assert.equal(bar, 1);
+        assert.equal(beat, 2);
+        assert.equal(position, 1);
+        assert.equal(duration, 1);
+      }
+    });
+  });
+
+  describe('## hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {
+    it(`should work`, () => {
+      const score = `
+        BAR 1 [4/4] TEMPO [1/4]=60
+        |1.5 "label"
+      `;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let event = interpreter.hasEventBetweenLocations(1, 1, 1, 2);
+        assert.equal(event.bar, 1);
+        assert.equal(event.beat, 1.5);
+        assert.equal(event.label, 'label');
+      }
+
+      {
+        let event = interpreter.hasEventBetweenLocations(1, 1.5, 1, 2);
+        assert.equal(event, null);
+      }
+
+      {
+        let event = interpreter.hasEventBetweenLocations(1, 1, 1, 1.5);
+        assert.equal(event, null);
       }
     });
   });

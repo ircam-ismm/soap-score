@@ -44,7 +44,7 @@ describe(`> soap.parseScore(score)`, () => {
   });
 
   describe(`# Bars w/ absolute duration`, () => {
-    it.only(`## Example 1`, () => {
+    it(`## Example 1`, () => {
       const score = fixtures.absExemple1Score;
       const expected = fixtures.absExemple1Data;
       const data = parseScore(score);
@@ -56,6 +56,15 @@ describe(`> soap.parseScore(score)`, () => {
     it(`## Example 2`, () => {
       const score = fixtures.absExemple2Score;
       const expected = fixtures.absExemple2Data;
+      const data = parseScore(score);
+
+      console.log(score);
+      assert.deepEqual(data, expected);
+    });
+
+    it(`## Example 3`, () => {
+      const score = fixtures.absExemple3Score;
+      const expected = fixtures.absExemple3Data;
       const data = parseScore(score);
 
       console.log(score);

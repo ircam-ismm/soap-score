@@ -338,6 +338,127 @@ export const absExemple2Data = [
     label: null
   }
 ];
+
+// # Example 2
+export const absExemple3Score = `\
+BAR 1 [4/4] TEMPO [1/4]=80
+BAR 2 10s
+BAR 3 "my-label" // check that duration is propagated
+BAR 4 [3/4] \
+`;
+
+export const absExemple3Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null
+  },
+  {
+    bar: 2,
+    beat: 1,
+    // we keep signature and temp, it is just ignored as duration is set
+    duration: 10,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null
+  },
+  {
+    bar: 3,
+    beat: 1,
+    // we keep signature and temp, it is just ignored as duration is set
+    duration: 10,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: 'my-label'
+  },
+  {
+    bar: 4,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '3/4',
+      type: 'simple',
+      upper: 3,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null
+  }
+];
 // ----------------------------------------------------------
 // ## Labels
 // ----------------------------------------------------------
