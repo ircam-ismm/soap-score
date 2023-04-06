@@ -55,7 +55,7 @@ const midi2soap = {
 
     data.forEach( (line,index) => {
       // for debug
-      // console.log(line);
+      console.log(line);
       time = line.deltaTime / timeDiv;
 
       // on publie à chaque changement de temps ou si c'est le dernier evenement de la liste
@@ -106,7 +106,7 @@ const midi2soap = {
   },
 };
 
-// midi2soap.fromFile('midi_export.mid');
+midi2soap.fromFile('curve_score.mid');
 
 export default midi2soap;
 

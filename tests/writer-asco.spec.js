@@ -177,8 +177,9 @@ BAR 2 7.5s
 BAR 3 "end-of-score" \
 `;
         const expected = `\
-NOTE 60 10s MEASURE_1
-NOTE 60 7.5s MEASURE_2\n`;
+BPM 60
+NOTE 60 10 MEASURE_1
+NOTE 60 7.5 MEASURE_2\n`;
 
         const ascoScore = soap2asco.parse(data);
         //console.log(ascoScore);
