@@ -7,3 +7,12 @@
 - location  - [bar, beat] specific position in the score expressed in musical units
 
 
+## FIXME
+
+```soap
+BAR 1 [4/4] TEMPO [1/4]=80
+|2.5 "section A"
+BAR 2 [6/8] TEMPO [3/8]=[1/4] 
+```
+
+with sub beat notifications breaks

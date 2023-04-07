@@ -194,10 +194,30 @@ describe(`> soap.parseScore(score)`, () => {
     });
   });
 
-  describe('# Courbes de tempo', () => {
+  describe.only('# Courbes de tempo', () => {
     it(`## Example 1`, () => {
       const score = fixtures.tempoCurveExample1Score;
       const expected = fixtures.tempoCurveExample1Data;
+      const data = parseScore(score);
+
+      console.log(score);
+      assert.deepEqual(data, expected);
+    });
+
+    it(`## Example 2`, () => {
+      const score = fixtures.tempoCurveExample2Score;
+      const expected = fixtures.tempoCurveExample2Data;
+      const data = parseScore(score);
+
+      console.log(score);
+      assert.deepEqual(data, expected);
+    });
+  });
+
+  describe(`# Equivalences de tempo`, () => {
+    it(`## Example 1`, () => {
+      const score = fixtures.tempoEquivalencyExample1Score;
+      const expected = fixtures.tempoEquivalencyExample1Data;
       const data = parseScore(score);
 
       console.log(score);

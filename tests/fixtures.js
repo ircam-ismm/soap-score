@@ -1341,3 +1341,201 @@ export const tempoCurveExample1Data = [
     label: null,
   },
 ];
+
+
+export const tempoCurveExample2Score = `\
+BAR 1 [4/4] TEMPO [1/4]=60 curve 1
+BAR 2 [3/4]
+// tempo equivalences are considered inside the curve
+BAR 3 [6/8] TEMPO [3/8]=[1/4]
+// new tempo definition defines the end of the curve
+BAR 4 [2/4] TEMPO [1/4]=120 \
+`;
+export const tempoCurveExample2Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 60,
+      curve: {
+        start: { bar: 1, beat: 1 },
+        end: { bar: 4, beat: 1 },
+        exponent: 1,
+      },
+    },
+    fermata: null,
+    label: null,
+  },
+  {
+    bar: 2,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '3/4',
+      type: 'simple',
+      upper: 3,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 60,
+      curve: {
+        start: { bar: 1, beat: 1 },
+        end: { bar: 4, beat: 1 },
+        exponent: 1,
+      },
+    },
+    fermata: null,
+    label: null,
+  },
+  {
+    bar: 3,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '6/8',
+      type: 'compound',
+      upper: 6,
+      lower: 8,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '3/8',
+        type: 'compound',
+        upper: 3,
+        lower: 8,
+        additive: []
+      },
+      bpm: 60,
+      curve: {
+        start: { bar: 1, beat: 1 },
+        end: { bar: 4, beat: 1 },
+        exponent: 1,
+      },
+    },
+    fermata: null,
+    label: null,
+  },
+  {
+    bar: 4,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '2/4',
+      type: 'simple',
+      upper: 2,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 120,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  },
+];
+
+// -----------------------------------------------------
+// # Equivalences de tempo
+// -----------------------------------------------------
+
+export const tempoEquivalencyExample1Score = `\
+BAR 1 [4/4] TEMPO [1/4]=80
+BAR 2 [6/8] TEMPO [3/8]=[1/4] \
+`;
+
+export const tempoEquivalencyExample1Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  },
+  {
+    bar: 2,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '6/8',
+      type: 'compound',
+      upper: 6,
+      lower: 8,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '3/8',
+        type: 'compound',
+        upper: 3,
+        lower: 8,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  }
+]
