@@ -15,4 +15,4 @@ BAR 1 [4/4] TEMPO [1/4]=80
 BAR 2 [6/8] TEMPO [3/8]=[1/4] 
 ```
 
-with sub beat notifications breaks
+with sub beat notifications breaks, need to 
