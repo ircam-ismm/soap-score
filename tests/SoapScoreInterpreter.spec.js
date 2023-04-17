@@ -623,7 +623,7 @@ describe('# SoapScoreInterpreter', () => {
   });
 
   describe.only('## hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {
-    it(`should work`, () => {
+    it(`should work 1`, () => {
       const score = `
         BAR 1 [4/4] TEMPO [1/4]=60
         |1.5 "label"
@@ -658,8 +658,8 @@ describe('# SoapScoreInterpreter', () => {
       {
         let event = interpreter.hasEventBetweenLocations(1, 4, 2, 1);
         assert.equal(event.bar, 1);
-        assert.equal(event.beat, 1.5);
-        assert.equal(event.label, 'label');
+        assert.equal(event.beat, 4.5);
+        assert.equal(event.label, 'accent');
       }
     });
   });

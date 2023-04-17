@@ -14,6 +14,10 @@ class SoapScoreInterpreter {
       return event.duration;
     }
 
+    if (event.fermata) {
+      if (event.fermata.absDuration) {}
+    }
+
     if (event.tempo.curve === null) {
       const basisDuration = 60 / event.tempo.bpm;
 
@@ -448,8 +452,12 @@ class SoapScoreInterpreter {
       const event = this.score[i];
       const { bar, beat } = event;
 
-      if (bar >= preBar && beat > preBeat && bar <= postBar && beat < postBeat) {
-        return event;
+      if ((bar === preBar && beat > preBeat) || bar > preBar) {
+        // is strictly after pre
+        if (bar < postBar || (bar === postBar && beat < postBeat)) {
+          // is strictly before post
+          return event;
+        }
       }
     }
 
