@@ -285,7 +285,7 @@ class SoapScoreInterpreter {
     // check if we have an event between the two locations
     const inBetweenEvent = this.hasEventBetweenLocations(bar, beat, nextBar, nextBeat);
 
-    console.log('inBetweenEvent', inBetweenEvent, bar, beat, nextBar, nextBeat)
+    // console.log('inBetweenEvent', inBetweenEvent, bar, beat, nextBar, nextBeat)
     if (inBetweenEvent !== null) {
       nextBar = inBetweenEvent.bar;
       nextBeat = inBetweenEvent.beat;
