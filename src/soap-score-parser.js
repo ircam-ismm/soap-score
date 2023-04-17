@@ -224,6 +224,7 @@ export function getEventList(score) {
         type: part[1],
         bar: currentBar,
         beat: parseFloat(part[0]),
+        source: line,
       };
 
       switch (event.type) {
@@ -279,8 +280,8 @@ export function getEventList(score) {
               lastTempoSignature = TimeSignature.get('1/4');
             }
 
-            const lastUnitEq = part[2].replace(/\=\[[0-9]+\/[0-9]+\]/, '');
-            const newUnitEq = part[2].replace(/\[[0-9]+\/[0-9]+\]\=/, '');
+            const newUnitEq = part[2].replace(/\=\[[0-9]+\/[0-9]+\]/, '');
+            const lastUnitEq = part[2].replace(/\[[0-9]+\/[0-9]+\]\=/, '');
 
             const lastUnitEqSignature = TimeSignature.get(lastUnitEq.slice(1, -1));
             // ratio betwen the last defined signature and signature before convertion
@@ -289,12 +290,14 @@ export function getEventList(score) {
 
             event.bpm = lastBPM * tempoRatio;
             event.basis = TimeSignature.get(newUnitEq.slice(1, -1));
+            event.unitEquivalency = true;
           // normal syntax
           } else if (tempoSyntaxRegexp.test(part[2])) {
             const [basis, bpm] = part[2].split('=');
 
             event.bpm = parseFloat(bpm);
             event.basis = TimeSignature.get(basis.slice(1, -1));
+            event.unitEquivalency = false;
           } else {
             throw new Error(`Invalid syntax for TEMPO signature in line: ${line}`)
           }
@@ -432,15 +435,24 @@ export function parseScore(score) {
         }
 
         currentEvent.tempo.basis = event.basis;
+        // always store bpm, as a unit equivalency can change duration of the
+        // unit basis and they are allowed in curves
         currentEvent.tempo.bpm = event.bpm;
 
+        // handle curve
         if (event.bpmCurve) {
-          const start = { bar: currentEvent.bar, beat: currentEvent.beat };
+          const start = {
+            bar: event.bar,
+            beat: event.beat,
+            bpm: event.bpm,
+          };
           // find next TEMPO event in list
           let nextTempoEvent = null;
 
           for (let j = index + 1; j < ir.length; j++) {
-            if (ir[j].type === 'TEMPO') {
+            // tempo definition with unit equivalence, e.g. [3/8]=[1/4], are not
+            // considered as a curve end
+            if (ir[j].type === 'TEMPO' && ir[j].unitEquivalency === false) {
               nextTempoEvent = ir[j];
               break;
             }
@@ -450,11 +462,16 @@ export function parseScore(score) {
             throw new Error(`Tempo curve has no end`);
           }
 
-          const end = { bar: nextTempoEvent.bar, beat: nextTempoEvent.beat };
+          const end = {
+            bar: nextTempoEvent.bar,
+            beat: nextTempoEvent.beat,
+            bpm: nextTempoEvent.bpm,
+          };
           const exponent = event.bpmCurve;
 
           currentEvent.tempo.curve = { start, end, exponent };
-        } else {
+        // reset curve if needed, unit equivalencies are allowed inside curves
+        } else if (event.unitEquivalency === false) {
           currentEvent.tempo.curve = null;
         }
         break;

@@ -66,7 +66,11 @@ server.stateManager.registerUpdateHook('globals', (updates, currentValues) => {
 
     let applyAt;
 
-    // console.log(mtcApplyAt);
+    // @note:
+    // `undefined`` is normal here, as mtcApplyAt is not part of `updates`
+    // should be null in current values, can be switch to
+    // if ('mtcApplyAt' in updates) {
+    // for more clarity
     if (mtcApplyAt === undefined) {
       applyAt = sync.getSyncTime() + 0.1;
     } else {

@@ -38,10 +38,9 @@ const scheduler = new Scheduler(getAudioTime);
 const transport = new Transport(scheduler);
 
 let score = `\
-BAR 1 [4/4] TEMPO [1/4]=60
-BAR 2 |2.5 "coucou"
-BAR 3 "next bar is 120"
-BAR 4 [4/4] TEMPO [1/4]=120`;
+BAR 1 [4/4] "section 1" TEMPO [1/4]=120
+BAR 3 [4/4] "section 2" TEMPO [1/4]=60
+`;
 
 let soapEngine = null;
 
@@ -74,7 +73,9 @@ class SoapEngine {
 
       return infos.position;
     } else {
+      if (event.type === 'seek') {
 
+      }
 
       return Infinity;
     }
@@ -88,9 +89,11 @@ class SoapEngine {
       this.next = null;
     }
 
+    console.log(position, this.current);
     // do not sonify event in between beats
     if (Math.floor(this.beat) === this.beat) {
       const freq = this.beat === 1 ? 900 : 600;
+      const gain = this.beat === 1 ? 1 : 0.4;
       this._triggerBeat(audioTime, freq, 1);
 
       if (this.sonifySubBeats === true) {
@@ -106,7 +109,7 @@ class SoapEngine {
 
         for (let i = 1; i < upper; i++) {
           const subBeatTime = audioTime + i * delta;
-          this._triggerBeat(subBeatTime, 1200, 0.5);
+          this._triggerBeat(subBeatTime, 1200, 0.3);
         }
       }
 
@@ -123,7 +126,7 @@ class SoapEngine {
     // display the right infos
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
-    return position + this.current.duration;
+    return position + this.current.dt;
   }
 
   _triggerBeat(audioTime, freq, gain) {
@@ -155,11 +158,19 @@ function setScore(newScore) {
     transport.remove(soapEngine);
   }
 
-  console.log(score);
   soapEngine = new SoapEngine(score);
   transport.add(soapEngine);
 
   renderScreen();
+}
+
+function jumpToLabel(label) {
+  const now = getTime();
+  const position = soapEngine.interpreter.getPositionAtLabel(label);
+  console.log('Jump to label', label, position);
+
+  transport.pause(now);
+  transport.seek(now, position);
 }
 
 function renderScreen(active = false) {
@@ -245,11 +256,34 @@ function renderScreen(active = false) {
     </div>
 
     <div style="margin: 4px 0;">
+      <sc-text
+        style="margin: 4px 0;"
+        value="test scores"
+        readonly
+      ></sc-text>
+      <br />
       ${Object.keys(scores).map(name => {
         return html`<sc-button
           style="padding-bottom: 2px;"
           value="${name}"
           @input=${e => setScore(scores[name])}
+        ></sc-button>
+        `;
+      })}
+    </div>
+
+    <div style="margin: 4px 0;">
+      <sc-text
+        style="margin: 4px 0;"
+        value="labels"
+        readonly
+      ></sc-text>
+      <br />
+      ${soapEngine.interpreter.getLabels().map(name => {
+        return html`<sc-button
+          style="padding-bottom: 2px;"
+          value="${name}"
+          @input=${e => jumpToLabel(name)}
         ></sc-button>
         `;
       })}
