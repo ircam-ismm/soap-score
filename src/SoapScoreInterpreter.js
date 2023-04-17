@@ -14,6 +14,10 @@ class SoapScoreInterpreter {
       return event.duration;
     }
 
+    if (event.fermata) {
+      if (event.fermata.absDuration) {}
+    }
+
     if (event.tempo.curve === null) {
       const basisDuration = 60 / event.tempo.bpm;
 
@@ -281,11 +285,9 @@ class SoapScoreInterpreter {
   // or thow error
   getNextLocationInfos(bar, beat) {
     let { nextBar, nextBeat } = this.getNextLocation(bar, beat);
-
     // check if we have an event between the two locations
     const inBetweenEvent = this.hasEventBetweenLocations(bar, beat, nextBar, nextBeat);
 
-    // console.log('inBetweenEvent', inBetweenEvent, bar, beat, nextBar, nextBeat)
     if (inBetweenEvent !== null) {
       nextBar = inBetweenEvent.bar;
       nextBeat = inBetweenEvent.beat;
@@ -448,8 +450,12 @@ class SoapScoreInterpreter {
       const event = this.score[i];
       const { bar, beat } = event;
 
-      if (bar >= preBar && beat > preBeat && bar <= postBar && beat < postBeat) {
-        return event;
+      if ((bar === preBar && beat > preBeat) || bar > preBar) {
+        // is strictly after pre
+        if (bar < postBar || (bar === postBar && beat < postBeat)) {
+          // is strictly before post
+          return event;
+        }
       }
     }
 
