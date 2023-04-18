@@ -31,39 +31,42 @@ function renderTempo(soapEngine) {
   div.innerHTML = ``;
 
   const renderer = new Renderer(div, Renderer.Backends.SVG);
-  renderer.resize(100, 40);
+  renderer.resize(80, 40);
   const context = renderer.getContext();
-  const stave = new Stave(0, 10, 0);
+  const stave = new Stave(-10, 10, 0);
   stave.setTempo({ duration, dots, bpm }, 0);
   stave.setContext(context).draw();
 }
 
-// function renderTimeSignature(soapEngine) {
-//   if (!soapEngine.current) {
-//     return null;
-//   }
+function renderTimeSignature(soapEngine) {
+  if (!soapEngine.current) {
+    return null;
+  }
 
 
 
-//   if (!soapEngine.current.event.tempo) {
-//     const div = document.getElementById('timesignature');
-//     div.innerHTML = ``;
-//     return null;
-//   }
+  if (!soapEngine.current.event.tempo) {
+    const div = document.getElementById('timesignature');
+    div.innerHTML = ``;
+    return null;
+  }
 
-//   console.log(soapEngine);
-//   // const { basis, bpm } = soapEngine.current.event;
+  // console.log(soapEngine);
+  const { signature } = soapEngine.current.event;
 
-//   const div = document.getElementById('timesignature');
-//   div.innerHTML = ``;
+  const div = document.getElementById('timesignature');
+  div.innerHTML = ``;
 
-//   const renderer = new Renderer(div, Renderer.Backends.SVG);
-//   renderer.resize(100, 40);
-//   const context = renderer.getContext();
-//   const stave = new Stave(0, 10, 0);
-//   stave.setTempo({ duration, dots, bpm }, 0);
-//   stave.setContext(context).draw();
-// }
+  const renderer = new Renderer(div, Renderer.Backends.SVG);
+  renderer.resize(100, 50);
+  const context = renderer.getContext();
+  const stave = new Stave(0, -30, 0);
+
+  stave.addTimeSignature(signature.name);
+  stave.setContext(context).draw();
+  context.rect(0, 0, 1, 100, { stroke: 'none', fill: 'white' });
+
+}
 
 export function renderScreen(viewState) {
   const { transport, soapEngine, active, score, scores, getTime, setScore, jumpToLabel } = viewState;
@@ -71,6 +74,7 @@ export function renderScreen(viewState) {
     <h2>SO(a)P player</h2>
     <div class="metronome">
       <div id="bpmBasis"></div>
+      <div id="timesignature"></div>
     <sc-transport
       buttons="[play, pause, stop]"
       state="stop"
@@ -196,4 +200,5 @@ export function renderScreen(viewState) {
 
   // console.log(getBpmBasis(soapEngine));
   renderTempo(soapEngine);
+  renderTimeSignature(soapEngine);
 }

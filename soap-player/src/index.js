@@ -55,7 +55,7 @@ const viewState = {
 };
 
 function setScore(newScore) {
-  console.log(newScore);
+  // console.log(newScore);
   score = newScore;
 
   // reset transport
