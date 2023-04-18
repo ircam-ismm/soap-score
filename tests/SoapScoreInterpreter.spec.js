@@ -622,7 +622,7 @@ describe('# SoapScoreInterpreter', () => {
     });
   });
 
-  describe.only('## hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {
+  describe('## hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {
     it(`should work 1`, () => {
       const score = `
         BAR 1 [4/4] TEMPO [1/4]=60

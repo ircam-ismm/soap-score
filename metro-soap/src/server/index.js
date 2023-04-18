@@ -39,10 +39,8 @@ server.useDefaultApplicationTemplate();
 /**
  * Register plugins and schemas
  */
-server.pluginManager.register('sync', pluginSyncFactory, {
-  getTimeFunction: getTime,
-}, []);
 server.pluginManager.register('platform-init', pluginPlatformInit);
+server.pluginManager.register('sync', pluginSyncFactory, { getTimeFunction: getTime });
 
 // @todo - rename÷
 server.stateManager.registerSchema('globals', globalsSchema);
