@@ -87,3 +87,26 @@ function jumpToLabel(label) {
   await resumeAudioContext(audioContext);
   setScore(score);
 }());
+
+
+document.body.onkeyup = (e) => {
+  const now = getTime();
+  if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
+    switch (viewState.transportState) {
+      case "play":
+        transport.pause(now);
+        transport.seek(now, 0);
+        viewState.transportState = "stop";
+        break;
+      case "pause":
+        transport.play(now);
+        viewState.transportState = "play";
+        break;
+      case "stop":
+        transport.play(now);
+        viewState.transportState = "play";
+        break;
+    }
+    renderScreen(viewState);
+  }
+}

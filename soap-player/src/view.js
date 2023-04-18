@@ -9,10 +9,7 @@ let manualScore = {
     upper: 4,
     lower: 4,
   },
-  basis: {
-    upper: 1,
-    lower: 4,
-  },
+  basis: '1/4',
 };
 
 import '@ircam/simple-components/sc-bang.js';
@@ -23,6 +20,7 @@ import '@ircam/simple-components/sc-button.js';
 import '@ircam/simple-components/sc-text.js';
 import '@ircam/simple-components/sc-toggle.js';
 import '@ircam/simple-components/sc-slider.js';
+import '@ircam/simple-components/sc-tap-tempo.js';
 import './sc-clock.js';
 
 function renderTempo(soapEngine) {
@@ -91,9 +89,9 @@ function renderTimeSignature(soapEngine) {
 }
 
 function createScore(e) {
-  return `BAR 1 [${e.signature.upper}/${e.signature.lower}] TEMPO [${e.basis.upper}/${e.basis.lower}]=${e.tempo}`;
-
+  return `BAR 1 [${e.signature.upper}/${e.signature.lower}] TEMPO [${e.basis}]=${e.tempo}`;
 }
+
 
 export function renderScreen(viewState) {
   const {
@@ -141,7 +139,7 @@ export function renderScreen(viewState) {
     <h3>controle</h3>
     <sc-transport
       buttons="[play, pause, stop]"
-      state="${transportState}"
+      state="${viewState.transportState}"
       @change=${e => {
         const now = getTime() + 0.05;
 
@@ -173,12 +171,18 @@ export function renderScreen(viewState) {
       ></sc-text>
       <sc-number
         min="0"
-        value="60"
+        value="${manualScore.tempo}"
         @change=${e => {
-          manualScore.tempo = e.detail.value
+          manualScore.tempo = e.detail.value;
           setScore(createScore(manualScore));
         }}
       ></sc-number>
+      <sc-tap-tempo
+        @change="${e => {
+          manualScore.tempo = e.detail.value.toFixed(2);
+          setScore(createScore(manualScore));
+        }}"
+      ></sc-tap-tempo>
     </div>
     <div style="margin: 4px 0;">
       <sc-text
@@ -204,8 +208,26 @@ export function renderScreen(viewState) {
         }}
       ></sc-number>
     </div>
+    <div style="margin: 4px 0;">
+      <sc-text
+        value="BPM basis"
+        readonly
+      ></sc-text>
+      <select @change="${(e) => {
+        manualScore.basis = e.target.value;
+        setScore(createScore(manualScore));
+      }}">
+        <option value="1/4">♩</option>
+        <option value="1/8">♪</option>
+        <option value="1/2">blanche</option>
+        <option value="3/8">♩.</option>
+        <option value="3/16">♪.</option>
+        <option value="3/4">blanche pointée</option>
+      </select>
+    </div>
 
-    <h4>editor</h4>
+    <div>
+      <h4>editor</h4>
       <div style="margin: 4px 0;">
         <sc-editor
           value="${score}"
@@ -271,7 +293,8 @@ export function renderScreen(viewState) {
   `, document.body);
 
 
-  // console.log(getBpmBasis(soapEngine));
+
   renderTempo(soapEngine);
   renderTimeSignature(soapEngine);
+
 }
