@@ -91,5 +91,4 @@ function jumpToLabel(label) {
 (async function main() {
   await resumeAudioContext(audioContext);
   setScore(score);
-
 }());

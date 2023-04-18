@@ -1,6 +1,6 @@
 import { render, html } from 'lit/html.js';
-const { Renderer, Stave, StaveNote, Voice, Formatter } = Vex.Flow;
-import { TimeSignature } from "tonal";
+import { TimeSignature } from 'tonal';
+import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
 function renderTempo(soapEngine) {
   if (!soapEngine.current) {
@@ -34,6 +34,7 @@ function renderTempo(soapEngine) {
   renderer.resize(100, 40);
   const context = renderer.getContext();
   const stave = new Stave(0, 10, 0);
+
   stave.setTempo({ duration, dots, bpm }, 0);
   stave.setContext(context).draw();
 }
@@ -67,6 +68,7 @@ function renderTempo(soapEngine) {
 
 export function renderScreen(viewState) {
   const { transport, soapEngine, active, score, scores, getTime, setScore, jumpToLabel } = viewState;
+
   render(html`
     <h2>SO(a)P player</h2>
     <div class="metronome">
