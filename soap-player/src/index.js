@@ -4,21 +4,11 @@ import { resumeAudioContext } from '@ircam/resume-audio-context';
 
 import { Scheduler, Transport } from '@ircam/sc-scheduling';
 
-import '@ircam/simple-components/sc-bang.js';
-import '@ircam/simple-components/sc-transport.js';
-import '@ircam/simple-components/sc-number.js';
-import '@ircam/simple-components/sc-editor.js';
-import '@ircam/simple-components/sc-button.js';
-import '@ircam/simple-components/sc-text.js';
-import '@ircam/simple-components/sc-toggle.js';
-import '@ircam/simple-components/sc-slider.js';
-import './sc-clock.js';
-
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
 import * as fixtures from '../../tests/fixtures.js';
 
 import { renderScreen } from './view.js';
-import { SoapEngine } from './SoapEngine.js';
+import SoapEngine from './SoapEngine.js';
 
 const scores = {};
 for (let name in fixtures) {

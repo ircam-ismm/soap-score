@@ -2,12 +2,20 @@ import { render, html } from 'lit/html.js';
 import { TimeSignature } from 'tonal';
 import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
+import '@ircam/simple-components/sc-bang.js';
+import '@ircam/simple-components/sc-transport.js';
+import '@ircam/simple-components/sc-number.js';
+import '@ircam/simple-components/sc-editor.js';
+import '@ircam/simple-components/sc-button.js';
+import '@ircam/simple-components/sc-text.js';
+import '@ircam/simple-components/sc-toggle.js';
+import '@ircam/simple-components/sc-slider.js';
+import './sc-clock.js';
+
 function renderTempo(soapEngine) {
   if (!soapEngine.current) {
     return null;
   }
-
-
 
   if (!soapEngine.current.event.tempo) {
     const div = document.getElementById('bpmBasis');
@@ -77,7 +85,7 @@ export function renderScreen(viewState) {
       buttons="[play, pause, stop]"
       state="stop"
       @change=${e => {
-        const now = getTime();
+        const now = getTime() + 0.05;
 
         switch (e.detail.value) {
           case 'play': {
