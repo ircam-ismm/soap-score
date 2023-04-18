@@ -118,7 +118,7 @@ export function renderScreen(viewState) {
       <div id="bpmBasis"></div>
       <div id="timesignature"></div>
       <sc-bang
-        ?active="${active}"
+        .active="${live(active)}"
       ></sc-bang>
       <sc-clock
         style="margin: 4px 0; display: block;"
