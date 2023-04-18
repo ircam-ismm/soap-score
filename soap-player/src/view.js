@@ -7,12 +7,12 @@ let manualScore = {
   tempo: 60,
   signature: {
     upper: 4,
-    lower: 4
-  }
+    lower: 4,
+  },
   basis: {
     upper: 1,
-    lower: 4
-  }
+    lower: 4,
+  },
 };
 
 import '@ircam/simple-components/sc-bang.js';
@@ -91,7 +91,7 @@ function renderTimeSignature(soapEngine) {
 }
 
 function createScore(e) {
-  return `BAR 1 [${e.signature}] TEMPO [${e.basis}]=${e.tempo}`;
+  return `BAR 1 [${e.signature.upper}/${e.signature.lower}] TEMPO [${e.basis.upper}/${e.basis.lower}]=${e.tempo}`;
 
 }
 
@@ -188,6 +188,7 @@ export function renderScreen(viewState) {
       <sc-number
         min="0"
         value="4"
+        integer
         @change=${e => {
           manualScore.signature.upper = e.detail.value;
           setScore(createScore(manualScore));
@@ -196,6 +197,7 @@ export function renderScreen(viewState) {
       <sc-number
         min="0"
         value="4"
+        integer
         @change=${e => {
           manualScore.signature.lower = e.detail.value;
           setScore(createScore(manualScore));
