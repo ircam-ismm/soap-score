@@ -1,7 +1,7 @@
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
 import { renderScreen } from './view.js';
 
-export class SoapEngine {
+export default class SoapEngine {
   constructor(score, viewState, audioContext) {
     this.interpreter = new SoapScoreInterpreter(score);
     this.bar = 1;
@@ -50,7 +50,6 @@ export class SoapEngine {
       this.next = null;
     }
 
-    // console.log(position, this.current);
     // do not sonify event in between beats
     if (Math.floor(this.beat) === this.beat) {
       const freq = this.beat === 1 ? 900 : 600;
@@ -78,7 +77,7 @@ export class SoapEngine {
         this.viewState.active = true;
         renderScreen(this.viewState);
         // this is weird...
-      //   setTimeout(() => renderScreen(false), 20);
+        // setTimeout(() => renderScreen(false), 20);
       }, dt);
     } else {
       this.viewState.active = false;
@@ -93,6 +92,7 @@ export class SoapEngine {
   }
 
   _triggerBeat(audioTime, freq, gain) {
+    console.log('trigger beat', audioTime, this.audioContext.currentTime);
     // audio feeedback
     const env = this.audioContext.createGain();
     env.connect(this.audioContext.destination);

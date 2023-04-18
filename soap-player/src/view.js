@@ -1,13 +1,21 @@
 import { render, html } from 'lit/html.js';
-const { Renderer, Stave, StaveNote, Voice, Formatter } = Vex.Flow;
-import { TimeSignature } from "tonal";
+import { TimeSignature } from 'tonal';
+import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
+
+import '@ircam/simple-components/sc-bang.js';
+import '@ircam/simple-components/sc-transport.js';
+import '@ircam/simple-components/sc-number.js';
+import '@ircam/simple-components/sc-editor.js';
+import '@ircam/simple-components/sc-button.js';
+import '@ircam/simple-components/sc-text.js';
+import '@ircam/simple-components/sc-toggle.js';
+import '@ircam/simple-components/sc-slider.js';
+import './sc-clock.js';
 
 function renderTempo(soapEngine) {
   if (!soapEngine.current) {
     return null;
   }
-
-
 
   if (!soapEngine.current.event.tempo) {
     const div = document.getElementById('bpmBasis');
@@ -33,7 +41,9 @@ function renderTempo(soapEngine) {
   const renderer = new Renderer(div, Renderer.Backends.SVG);
   renderer.resize(80, 40);
   const context = renderer.getContext();
+
   const stave = new Stave(-10, 10, 0);
+
   stave.setTempo({ duration, dots, bpm }, 0);
   stave.setContext(context).draw();
 }
@@ -70,6 +80,7 @@ function renderTimeSignature(soapEngine) {
 
 export function renderScreen(viewState) {
   const { transport, soapEngine, active, score, scores, getTime, setScore, jumpToLabel } = viewState;
+
   render(html`
     <h2>SO(a)P player</h2>
     <div class="metronome">
@@ -79,7 +90,7 @@ export function renderScreen(viewState) {
       buttons="[play, pause, stop]"
       state="stop"
       @change=${e => {
-        const now = getTime();
+        const now = getTime() + 0.05;
 
         switch (e.detail.value) {
           case 'play': {
