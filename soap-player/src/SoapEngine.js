@@ -76,13 +76,12 @@ export default class SoapEngine {
       setTimeout(() => {
         this.viewState.active = true;
         renderScreen(this.viewState);
-        // this is weird...
-        // this.viewState.active = false;
-        // setTimeout(() => renderScreen(this.viewState), 20);
       }, dt);
     } else {
-      this.viewState.active = false;
-      setTimeout(() => renderScreen(this.viewState), dt);
+      setTimeout(() => {
+        this.viewState.active = false;
+        renderScreen(this.viewState);
+      }, dt);
     }
 
     // update values for next call, we don't update right now as we want to
