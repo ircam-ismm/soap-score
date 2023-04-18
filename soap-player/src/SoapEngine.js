@@ -14,7 +14,7 @@ export default class SoapEngine {
   }
 
   onTransportEvent(event, position, audioTime, dt) {
-    // to do - handle stop / seek correctly for display
+
     const { bar, beat } = this.interpreter.getLocationAtPosition(position);
 
     if (event.type === 'play' || event.type === 'seek') {
@@ -107,4 +107,5 @@ export default class SoapEngine {
     src.start(audioTime);
     src.stop(audioTime + 0.100);
   }
+
 };
