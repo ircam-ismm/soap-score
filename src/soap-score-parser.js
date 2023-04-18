@@ -1,6 +1,6 @@
 // import fs from 'node:fs';
 import { isString } from '@ircam/sc-utils';
-import TimeSignature from '@tonaljs/time-signature';
+import { TimeSignature } from 'tonal';
 import parseDuration from 'parse-duration';
 import cloneDeep from 'lodash.clonedeep';
 

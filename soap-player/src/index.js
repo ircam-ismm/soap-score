@@ -41,7 +41,8 @@ const viewState = {
   scores: scores,
   getTime: getTime,
   setScore: setScore,
-  jumpToLabel: jumpToLabel
+  jumpToLabel: jumpToLabel,
+  transportState: 'stop',
 };
 
 function setScore(newScore) {
@@ -63,6 +64,8 @@ function setScore(newScore) {
   viewState.score = newScore;
   viewState.soapEngine = soapEngine;
 
+  viewState.transportState = 'stop';
+
   renderScreen(viewState);
 }
 
@@ -73,6 +76,8 @@ function jumpToLabel(label) {
 
   transport.pause(now);
   transport.seek(now, position);
+
+  viewState.transportState = 'pause';
 
   renderScreen(viewState);
 }

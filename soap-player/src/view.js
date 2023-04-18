@@ -1,4 +1,5 @@
 import { render, html } from 'lit/html.js';
+import { live } from 'lit/directives/live.js';
 import { TimeSignature } from 'tonal';
 import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
@@ -66,8 +67,6 @@ function renderTimeSignature(soapEngine) {
     return null;
   }
 
-
-
   if (!soapEngine.current.event.tempo) {
     const div = document.getElementById('timesignature');
     div.innerHTML = ``;
@@ -97,12 +96,23 @@ function createScore(e) {
 }
 
 export function renderScreen(viewState) {
-  const { transport, soapEngine, active, score, scores, getTime, setScore, jumpToLabel } = viewState;
+  const {
+    transport,
+    soapEngine,
+    active,
+    score,
+    scores,
+    getTime,
+    setScore,
+    jumpToLabel,
+    transportState,
+  } = viewState;
 
   // console.log(viewState.active);
 
   render(html`
     <h2>SO(a)P player</h2>
+
     <h3>affichage</h3>
     <div class="affichage">
       <div id="bpmBasis"></div>
@@ -131,9 +141,11 @@ export function renderScreen(viewState) {
     <h3>controle</h3>
     <sc-transport
       buttons="[play, pause, stop]"
-      state="stop"
+      state="${transportState}"
       @change=${e => {
         const now = getTime() + 0.05;
+
+        viewState.transportState = e.detail.value;
 
         switch (e.detail.value) {
           case 'play': {

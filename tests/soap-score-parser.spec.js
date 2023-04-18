@@ -41,6 +41,15 @@ describe(`> soap.parseScore(score)`, () => {
       console.log(score);
       assert.deepEqual(data, expected);
     });
+
+    it(`## Example 5`, () => {
+      const score = fixtures.basicExample5Score;
+      const expected = fixtures.basicExample5Data;
+      const data = parseScore(score);
+
+      console.log(score);
+      assert.deepEqual(data, expected);
+    });
   });
 
   describe(`# Bars w/ absolute duration`, () => {
@@ -194,7 +203,7 @@ describe(`> soap.parseScore(score)`, () => {
     });
   });
 
-  describe.only('# Courbes de tempo', () => {
+  describe('# Courbes de tempo', () => {
     it(`## Example 1`, () => {
       const score = fixtures.tempoCurveExample1Score;
       const expected = fixtures.tempoCurveExample1Data;

@@ -217,6 +217,38 @@ export const basicExample4Data = [
     label: null
   },
 ];
+
+export const basicExample5Score = `BAR 1 [3/16] TEMPO [1/16]=60`;
+export const basicExample5Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '3/16',
+      type: 'irregular',
+      upper: 3,
+      lower: 16,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/16',
+        type: 'irregular',
+        upper: 1,
+        lower: 16,
+        additive: []
+      },
+      bpm: 60,
+      curve: null,
+    },
+    fermata: null,
+    label: null
+  }
+];
+
 // ----------------------------------------------------------
 // ## Mesures à durées absolues
 // ----------------------------------------------------------
@@ -1305,8 +1337,8 @@ export const tempoCurveExample1Data = [
       },
       bpm: 80,
       curve: {
-        start: { bar: 34, beat: 1 },
-        end: { bar: 36, beat: 1 },
+        start: { bar: 34, beat: 1, bpm: 80 },
+        end: { bar: 36, beat: 1, bpm: 120 },
         exponent: 1.5,
       },
     },
@@ -1375,8 +1407,8 @@ export const tempoCurveExample2Data = [
       },
       bpm: 60,
       curve: {
-        start: { bar: 1, beat: 1 },
-        end: { bar: 4, beat: 1 },
+        start: { bar: 1, beat: 1, bpm: 60 },
+        end: { bar: 4, beat: 1, bpm: 120 },
         exponent: 1,
       },
     },
@@ -1406,8 +1438,8 @@ export const tempoCurveExample2Data = [
       },
       bpm: 60,
       curve: {
-        start: { bar: 1, beat: 1 },
-        end: { bar: 4, beat: 1 },
+        start: { bar: 1, beat: 1, bpm: 60 },
+        end: { bar: 4, beat: 1, bpm: 120 },
         exponent: 1,
       },
     },
@@ -1437,8 +1469,8 @@ export const tempoCurveExample2Data = [
       },
       bpm: 60,
       curve: {
-        start: { bar: 1, beat: 1 },
-        end: { bar: 4, beat: 1 },
+        start: { bar: 1, beat: 1, bpm: 60 },
+        end: { bar: 4, beat: 1, bpm: 120 },
         exponent: 1,
       },
     },

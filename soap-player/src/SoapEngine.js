@@ -76,12 +76,12 @@ export default class SoapEngine {
       setTimeout(() => {
         this.viewState.active = true;
         renderScreen(this.viewState);
-        // this is weird...
-        // setTimeout(() => renderScreen(false), 20);
       }, dt);
     } else {
-      this.viewState.active = false;
-      setTimeout(() => renderScreen(this.viewState), dt);
+      setTimeout(() => {
+        this.viewState.active = false;
+        renderScreen(this.viewState);
+      }, dt);
     }
 
     // update values for next call, we don't update right now as we want to
@@ -92,7 +92,7 @@ export default class SoapEngine {
   }
 
   _triggerBeat(audioTime, freq, gain) {
-    // console.log('trigger beat', audioTime, this.audioContext.currentTime);
+
     // audio feeedback
     const env = this.audioContext.createGain();
     env.connect(this.audioContext.destination);
