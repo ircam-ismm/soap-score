@@ -92,7 +92,7 @@ export default class SoapEngine {
   }
 
   _triggerBeat(audioTime, freq, gain) {
-    console.log('trigger beat', audioTime, this.audioContext.currentTime);
+    // console.log('trigger beat', audioTime, this.audioContext.currentTime);
     // audio feeedback
     const env = this.audioContext.createGain();
     env.connect(this.audioContext.destination);

@@ -2,6 +2,18 @@ import { render, html } from 'lit/html.js';
 import { TimeSignature } from 'tonal';
 import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
+let manualScore = {
+  tempo: 60,
+  signature: {
+    upper: 4,
+    lower: 4
+  }
+  basis: {
+    upper: 1,
+    lower: 4
+  }
+};
+
 import '@ircam/simple-components/sc-bang.js';
 import '@ircam/simple-components/sc-transport.js';
 import '@ircam/simple-components/sc-number.js';
@@ -13,6 +25,7 @@ import '@ircam/simple-components/sc-slider.js';
 import './sc-clock.js';
 
 function renderTempo(soapEngine) {
+
   if (!soapEngine.current) {
     return null;
   }
@@ -78,14 +91,44 @@ function renderTimeSignature(soapEngine) {
 
 }
 
+function createScore(e) {
+  return `BAR 1 [${e.signature}] TEMPO [${e.basis}]=${e.tempo}`;
+
+}
+
 export function renderScreen(viewState) {
   const { transport, soapEngine, active, score, scores, getTime, setScore, jumpToLabel } = viewState;
 
+  // console.log(viewState.active);
+
   render(html`
     <h2>SO(a)P player</h2>
-    <div class="metronome">
+    <h3>affichage</h3>
+    <div class="affichage">
       <div id="bpmBasis"></div>
       <div id="timesignature"></div>
+      <sc-bang
+        ?active="${active}"
+      ></sc-bang>
+      <sc-clock
+        style="margin: 4px 0; display: block;"
+        .getTimeFunction=${() => transport.getPositionAtTime(getTime())}
+        font-size="20"
+        twinkle="[0, 0.5]"
+      ></sc-clock>
+      <sc-text
+        value="${soapEngine.bar}.${soapEngine.beat}"
+        readonly
+      ></sc-text>
+      <div>
+        <sc-text
+          value="labels: ${soapEngine.current && soapEngine.current.event ? soapEngine.current.event.label : ''}"
+          readonly
+        ></sc-text>
+      </div>
+    </div>
+
+    <h3>controle</h3>
     <sc-transport
       buttons="[play, pause, stop]"
       state="stop"
@@ -110,66 +153,80 @@ export function renderScreen(viewState) {
       }}
     ></sc-transport>
 
-    <sc-clock
-      style="margin: 4px 0; display: block;"
-      .getTimeFunction=${() => transport.getPositionAtTime(getTime())}
-      font-size="20"
-      twinkle="[0, 0.5]"
-    ></sc-clock>
-
-    <div style="margin: 4px 0;">
-      <sc-number
-        integer
-        min="0"
-        max="1000"
-        value="${soapEngine.bar}"
-      ></sc-number>
-      <sc-number
-        integer
-        min="0"
-        max="1000"
-        value="${soapEngine.beat}"
-      ></sc-number>
-      <sc-bang
-        ?active="${active}"
-      ></sc-bang>
-    </div>
-
-    <div>
-      <sc-text
-        value="labels:"
-        readonly
-      ></sc-text>
-      <sc-text
-        value="${soapEngine.current && soapEngine.current.event ? soapEngine.current.event.label : ''}"
-        readonly
-      ></sc-text>
-    </div>
-
+    <h4>basic</h4>
     <div style="margin: 4px 0;">
       <sc-text
-        value="sonify sub-beats"
+        value="set tempo"
         readonly
       ></sc-text>
+      <sc-number
+        min="0"
+        value="60"
+        @change=${e => {
+          manualScore.tempo = e.detail.value
+          setScore(createScore(manualScore));
+        }}
+      ></sc-number>
+    </div>
+    <div style="margin: 4px 0;">
+      <sc-text
+        value="set time signature"
+        readonly
+      ></sc-text>
+      <sc-number
+        min="0"
+        value="4"
+        @change=${e => {
+          manualScore.signature.upper = e.detail.value;
+          setScore(createScore(manualScore));
+        }}
+      ></sc-number>/
+      <sc-number
+        min="0"
+        value="4"
+        @change=${e => {
+          manualScore.signature.lower = e.detail.value;
+          setScore(createScore(manualScore));
+        }}
+      ></sc-number>
+    </div>
+
+    <h4>editor</h4>
+      <div style="margin: 4px 0;">
+        <sc-editor
+          value="${score}"
+          @change="${e => setScore(e.detail.value)}"
+        ></sc-editor>
+      </div>
+    </div>
+
+
+    <h3>parameters</h3>
+    <div style="margin: 4px 0;">
+
+
+      <sc-text
+          value="mode de sonification"
+          readonly
+      ></sc-text>
+      <form action="#">
+            <select name="" id="">
+              <option value="bar">bar</option>
+              <option value="odd">odd</option>
+              <option value="even">even</option>
+              <option value="beat">beat</option>
+              <option value="double">double</option>
+            </select>
+      </form>
+
       <sc-toggle
         ?active=${soapEngine.sonifySubBeats}
         @change=${e => soapEngine.sonifySubBeats = e.detail.value}
       ></sc-toggle>
     </div>
 
+    <h3>tests</h3>
     <div style="margin: 4px 0;">
-      <sc-editor
-        value="${score}"
-        @change="${e => setScore(e.detail.value)}"
-      ></sc-editor>
-    </div>
-
-    <div style="margin: 4px 0;">
-      <sc-text
-        style="margin: 4px 0;"
-        value="test scores"
-        readonly
-      ></sc-text>
       <br />
       ${Object.keys(scores).map(name => {
         return html`<sc-button
@@ -179,9 +236,7 @@ export function renderScreen(viewState) {
         ></sc-button>
         `;
       })}
-    </div>
 
-    <div style="margin: 4px 0;">
       <sc-text
         style="margin: 4px 0;"
         value="labels"
@@ -198,14 +253,7 @@ export function renderScreen(viewState) {
       })}
     </div>
 
-<!--     <sc-slider
-      width="800"
-      height="100"
-      min="0"
-      max="1"
-      value="0"
-    ></sc-slider>
- -->
+
   `, document.body);
 
 
