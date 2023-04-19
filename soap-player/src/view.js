@@ -335,21 +335,20 @@ export function renderScreen(viewState) {
 
     <h3>parameters</h3>
     <div style="margin: 4px 0;">
-
-
       <sc-text
-          value="mode de sonification"
-          readonly
+        value="mode de sonification"
+        readonly
       ></sc-text>
-      <form action="#">
-            <select name="" id="">
-              <option value="bar">bar</option>
-              <option value="odd">odd</option>
-              <option value="even">even</option>
-              <option value="beat">beat</option>
-              <option value="double">double</option>
-            </select>
-      </form>
+      <select @change="${(e) => {
+        console.log(e.target.value)
+      }}">
+        <option value="beat">beat</option>
+        <option value="double">double</option>
+        <option value="bar">bar</option>
+        <option value="odd">odd</option>
+        <option value="even">even</option>
+      </select>
+    </div>
 
       <sc-toggle
         ?active=${soapEngine.sonifySubBeats}

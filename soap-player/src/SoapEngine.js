@@ -9,6 +9,7 @@ export default class SoapEngine {
     this.current = null;
     this.next = null;
     this.sonifySubBeats = false;
+    this.sonifyMode = "beat";
     this.viewState = viewState;
     this.audioContext = audioContext;
   }
@@ -54,24 +55,31 @@ export default class SoapEngine {
     if (Math.floor(this.beat) === this.beat) {
       const freq = this.beat === 1 ? 900 : 600;
       const gain = this.beat === 1 ? 1 : 0.4;
-      this._triggerBeat(audioTime, freq, 1);
 
-      if (this.sonifySubBeats === true) {
-        // if tempo basis is one unit, e.g. [1/4], just devide it by 2, i.e. [1/8]
-        // don't see what could go wrong here
-        let { upper, lower } = this.current.basis;
+      let { upper, lower } = this.current.basis;
 
-        if (upper === 1) {
-          upper = 2;
-        }
-
-        const delta = this.current.duration / upper;
-
-        for (let i = 1; i < upper; i++) {
-          const subBeatTime = audioTime + i * delta;
-          this._triggerBeat(subBeatTime, 1200, 0.3);
-        }
+      switch (this.sonifyMode) {
+        case "beat":
+          this._triggerBeat(audioTime, freq, 1);
+          break;
+        case "double":
+          if (upper === 1) {
+            upper = 2;
+          };
+          const delta = this.current.duration / upper;
+          for (let i = 1; i < upper; i++) {
+            const subBeatTime = audioTime + i * delta;
+            this._triggerBeat(subBeatTime, 1200, 0.3);
+          }
+          break;
+        case "bar":
+          break;
+        case "odd":
+          break;
+        case "even":
+          break;
       }
+
 
       setTimeout(() => {
         this.viewState.active = true;
