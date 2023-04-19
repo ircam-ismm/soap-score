@@ -77,34 +77,95 @@ async function main($container) {
    */
   await client.start();
 
-  const getAudioTime = () => audioContext.currentTime;
-  const scheduler = new Scheduler(getAudioTime);
-  const transport = new Transport(scheduler);
+  const globals = await client.stateManager.attach('globals');
+  const sync = await client.pluginManager.get('sync');
 
-  const score = `BAR 1 [4/4] TEMPO [1/4]=60`;
+  const getSyncTime = () => sync.getSyncTime();
+  const scheduler = new Scheduler(getSyncTime, {
+    currentTimeToAudioTimeFunction: currentTime => sync.getLocalTime(currentTime),
+  });
+
+  const transport = new Transport(scheduler);
+  // this must be done only at initialization
+  transport.setState(globals.get('transportState'));
+
+  const score = globals.get('score');
+  const testScores = globals.get('scores');
 
   // The `$layout` is provided as a convenience and is not required by soundworks,
   // its full source code is located in the `./views/layout.js` file, so feel free
   // to edit it to match your needs or even to delete it.
   // const $layout = createLayout(client, $container);
 
+  const transportProxy = {
+    // delegate time to the server
+    play(time) {
+      globals.set({ transportCommand: 'play' });
+    },
+    pause(time) {
+      globals.set({ transportCommand: 'pause' });
+    },
+    seek(time, position) {
+      globals.set({
+        transportCommand: 'seek',
+        seekPosition: position,
+      });
+    },
+    getPositionAtTime(time) {
+      return transport.getPositionAtTime(time);
+    }
+  };
+
   const viewState = {
-    transport,
+    transport: transportProxy,
     score,
+    scores: testScores,
     soapEngine: null,
     active: false,
-    scores: {},
-    getTime,
-    setScore: (score) => console.log('@todo - setScore', score),
+    getTime: getSyncTime,
+    setScore: score => globals.set({ score }),
     jumpToLabel: (label) => console.log('@todo - jumpToLabel', label),
   }
 
-  const soapEngine = new SoapEngine(score, viewState, audioContext);
-  transport.add(soapEngine);
+  globals.onUpdate(updates => {
+    for (let [key, value] of Object.entries(updates)) {
+      switch (key) {
+        case 'transportEvents': {
+          if (value !== null) { // is null on first call
+            transport.addEvents(value);
+          }
 
-  viewState.soapEngine = soapEngine;
+          break;
+        }
+        case 'score': {
+          const score = value;
 
-  renderScreen(viewState);
+          const now = getSyncTime();
+          transport.pause(now);
+          transport.seek(now, 0);
+
+          if (transport.has(viewState.soapEngine)) {
+            transport.remove(viewState.soapEngine);
+          }
+
+          const soapEngine = new SoapEngine(score, viewState, audioContext);
+          transport.add(soapEngine);
+
+          viewState.score = score;
+          viewState.soapEngine = soapEngine;
+          viewState.transportState = 'stop';
+
+          renderScreen(viewState);
+          break;
+        }
+        default: {
+          // console.log('handle update', key, value);
+          break;
+        }
+      }
+    }
+  }, true);
+
   // do your own stuff!
 }
 

@@ -1,8 +1,8 @@
 :root {
-  --sw-background-color: #000000;
-  --sw-light-background-color: #242424;
-  --sw-font-color: #ffffff;
-  --sw-light-font-color: #cccccc;
+  --sw-background-color: #ffffff;
+  --sw-light-background-color: #efefef;
+  --sw-font-color: #000000;
+  --sw-light-font-color: #454545;
   --sw-font-color-error: #a94442;
   --sw-font-family: Consolas, monaco, monospace;
   --sw-font-size: 62.5%; // such that 1rem == 10px
@@ -28,4 +28,8 @@ body.loading {
   background-image: url(../../images/loader.gif);
   background-position: 50% 50%;
   background-repeat: no-repeat;
+}
+
+body {
+  padding: 20px;
 }

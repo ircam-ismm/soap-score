@@ -15,6 +15,15 @@ import globalsSchema from './schemas/globals.js';
 
 import { getTime } from '@ircam/sc-gettime';
 
+// import test scores from fixtures
+import * as fixtures from '../../../tests/fixtures.js';
+const scores = {};
+for (let name in fixtures) {
+  if (name.endsWith('Score')) {
+    scores[name] = fixtures[name];
+  }
+}
+
 // - General documentation: https://soundworks.dev/
 // - API documentation:     https://soundworks.dev/api
 // - Issue Tracker:         https://github.com/collective-soundworks/soundworks/issues
@@ -43,13 +52,14 @@ server.pluginManager.register('platform-init', pluginPlatformInit);
 server.pluginManager.register('sync', pluginSyncFactory, { getTimeFunction: getTime });
 
 // @todo - rename÷
-server.stateManager.registerSchema('globals', globalsSchema);
+server.stateManager.registerSchema('globals', globalsSchema, { scores });
 
 await server.start();
 
 //
-const sync = server.pluginManager.get('sync');
+const sync = await server.pluginManager.get('sync');
 const getTimeFunction = () => sync.getSyncTime();
+
 const scheduler = new Scheduler(getTimeFunction);
 const transport = new Transport(scheduler);
 
@@ -58,130 +68,60 @@ const globals = await server.stateManager.create('globals', {
 });
 
 server.stateManager.registerUpdateHook('globals', (updates, currentValues) => {
-  if (updates.command) {
-    const { command, mtcApplyAt } = updates;
-    const { enablePreRoll, preRollDuration } = currentValues;
+  if (updates.transportCommand) {
+    const command = updates.transportCommand;
+    const applyAt = sync.getSyncTime() + 0.1;
 
-    let applyAt;
-
-    // @note:
-    // `undefined`` is normal here, as mtcApplyAt is not part of `updates`
-    // should be null in current values, can be switch to
-    // if ('mtcApplyAt' in updates) {
-    // for more clarity
-    if (mtcApplyAt === undefined) {
-      applyAt = sync.getSyncTime() + 0.1;
-    } else {
-      applyAt = mtcApplyAt;
-    }
-
-    const clockEvents = [
+    // cancel any scheduled event by default
+    const transportEvents = [
       {
         type: 'cancel',
         time: applyAt,
-      },
+      }
     ];
 
     switch (command) {
-      case 'start':
-        clockEvents.push({
+      case 'play':
+        transportEvents.push({
           type: 'play',
-          time: enablePreRoll ? applyAt + preRollDuration : applyAt,
-        });
-        break;
-      case 'stop':
-        clockEvents.push({
-          type: 'pause',
           time: applyAt,
-        });
-        clockEvents.push({
-          type: 'seek',
-          time: applyAt,
-          position: 0,
         });
         break;
       case 'pause':
-        clockEvents.push({
+        transportEvents.push({
           type: 'pause',
           time: applyAt,
         });
         break;
       case 'seek':
-        clockEvents.push({
+        transportEvents.push({
           type: 'seek',
           time: applyAt,
           position: updates.seekPosition || currentValues.seekPosition,
         });
         break;
-      case 'loop':
-        clockEvents.push({
-          type: 'loop',
-          time: applyAt,
-          loop: updates.loop,
-        });
-        break;
-    }
-
-    const preRollEvents = [{
-      type: 'cancel',
-      time: applyAt,
-    }];
-
-    if (enablePreRoll && clockEvents.length > 0) {
-      if (command === 'start') {
-        preRollEvents.push({
-          type: 'seek',
-          time: applyAt,
-          position: -1 * (preRollDuration + 1),
-        })
-        preRollEvents.push({
-          type: 'play',
-          time: applyAt,
-        });
-        preRollEvents.push({
-          type: 'pause',
-          time: applyAt + preRollDuration,
-        });
-        preRollEvents.push({
-          type: 'seek',
-          time: applyAt + preRollDuration,
-          position: 0,
-        });
-      } else {
-        // for seek pause and stop, we want to stop the playroll now
-        preRollEvents.push({
-          type: 'pause',
-          time: applyAt,
-        });
-        preRollEvents.push({
-          type: 'seek',
-          time: applyAt,
-          position: 0,
-        });
-      }
     }
 
     return {
       ...updates,
-      clockEvents,
-      preRollEvents,
+      transportEvents,
     };
+  }
+});
+
+globals.onUpdate(updates => {
+  if (updates.transportEvents) {
+    transport.addEvents(updates.transportEvents);
   }
 });
 
 const engine = {
   onTransportEvent(event, position, currentTime, dt) {
-    globals.set({ transportState: clock.getState() });
+    globals.set({ transportState: transport.getState() });
     return event.speed > 0 ? position : Infinity;
   },
 };
 
 transport.add(engine);
-
-// setInterval(() => {
-//   const now = getTimeFunction();
-//   const position = clock.getPositionAtTime(now);
-//   console.log(position);
-// }, 250);
 
 
