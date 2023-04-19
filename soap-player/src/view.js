@@ -152,24 +152,7 @@ export function renderScreen(viewState) {
         buttons="[play, stop]"
         width="50"
         state="${viewState.transportState}"
-        @change=${e => {
-          const now = getTime() + 0.05;
-
-          switch (e.detail.value) {
-            case 'play': {
-              transport.play(now);
-              break;
-            }
-            case 'stop': {
-              const { bar, beat } = viewState.seekBarBeat;
-              const pos = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-
-              transport.pause(now);
-              transport.seek(now, pos);
-              break;
-            }
-          }
-        }}
+        @change=${e => setTransportState(e.detail.value)}
       ></sc-transport>
     </div>
     <div style="margin: 4px 0;">
@@ -360,9 +343,7 @@ export function renderScreen(viewState) {
         value="mode de sonification"
         readonly
       ></sc-text>
-      <select @change="${(e) => {
-        soapEngine.sonifyMode = e.target.value;
-      }}">
+      <select @change="${(e) => soapEngine.sonifyMode = e.target.value}">
         <option value="auto">auto</option>
         <option value="beat">beat</option>
         <option value="double">double</option>

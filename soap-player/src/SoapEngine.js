@@ -14,7 +14,6 @@ export default class SoapEngine {
   }
 
   onTransportEvent(event, position, audioTime, dt) {
-
     const { bar, beat } = this.interpreter.getLocationAtPosition(position);
 
     if (event.type === 'play' || event.type === 'seek') {
@@ -73,10 +72,13 @@ export default class SoapEngine {
           }
         case 'double':
           this._triggerBeat(audioTime, freq, 1);
+
           if (upper === 1) {
             upper = 2;
           };
+
           const delta = this.current.duration / upper;
+
           for (let i = 1; i < upper; i++) {
             const subBeatTime = audioTime + i * delta;
             this._triggerBeat(subBeatTime, 1200, 0.3);
@@ -91,12 +93,12 @@ export default class SoapEngine {
           }
           break;
         case 'odd':
-          if (this.beat%2 === 1) {
+          if (this.beat % 2 === 1) {
             this._triggerBeat(audioTime, freq, 1);
           }
           break;
         case 'even':
-          if (this.beat%2 === 0) {
+          if (this.beat % 2 === 0) {
             this._triggerBeat(audioTime, freq, 1);
           }
           break;
