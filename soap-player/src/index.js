@@ -27,8 +27,8 @@ const scheduler = new Scheduler(getTime);
 const transport = new Transport(scheduler);
 
 const defaultScore = `\
-BAR 1 [4/4] "section 1" TEMPO [1/4]=120
-BAR 3 [4/4] "section 2" TEMPO [1/4]=60
+BAR 1 [4/4] TEMPO [1/4]=120 curve 1
+BAR 3 TEMPO [1/4]=60
 `;
 
 // model
@@ -109,37 +109,37 @@ function jumpToLabel(label) {
 }());
 
 
-document.body.addEventListener('keypress', e => {
-  // console.log(e);
-  // if (e.key == "Enter" || e.code == "Enter" || e.keyCode == 13) {
-  //   const now = getTime();
-  //   e.preventDefault();
+// document.body.addEventListener('keypress', e => {
+//   // console.log(e);
+//   // if (e.key == "Enter" || e.code == "Enter" || e.keyCode == 13) {
+//   //   const now = getTime();
+//   //   e.preventDefault();
 
-  //   transport.seek(now, 0);
-  //   viewState.seekBarBeat.bar = 1;
-  //   viewState.seekBarBeat.beat = 1;
+//   //   transport.seek(now, 0);
+//   //   viewState.seekBarBeat.bar = 1;
+//   //   viewState.seekBarBeat.beat = 1;
 
-  // }
+//   // }
 
-  if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
-    const now = getTime();
-    e.preventDefault();
+//   if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
+//     const now = getTime();
+//     e.preventDefault();
 
-    switch (viewState.transportState) {
-      case "play":
-        // need to stop
-        const { bar, beat } = viewState.seekBarBeat;
-        const pos = viewState.soapEngine.interpreter.getPositionAtLocation(bar, beat);
-        transport.pause(now);
-        transport.seek(now, pos);
-        viewState.transportState = "stop";
-        break;
-      case "stop":
-        // need to play
-        transport.play(now);
-        viewState.transportState = "play";
-        break;
-    }
-    renderScreen(viewState);
-  }
-});
+//     switch (viewState.transportState) {
+//       case "play":
+//         // need to stop
+//         const { bar, beat } = viewState.seekBarBeat;
+//         const pos = viewState.soapEngine.interpreter.getPositionAtLocation(bar, beat);
+//         transport.pause(now);
+//         transport.seek(now, pos);
+//         viewState.transportState = "stop";
+//         break;
+//       case "stop":
+//         // need to play
+//         transport.play(now);
+//         viewState.transportState = "play";
+//         break;
+//     }
+//     renderScreen(viewState);
+//   }
+// });

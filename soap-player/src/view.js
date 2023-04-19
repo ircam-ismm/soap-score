@@ -363,6 +363,7 @@ export function renderScreen(viewState) {
       <select @change="${(e) => {
         soapEngine.sonifyMode = e.target.value;
       }}">
+        <option value="auto">auto</option>
         <option value="beat">beat</option>
         <option value="double">double</option>
         <option value="bar">bar</option>

@@ -8,8 +8,7 @@ export default class SoapEngine {
     this.beat = 1;
     this.current = null;
     this.next = null;
-    this.sonifySubBeats = false;
-    this.sonifyMode = "beat";
+    this.sonifyMode = "auto";
     this.viewState = viewState;
     this.audioContext = audioContext;
   }
@@ -65,9 +64,13 @@ export default class SoapEngine {
       let { upper, lower } = this.current.basis;
 
       switch (this.sonifyMode) {
-        case 'beat':
-          this._triggerBeat(audioTime, freq, 1);
-          break;
+        case 'auto':
+          // if we're not in a tempo curve, sonify each beat
+          // else fall down to case double
+          if (this.current.event.tempo.curve === null) {
+            this._triggerBeat(audioTime, freq, 1);
+            break;
+          }
         case 'double':
           this._triggerBeat(audioTime, freq, 1);
           if (upper === 1) {
@@ -78,6 +81,9 @@ export default class SoapEngine {
             const subBeatTime = audioTime + i * delta;
             this._triggerBeat(subBeatTime, 1200, 0.3);
           }
+          break;
+        case 'beat':
+          this._triggerBeat(audioTime, freq, 1);
           break;
         case "bar":
           if (this.beat === 1) {
