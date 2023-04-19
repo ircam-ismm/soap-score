@@ -33,7 +33,17 @@ export default class SoapEngine {
       this.next = null;
     }
 
-    this.viewState.active = true;
+    if (event.speed > 0) {
+      this.viewState.transportState = 'play';
+    } else if (event.speed === 0) {
+      if (event.position === 0) {
+        this.viewState.transportState = 'stop';
+      } else {
+        this.viewState.transportState = 'pause';
+      }
+    }
+
+    this.viewState.active = false;
     renderScreen(this.viewState);
 
     if (event.speed > 0) {
@@ -59,10 +69,10 @@ export default class SoapEngine {
       let { upper, lower } = this.current.basis;
 
       switch (this.sonifyMode) {
-        case "beat":
+        case 'beat':
           this._triggerBeat(audioTime, freq, 1);
           break;
-        case "double":
+        case 'double':
           if (upper === 1) {
             upper = 2;
           };
@@ -72,11 +82,11 @@ export default class SoapEngine {
             this._triggerBeat(subBeatTime, 1200, 0.3);
           }
           break;
-        case "bar":
+        case 'bar':
           break;
-        case "odd":
+        case 'odd':
           break;
-        case "even":
+        case 'even':
           break;
       }
 

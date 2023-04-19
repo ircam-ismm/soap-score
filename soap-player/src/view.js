@@ -165,8 +165,6 @@ export function renderScreen(viewState) {
         @change=${e => {
           const now = getTime() + 0.05;
 
-          viewState.transportState = e.detail.value;
-
           switch (e.detail.value) {
             case 'play': {
               transport.play(now);

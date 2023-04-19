@@ -125,6 +125,21 @@ async function main($container) {
     getTime: getSyncTime,
     setScore: score => globals.set({ score }),
     jumpToLabel: (label) => console.log('@todo - jumpToLabel', label),
+    transportState: 'stop',
+    seekBarBeat: {
+      bar: 1,
+      beat: 1,
+    },
+    loopState: {
+      start: {
+        bar: 1,
+        beat: 1,
+      },
+      end: {
+        bar: 2,
+        beat: 1,
+      },
+    },
   }
 
   globals.onUpdate(updates => {
