@@ -2,18 +2,17 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { resumeAudioContext } from '@ircam/resume-audio-context';
 
-import { Scheduler, Transport } from '@ircam/sc-scheduling';
+import { Scheduler } from '@ircam/sc-scheduling';
+
+import Application from './Application.js';
 
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
 import * as fixtures from '../../tests/fixtures.js';
 
-import { renderScreen } from './view.js';
-import SoapEngine from './SoapEngine.js';
-
-const scores = {};
+const scoreList = {};
 for (let name in fixtures) {
   if (name.endsWith('Score')) {
-    scores[name] = fixtures[name];
+    scoreList[name] = fixtures[name];
   }
 }
 
@@ -22,110 +21,18 @@ console.info('> self.crossOriginIsolated', self.crossOriginIsolated);
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
 
-const getTime = () => audioContext.currentTime;
-const scheduler = new Scheduler(getTime);
-const transport = new Transport(scheduler);
+const getTimeFunction = () => audioContext.currentTime;
+const scheduler = new Scheduler(getTimeFunction);
 
 const defaultScore = `\
 BAR 1 [4/4] TEMPO [1/4]=120 curve 1
 BAR 3 TEMPO [1/4]=60
 `;
 
-// model
-const viewState = {
-  transport: transport,
-  score: defaultScore,
-  soapEngine: null,
-  active: false,
-  scores: scores,
-  getTime: getTime,
-  setScore: setScore,
-  jumpToLabel: jumpToLabel,
-  transportState: 'stop',
-  seekBarBeat: {
-    bar: 1,
-    beat: 1,
-  },
-  loopState: {
-    start: {
-      bar: 1,
-      beat: 1,
-    },
-    end: {
-      bar: 2,
-      beat: 1,
-    },
-  },
-};
-
-const callbacks = {
-  setTransportState(state) {
-    const now = getTime() + 0.05;
-
-    switch (state) {
-      case 'play': {
-        transport.play(now);
-        break;
-      }
-      case 'stop': {
-        const { bar, beat } = viewState.seekBarBeat;
-        const pos = viewState.soapEngine.interpreter.getPositionAtLocation(bar, beat);
-
-        transport.pause(now);
-        transport.seek(now, pos);
-        break;
-      }
-    }
-  },
-
-  setScore(newScore) {
-    // reset transport
-    const now = getTime();
-    transport.pause(now);
-    transport.seek(now, 0);
-
-    if (transport.has(viewState.soapEngine)) {
-      transport.remove(viewState.soapEngine);
-    }
-
-    const soapEngine = new SoapEngine(newScore, viewState, audioContext);
-    transport.add(soapEngine);
-
-    viewState.score = newScore;
-    viewState.soapEngine = soapEngine;
-
-    viewState.transportState = 'stop';
-
-    {
-      const { bar, beat } = viewState.loopState.start;
-      transport.loopStart = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-    }
-
-    {
-      const { bar, beat } = viewState.loopState.end;
-      transport.loopEnd = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-    }
-
-    renderScreen(viewState);
-  },
-
-  jumpToLabel(label) {
-    const now = getTime();
-    const position = viewState.soapEngine.interpreter.getPositionAtLabel(label);
-
-    transport.pause(now);
-    transport.seek(now, position);
-
-    viewState.transportState = 'stop';
-
-    renderScreen(viewState);
-  },
-};
-
-
 (async function main() {
   await resumeAudioContext(audioContext);
-  setScore(defaultScore);
+
+  const application = new Application(audioContext, getTimeFunction, scheduler, defaultScore, scoreList);
 }());
 
 
@@ -137,8 +44,8 @@ document.body.addEventListener('keypress', e => {
     // e.preventDefault();
 
     // transport.seek(now, 0);
-    // viewState.seekBarBeat.bar = 1;
-    // viewState.seekBarBeat.beat = 1;
+    // this.model.seekBarBeat.bar = 1;
+    // this.model.seekBarBeat.beat = 1;
   }
 
   // if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
@@ -148,21 +55,21 @@ document.body.addEventListener('keypress', e => {
 
   //   // const now = getTime();
 
-  //   // switch (viewState.transportState) {
+  //   // switch (this.model.transportState) {
   //   //   case "play":
   //   //     // need to stop
-  //   //     const { bar, beat } = viewState.seekBarBeat;
-  //   //     const pos = viewState.soapEngine.interpreter.getPositionAtLocation(bar, beat);
+  //   //     const { bar, beat } = this.model.seekBarBeat;
+  //   //     const pos = this.soapEngine.interpreter.getPositionAtLocation(bar, beat);
   //   //     transport.pause(now);
   //   //     transport.seek(now, pos);
-  //   //     viewState.transportState = "stop";
+  //   //     this.model.transportState = "stop";
   //   //     break;
   //   //   case "stop":
   //   //     // need to play
   //   //     transport.play(now);
-  //   //     viewState.transportState = "play";
+  //   //     this.model.transportState = "play";
   //   //     break;
   //   // }
-  //   // renderScreen(viewState);
+  //   // renderScreen(this.model);
   // }
 });

@@ -620,6 +620,50 @@ describe('# SoapScoreInterpreter', () => {
         assert.equal(dt, 1);
       }
     });
+
+    it.only('events in between beats 3', () => {
+      const score = `
+        BAR 1 [4/4] TEMPO [1/4]=120
+        |4.5 "label"
+      `;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        let { bar, beat, duration, dt, event, position, basis  } = interpreter.getLocationInfos(1, 1);
+        assert.equal(bar, 1, 'bar');
+        assert.equal(beat, 1, 'beat');
+        assert.equal(position, 0, 'position');
+        assert.equal(duration, 0.5, 'duration');
+        assert.equal(dt, 0.5, 'dt');
+      }
+
+      {
+        let { bar, beat, duration, dt, event, position, basis  } = interpreter.getLocationInfos(1, 4);
+        assert.equal(bar, 1, 'bar');
+        assert.equal(beat, 4, 'beat');
+        assert.equal(position, 1.5, 'position');
+        assert.equal(duration, 0.5, 'duration');
+        assert.equal(dt, 0.25, 'dt');
+      }
+
+      {
+        let { bar, beat, duration, dt, event, position, basis  } = interpreter.getNextLocationInfos(1, 4);
+        assert.equal(bar, 1, 'bar');
+        assert.equal(beat, 4.5, 'beat');
+        assert.equal(position, 1.75, 'position');
+        assert.equal(duration, 0.25, 'duration');
+        assert.equal(dt, 0.25, 'dt');
+      }
+
+      {
+        let { bar, beat, duration, dt, event, position, basis  } = interpreter.getLocationInfos(1, 4.5);
+        assert.equal(bar, 1, 'bar');
+        assert.equal(beat, 4.5, 'beat');
+        assert.equal(position, 1.75, 'position');
+        assert.equal(duration, 0.25, 'duration');
+        assert.equal(dt, 0.25, 'dt');
+      }
+    });
   });
 
   describe('## hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {

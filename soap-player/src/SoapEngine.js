@@ -1,16 +1,15 @@
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
-import { renderScreen } from './view.js';
 
 export default class SoapEngine {
-  constructor(score, viewState, audioContext) {
+  constructor(audioContext, score, application) {
+    this.audioContext = audioContext;
     this.interpreter = new SoapScoreInterpreter(score);
+    this.application = application;
+
     this.bar = 1;
     this.beat = 1;
     this.current = null;
     this.next = null;
-    this.sonifyMode = "auto";
-    this.viewState = viewState;
-    this.audioContext = audioContext;
   }
 
   onTransportEvent(event, position, audioTime, dt) {
@@ -32,13 +31,13 @@ export default class SoapEngine {
     }
 
     if (event.speed > 0) {
-      this.viewState.transportState = 'play';
+      this.application.model.transportState = 'play';
     } else {
-      this.viewState.transportState = 'stop';
+      this.application.model.transportState = 'stop';
     }
 
-    this.viewState.active = false;
-    renderScreen(this.viewState);
+    this.application.model.displayActiveBeat = false;
+    this.application.render();
 
     if (event.speed > 0) {
       return this.current.position;
@@ -60,16 +59,28 @@ export default class SoapEngine {
       const freq = this.beat === 1 ? 900 : 600;
       const gain = this.beat === 1 ? 1 : 0.4;
 
-      let { upper, lower } = this.current.basis;
+      const { upper, lower } = this.current.basis;
 
-      switch (this.sonifyMode) {
+      switch (this.application.model.sonificationMode) {
         case 'auto':
-          // if we're not in a tempo curve, sonify each beat
-          // else fall down to case double
           if (this.current.event.tempo.curve === null) {
             this._triggerBeat(audioTime, freq, 1);
-            break;
+          } else {
+            // same as 'double'
+            this._triggerBeat(audioTime, freq, 1);
+
+            if (upper === 1) {
+              upper = 2;
+            };
+
+            const delta = this.current.duration / upper;
+
+            for (let i = 1; i < upper; i++) {
+              const subBeatTime = audioTime + i * delta;
+              this._triggerBeat(subBeatTime, 1200, 0.3);
+            }
           }
+          break;
         case 'double':
           this._triggerBeat(audioTime, freq, 1);
 
@@ -87,7 +98,7 @@ export default class SoapEngine {
         case 'beat':
           this._triggerBeat(audioTime, freq, 1);
           break;
-        case "bar":
+        case 'bar':
           if (this.beat === 1) {
             this._triggerBeat(audioTime, freq, 1);
           }
@@ -106,13 +117,13 @@ export default class SoapEngine {
 
 
       setTimeout(() => {
-        this.viewState.active = true;
-        renderScreen(this.viewState);
+        this.application.model.displayActiveBeat = true;
+        this.application.render();
       }, dt);
     } else {
       setTimeout(() => {
-        this.viewState.active = false;
-        renderScreen(this.viewState);
+        this.application.model.displayActiveBeat = false;
+        this.application.render();
       }, dt);
     }
 
@@ -124,7 +135,6 @@ export default class SoapEngine {
   }
 
   _triggerBeat(audioTime, freq, gain) {
-
     // audio feeedback
     const env = this.audioContext.createGain();
     env.connect(this.audioContext.destination);

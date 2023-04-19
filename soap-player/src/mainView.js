@@ -1,16 +1,7 @@
-import { render, html } from 'lit/html.js';
+import { html } from 'lit/html.js';
 import { live } from 'lit/directives/live.js';
 import { TimeSignature } from 'tonal';
 import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
-
-let manualScore = {
-  tempo: 60,
-  signature: {
-    upper: 4,
-    lower: 4,
-  },
-  basis: '1/4',
-};
 
 import '@ircam/simple-components/sc-bang.js';
 import '@ircam/simple-components/sc-transport.js';
@@ -91,27 +82,8 @@ function renderTimeSignature(soapEngine) {
   //return div;
 }
 
-function createScore(e) {
-  return `BAR 1 [${e.signature.upper}/${e.signature.lower}] TEMPO [${e.basis}]=${e.tempo}`;
-}
-
-
-export function renderScreen(viewState) {
-  const {
-    transport,
-    soapEngine,
-    active,
-    score,
-    scores,
-    getTime,
-    setScore,
-    jumpToLabel,
-    transportState,
-    seekBarBeat,
-    loopState,
-  } = viewState;
-
-  render(html`
+export default function mainView(app) {
+  return html`
     <h2>SO(a)P player</h2>
 
     <h3>affichage</h3>
@@ -120,27 +92,27 @@ export function renderScreen(viewState) {
       <div id="timesignature"></div>
       <div>
         <sc-bang
-          .active="${live(active ? soapEngine.beat === 1 : false)}"
+          .active="${live(app.model.displayActiveBeat ? app.soapEngine.beat === 1 : false)}"
         ></sc-bang>
         <sc-bang
-          .active="${live(active ? soapEngine.beat !== 1 : false)}"
+          .active="${live(app.model.displayActiveBeat ? app.soapEngine.beat !== 1 : false)}"
         ></sc-bang>
       </div>
       <div>
         <sc-clock
           style="margin: 4px 0; display: block;"
-          .getTimeFunction=${() => transport.getPositionAtTime(getTime())}
+          .getTimeFunction=${app.getTransportTime}
           font-size="20"
           twinkle="[0, 0.5]"
         ></sc-clock>
         <sc-text
-          value="${soapEngine.bar}.${soapEngine.beat}"
+          value="${app.soapEngine.bar}|${app.soapEngine.beat}"
           readonly
         ></sc-text>
       </div>
       <div>
         <sc-text
-          value="labels: ${soapEngine.current && soapEngine.current.event ? soapEngine.current.event.label : ''}"
+          value="labels: ${app.soapEngine.current && app.soapEngine.current.event ? app.soapEngine.current.event.label : ''}"
           readonly
         ></sc-text>
       </div>
@@ -151,8 +123,8 @@ export function renderScreen(viewState) {
       <sc-transport
         buttons="[play, stop]"
         width="50"
-        state="${viewState.transportState}"
-        @change=${e => setTransportState(e.detail.value)}
+        state="${app.getTransportState()}"
+        @change=${e => app.setTransportState(e.detail.value)}
       ></sc-transport>
     </div>
     <div style="margin: 4px 0;">
@@ -161,40 +133,17 @@ export function renderScreen(viewState) {
         readonly
       ></sc-text>
       <sc-return
-        @input="${e => {
-          const now = getTime() + 0.05;
-
-          seekBarBeat.bar = 1;
-          seekBarBeat.beat = 1;
-
-          transport.seek(now, 0);
-        }}"
+        @input=${e => app.seekToLocation(1, 1)}
       ></sc-return>
       <sc-number
         min="1"
-        value="${viewState.seekBarBeat.bar}"
-        @change=${(e) => {
-          seekBarBeat.bar = e.detail.value;
-
-          const { bar, beat } = seekBarBeat;
-          const pos = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-          const now = getTime() + 0.05;
-
-          transport.seek(now, pos);
-        }}
+        value="${app.model.seekLocation.bar}"
+        @change=${e => app.seekToLocation(e.detail.value, app.model.seekLocation.beat)}
       ></sc-number>
       <sc-number
         min="1"
-        value="${viewState.seekBarBeat.beat}"
-        @change=${(e) => {
-          seekBarBeat.beat = e.detail.value;
-
-          const { bar, beat } = viewState.seekBarBeat;
-          const pos = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-          const now = getTime() + 0.05;
-
-          transport.seek(now, pos);
-        }}
+        value="${app.model.seekLocation.beat}"
+        @change=${e => app.seekToLocation(sapp.model.seekLocation.bar, e.detail.value)}
       ></sc-number>
     </div>
     <div style="margin: 4px 0;">
@@ -203,7 +152,7 @@ export function renderScreen(viewState) {
         readonly
       ></sc-text>
       <sc-loop
-        @change="${e => transport.loop(getTime(), e.detail.value)}"
+        @change=${e => app.setTransportLoop(e.detail.value)}
       ></sc-loop>
       <br />
       <sc-text
@@ -213,25 +162,13 @@ export function renderScreen(viewState) {
       ></sc-text>
       <sc-number
         min="1"
-        value="${viewState.loopState.start.bar}"
-        @change="${e => {
-          loopState.start.bar = e.detail.value;
-
-          const { bar, beat } = viewState.loopState.start;
-          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-          transport.loopStart = position;
-        }}"
+        value="${app.model.loopState.start.bar}"
+        @change=${e => app.setLoopStartLocation(e.detail.value, app.model.loopState.start.beat)}
       ></sc-number>
       <sc-number
         min="1"
-        value="${viewState.loopState.start.beat}"
-        @change="${e => {
-          loopState.start.beat = e.detail.value;
-
-          const { bar, beat } = viewState.loopState.start;
-          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-          transport.loopStart = position;
-        }}"
+        value="${app.model.loopState.start.beat}"
+        @change=${e => app.setLoopStartLocation(app.model.loopState.start.bar, e.detail.value)}
       ></sc-number>
       <sc-text
         value="to"
@@ -240,25 +177,13 @@ export function renderScreen(viewState) {
       ></sc-text>
       <sc-number
         min="1"
-        value="${viewState.loopState.end.bar}"
-        @change="${e => {
-          loopState.end.bar = e.detail.value;
-
-          const { bar, beat } = viewState.loopState.end;
-          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-          transport.loopStart = position;
-        }}"
+        value="${app.model.loopState.end.bar}"
+        @change=${e => app.setLoopEndLocation(e.detail.value, app.model.loopState.end.beat)}
       ></sc-number>
       <sc-number
         min="1"
-        value="${viewState.loopState.end.beat}"
-        @change="${e => {
-          loopState.end.beat = e.detail.value;
-
-          const { bar, beat } = viewState.loopState.end;
-          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
-          transport.loopStart = position;
-        }}"
+        value="${app.model.loopState.end.beat}"
+        @change=${e => app.setLoopEndLocation(app.model.loopState.end.bar, e.detail.value)}
       ></sc-number>
     </div>
 
@@ -271,17 +196,11 @@ export function renderScreen(viewState) {
       ></sc-text>
       <sc-number
         min="0"
-        value="${manualScore.tempo}"
-        @change=${e => {
-          manualScore.tempo = e.detail.value;
-          setScore(createScore(manualScore));
-        }}
+        value="${app.model.generatedScore.tempo}"
+        @change=${e => app.generateScore('tempo', e.detail.value)}
       ></sc-number>
       <sc-tap-tempo
-        @change="${e => {
-          manualScore.tempo = e.detail.value.toFixed(2);
-          setScore(createScore(manualScore));
-        }}"
+        @change=${e => app.generateScore('tempo', parseFloat(e.detail.value.toFixed(2)))}
       ></sc-tap-tempo>
     </div>
     <div style="margin: 4px 0;">
@@ -293,19 +212,13 @@ export function renderScreen(viewState) {
         min="0"
         value="4"
         integer
-        @change=${e => {
-          manualScore.signature.upper = e.detail.value;
-          setScore(createScore(manualScore));
-        }}
+        @change=${e => app.generateScore('signatureUpper', e.detail.value)}
       ></sc-number>/
       <sc-number
         min="0"
         value="4"
         integer
-        @change=${e => {
-          manualScore.signature.lower = e.detail.value;
-          setScore(createScore(manualScore));
-        }}
+        @change=${e => app.generateScore('signatureLower', e.detail.value)}
       ></sc-number>
     </div>
     <div style="margin: 4px 0;">
@@ -313,10 +226,9 @@ export function renderScreen(viewState) {
         value="BPM basis"
         readonly
       ></sc-text>
-      <select @change="${(e) => {
-        manualScore.basis = e.target.value;
-        setScore(createScore(manualScore));
-      }}">
+      <select
+        @change=${e => app.generateScore('basis', e.target.value)}
+      >
         <option value="1/4">♩</option>
         <option value="1/8">♪</option>
         <option value="1/2">blanche</option>
@@ -330,8 +242,8 @@ export function renderScreen(viewState) {
       <h4>editor</h4>
       <div style="margin: 4px 0;">
         <sc-editor
-          value="${score}"
-          @change="${e => setScore(e.detail.value)}"
+          value="${app.model.score}"
+          @change=${e => app.setScore(e.detail.value)}
         ></sc-editor>
       </div>
     </div>
@@ -343,7 +255,7 @@ export function renderScreen(viewState) {
         value="mode de sonification"
         readonly
       ></sc-text>
-      <select @change="${(e) => soapEngine.sonifyMode = e.target.value}">
+      <select @change=${(e) => app.setSonificationMode(e.target.value)}>
         <option value="auto">auto</option>
         <option value="beat">beat</option>
         <option value="double">double</option>
@@ -356,11 +268,11 @@ export function renderScreen(viewState) {
     <h3>tests</h3>
     <div style="margin: 4px 0;">
       <br />
-      ${Object.keys(scores).map(name => {
+      ${Object.keys(app.model.scoreList).map(name => {
         return html`<sc-button
           style="padding-bottom: 2px;"
           value="${name}"
-          @input=${e => setScore(scores[name])}
+          @input=${e => app.setScore(app.model.scoreList[name])}
         ></sc-button>
         `;
       })}
@@ -371,7 +283,7 @@ export function renderScreen(viewState) {
         readonly
       ></sc-text>
       <br />
-      ${soapEngine.interpreter.getLabels().map(name => {
+      ${app.soapEngine.interpreter.getLabels().map(name => {
         return html`<sc-button
           style="padding-bottom: 2px;"
           value="${name}"
@@ -380,13 +292,8 @@ export function renderScreen(viewState) {
         `;
       })}
     </div>
+  `;
 
-
-  `, document.body);
-
-
-
-  renderTempo(soapEngine);
-  renderTimeSignature(soapEngine);
-
+  // renderTempo(soapEngine);
+  // renderTimeSignature(soapEngine);
 }
