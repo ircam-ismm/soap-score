@@ -4,6 +4,8 @@ import { Transport } from '@ircam/sc-scheduling';
 import SoapEngine from './SoapEngine.js';
 import mainView from './mainView.js';
 
+import midi2soap from '../../src/parsers/midi2soap.js'
+
 export default class Application {
   constructor(audioContext, getTimeFunction, scheduler, defaultScore, scoreList = []) {
 
@@ -11,8 +13,6 @@ export default class Application {
     this.getTime = getTimeFunction;
     this.scheduler = scheduler;
     this.transport = new Transport(scheduler);
-
-    console.log(this.transport);
 
     this.soapEngine = null;
 
@@ -68,6 +68,13 @@ export default class Application {
     this.model.transportState = 'stop';
 
     {
+      // if the score doesn't start on bar 1
+      const { bar, beat } = soapEngine.interpreter.score[0]
+      this.model.seekLocation.bar = bar;
+      this.model.seekLocation.beat = beat;
+    }
+
+    {
       const { bar, beat } = this.model.loopState.start;
       this.transport.loopStart = this.soapEngine.interpreter.getPositionAtLocation(bar, beat);
     }
@@ -78,6 +85,18 @@ export default class Application {
     }
 
     this.render();
+  }
+
+  parseMidi(file) {
+    const score = midi2soap.readString(file);
+    this.setScore(score);
+    // console.log(score);
+  }
+
+  parseAugustin(file) {
+    const score = augustin2soap.parse(file);
+    this.setScore(file);
+    // console.log(score);
   }
 
   setTransportState(state) {
@@ -143,6 +162,9 @@ export default class Application {
   jumpToLabel(label) {
     const now = this.getTime();
     const position = this.soapEngine.interpreter.getPositionAtLabel(label);
+    const location = this.soapEngine.interpreter.getLocationAtLabel(label);
+
+    this.model.seekLocation = location;
 
     this.transport.pause(now);
     this.transport.seek(now, position);

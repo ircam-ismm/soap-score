@@ -122,6 +122,67 @@ BAR 1 [4/4] TEMPO [1/4]=120
       assert.deepEqual(outputData, expectedData);
     })
   });
+  describe('# From Reaper Example', () => {
+    it('## Example 1', () => {
+      const input = [
+  {
+    deltaTime: 0,
+    type: 255,
+    metaType: 88,
+    data: [ 4, 2, 24, 8 ]
+  },
+  {
+    deltaTime: 0,
+    type: 255,
+    metaType: 81,
+    data: 500000
+  },
+  {
+    deltaTime: 2880,
+    type: 255,
+    metaType: 81,
+    data: 1000000
+  },
+  {
+    deltaTime: 2880,
+    type: 255,
+    metaType: 81,
+    data: 500000
+  },
+  {
+    deltaTime: 3840,
+    type: 255,
+    metaType: 81,
+    data: 1500000
+  },
+  {
+    deltaTime: 7680,
+    type: 255,
+    metaType: 81,
+    data: 300000
+  },
+  {
+    deltaTime: 0,
+    type: 255,
+    metaType: 47
+  }];
+      const outputScore = midi2soap.parse(input);
+      // console.log(outputScore);
+      const outputData = parseScore(outputScore);
+      const expectedScore = `\
+BAR 1 [4/4] TEMPO [1/4]=120
+|4 TEMPO [1/4]=60
+BAR 2
+|3 TEMPO [1/4]=120
+BAR 3
+|3 TEMPO [1/4]=40
+BAR 5
+|3 TEMPO [1/4]=200 \
+`;
+      const expectedData = parseScore(expectedScore);
+      assert.deepEqual(outputData, expectedData);
+    });
+  });
 //   describe('# Curve Examples', () => {
 //     it('# Curve begin on first beat', () => {
 //       const input = `\

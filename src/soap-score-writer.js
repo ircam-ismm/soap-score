@@ -7,16 +7,16 @@ export function writeScore(eventList) {
   let previous = { signature: null, tempo: null };
 
   eventList.forEach((event) => {
-    if (event.bar !== currentBar) {
+    if (event.bar !== currentBar || event.signature !== previous.signature) {
       output += currentLine + '\n';
 
       currentLine = ``;
       currentBar = event.bar;
+
+      currentLine = `BAR ${event.bar} `;
     }
 
-    if (event.beat === 1) {
-      currentLine += `BAR ${event.bar} `;
-    } else {
+    if (event.beat !== 1) {
       currentLine += `\n|${event.beat} `;
     }
 

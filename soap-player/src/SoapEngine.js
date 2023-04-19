@@ -59,7 +59,18 @@ export default class SoapEngine {
       const freq = this.beat === 1 ? 900 : 600;
       const gain = this.beat === 1 ? 1 : 0.4;
 
-      const { upper, lower } = this.current.basis;
+      if (!this.current.event.tempo) {
+        this._triggerBeat(audioTime, freq, 1);
+        this.application.model.displayActiveBeat = false;
+        this.application.render();
+        // update values for next call, we don't update right now as we want to
+        // display the right infos
+        this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
+
+        return position + this.current.dt;
+      }
+
+      let { upper, lower } = this.current.basis;
 
       switch (this.application.model.sonificationMode) {
         case 'auto':
