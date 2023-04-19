@@ -256,8 +256,9 @@ class SoapScoreInterpreter {
     } else {
       // normalized bar according to basis unit
       const normBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
-      // beat duration according to basis unit
-      const normBeatDuration = Math.min(normBar - (beat - 1), 1);
+      // normalized beat duration according to basis unit
+      // handle cases when signture is not a integer mutliple of tempo basis
+      const normBeatDuration = Math.min(normBar - (Math.floor(beat) - 1), 1);
 
       duration = basisDuration * normBeatDuration;
       // let's just hope this stays rationnal
@@ -267,13 +268,32 @@ class SoapScoreInterpreter {
       }
     }
 
+    // handle case where next event is in between two beats
     // if there is an event within the next beat, we want to adapt the duration
     const { nextBar, nextBeat } = this.getNextLocation(bar, beat);
     const inBetweenEvent = this.hasEventBetweenLocations(bar, beat, nextBar, nextBeat);
 
+
+    const isStartBeat = (Math.floor(beat) === beat);
+    // if is start beat and no event in between, dt is equal to duration
     let dt = duration;
 
-    if (inBetweenEvent !== null) {
+    // `duration` is the time until next full beat
+    if (!isStartBeat) {
+      const ratio = 1 - (beat % 1);
+      duration *= ratio;
+    }
+
+    // `dt` is the time until next event whatever it is (inbetween event, etc)
+    if (isStartBeat && inBetweenEvent !== null) {
+      // compute dt between this beat and next event
+      const ratio = inBetweenEvent.beat % 1;
+      dt *= ratio;
+    } else if (!isStartBeat && inBetweenEvent === null) {
+      // compute ratio between this sub-beat and net full beat
+      const ratio = 1 - (beat % 1);
+      dt *= ratio;
+    } else if (!isStartBeat && inBetweenEvent !== null) {
       const ratio = inBetweenEvent.beat - beat;
       dt *= ratio;
     }
@@ -293,17 +313,7 @@ class SoapScoreInterpreter {
       nextBeat = inBetweenEvent.beat;
     }
 
-    const values = this.getLocationInfos(nextBar, nextBeat);
-
-    // we need to adapt duration
-    if (inBetweenEvent !== null) {
-      const remaining = 1 - (values.beat % 1);
-      // this is not a full beat event so we override duration too
-      values.duration *= remaining;
-      values.dt *= remaining;
-    }
-
-    return values;
+    return this.getLocationInfos(nextBar, nextBeat);
   }
 
   getNextLocation(bar, beat) {

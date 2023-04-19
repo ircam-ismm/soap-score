@@ -1,5 +1,6 @@
-import { html } from 'lit/html.js';
+import { html, nothing } from 'lit/html.js';
 import { live } from 'lit/directives/live.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { TimeSignature } from 'tonal';
 import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
@@ -15,10 +16,10 @@ import '@ircam/simple-components/sc-tap-tempo.js';
 import '@ircam/simple-components/sc-return.js';
 import '@ircam/simple-components/sc-loop.js';
 import '@ircam/simple-components/sc-dragndrop.js';
-import './sc-clock.js';
+import '@ircam/simple-components/sc-clock.js';
+
 
 function renderTempo(soapEngine) {
-
   if (!soapEngine.current) {
     return null;
   }
@@ -41,8 +42,7 @@ function renderTempo(soapEngine) {
     dots = 1;
   }
 
-  const div = document.getElementById('bpmBasis');
-  div.innerHTML = ``;
+  const div = document.createElement('div');
 
   const renderer = new Renderer(div, Renderer.Backends.SVG);
   renderer.resize(80, 40);
@@ -52,6 +52,8 @@ function renderTempo(soapEngine) {
 
   stave.setTempo({ duration, dots, bpm }, 0);
   stave.setContext(context).draw();
+
+  return div;
 }
 
 function renderTimeSignature(soapEngine) {
@@ -67,9 +69,7 @@ function renderTimeSignature(soapEngine) {
 
   const { signature } = soapEngine.current.event;
 
-  const div = document.getElementById('timesignature');
-  // const div = document.createElement('div');
-  div.innerHTML = ``;
+  const div = document.createElement('div');
 
   const renderer = new Renderer(div, Renderer.Backends.SVG);
   renderer.resize(100, 50);
@@ -80,16 +80,20 @@ function renderTimeSignature(soapEngine) {
   stave.setContext(context).draw();
   context.rect(0, 0, 1, 100, { stroke: 'none', fill: 'white' });
 
-  //return div;
+  return div;
 }
 
 export default function mainView(app) {
+  const $tempo = renderTempo(app.soapEngine);
+  const $timeSignature = renderTimeSignature(app.soapEngine);
+
   return html`
     <h2>SO(a)P player</h2>
 
     <h3>affichage</h3>
     <div>
-      <div id="bpmBasis"></div>
+      ${$tempo}
+      ${$timeSignature}
       <div id="timesignature"></div>
       <div>
         <sc-bang
@@ -344,7 +348,4 @@ export default function mainView(app) {
       })}
     </div>
   `;
-
-  // renderTempo(soapEngine);
-  // renderTimeSignature(soapEngine);
 }
