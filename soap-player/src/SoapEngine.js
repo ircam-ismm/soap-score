@@ -82,7 +82,14 @@ export default class SoapEngine {
             this._triggerBeat(subBeatTime, 1200, 0.3);
           }
           break;
+<<<<<<< Updated upstream
         case 'bar':
+=======
+        case "bar":
+          if (this.beat === 1) {
+            this._triggerBeat(audioTime, freq, 1);
+          }
+>>>>>>> Stashed changes
           break;
         case 'odd':
           break;

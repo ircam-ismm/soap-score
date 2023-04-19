@@ -172,13 +172,16 @@ export function renderScreen(viewState) {
             }
             case 'pause': {
               transport.pause(now);
+              // store marker at current score position
               viewState.seekBarBeat.bar = soapEngine.bar;
               viewState.seekBarBeat.beat = soapEngine.beat;
               break;
             }
             case 'stop': {
+              const { bar, beat } = viewState.seekBarBeat;
+              const pos = soapEngine.interpreter.getPositionAtLocation(bar, beat);
+
               transport.pause(now);
-              const pos = soapEngine.interpreter.getPositionAtLocation(viewState.seekBarBeat.bar, viewState.seekBarBeat.beat);
               transport.seek(now, pos);
               break;
             }
