@@ -16,7 +16,6 @@ for (let name in fixtures) {
     scores[name] = fixtures[name];
   }
 }
-// console.log(scores);
 
 console.info('> self.crossOriginIsolated', self.crossOriginIsolated);
 
@@ -27,15 +26,15 @@ const getTime = () => audioContext.currentTime;
 const scheduler = new Scheduler(getTime);
 const transport = new Transport(scheduler);
 
-let score = `\
+const defaultScore = `\
 BAR 1 [4/4] "section 1" TEMPO [1/4]=120
 BAR 3 [4/4] "section 2" TEMPO [1/4]=60
 `;
 
-let soapEngine = null;
+// model
 const viewState = {
   transport: transport,
-  score: score,
+  score: defaultScore,
   soapEngine: null,
   active: false,
   scores: scores,
@@ -59,22 +58,17 @@ const viewState = {
   },
 };
 
-
-
 function setScore(newScore) {
-  // console.log(newScore);
-  score = newScore;
-
   // reset transport
   const now = getTime();
   transport.pause(now);
   transport.seek(now, 0);
 
-  if (transport.has(soapEngine)) {
-    transport.remove(soapEngine);
+  if (transport.has(viewState.soapEngine)) {
+    transport.remove(viewState.soapEngine);
   }
 
-  soapEngine = new SoapEngine(score, viewState, audioContext);
+  const soapEngine = new SoapEngine(newScore, viewState, audioContext);
   transport.add(soapEngine);
 
   viewState.score = newScore;
@@ -97,13 +91,13 @@ function setScore(newScore) {
 
 function jumpToLabel(label) {
   const now = getTime();
-  const position = soapEngine.interpreter.getPositionAtLabel(label);
+  const position = viewState.soapEngine.interpreter.getPositionAtLabel(label);
   // console.log('Jump to label', label, position);
 
   transport.pause(now);
   transport.seek(now, position);
 
-  viewState.transportState = 'pause';
+  viewState.transportState = 'stop';
 
   renderScreen(viewState);
 }
@@ -111,21 +105,21 @@ function jumpToLabel(label) {
 
 (async function main() {
   await resumeAudioContext(audioContext);
-  setScore(score);
+  setScore(defaultScore);
 }());
 
 
 document.body.addEventListener('keypress', e => {
   // console.log(e);
-  if (e.key == "Enter" || e.code == "Enter" || e.keyCode == 13) {
-    const now = getTime();
-    e.preventDefault();
+  // if (e.key == "Enter" || e.code == "Enter" || e.keyCode == 13) {
+  //   const now = getTime();
+  //   e.preventDefault();
 
-    transport.seek(now, 0);
-    viewState.seekBarBeat.bar = 1;
-    viewState.seekBarBeat.beat = 1;
+  //   transport.seek(now, 0);
+  //   viewState.seekBarBeat.bar = 1;
+  //   viewState.seekBarBeat.beat = 1;
 
-  }
+  // }
 
   if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
     const now = getTime();
@@ -133,17 +127,12 @@ document.body.addEventListener('keypress', e => {
 
     switch (viewState.transportState) {
       case "play":
-        const { bar, beat } = viewState.seekBarBeat;
         // need to stop
-        const pos = soapEngine.interpreter.getPositionAtLocation(bar, beat);
+        const { bar, beat } = viewState.seekBarBeat;
+        const pos = viewState.soapEngine.interpreter.getPositionAtLocation(bar, beat);
         transport.pause(now);
         transport.seek(now, pos);
         viewState.transportState = "stop";
-        break;
-      case "pause":
-        // need to play
-        transport.play(now);
-        viewState.transportState = "play";
         break;
       case "stop":
         // need to play

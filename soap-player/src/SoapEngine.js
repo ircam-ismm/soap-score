@@ -35,12 +35,8 @@ export default class SoapEngine {
 
     if (event.speed > 0) {
       this.viewState.transportState = 'play';
-    } else if (event.speed === 0) {
-      if (event.position === 0) {
-        this.viewState.transportState = 'stop';
-      } else {
-        this.viewState.transportState = 'pause';
-      }
+    } else {
+      this.viewState.transportState = 'stop';
     }
 
     this.viewState.active = false;
@@ -73,6 +69,7 @@ export default class SoapEngine {
           this._triggerBeat(audioTime, freq, 1);
           break;
         case 'double':
+          this._triggerBeat(audioTime, freq, 1);
           if (upper === 1) {
             upper = 2;
           };
@@ -82,18 +79,20 @@ export default class SoapEngine {
             this._triggerBeat(subBeatTime, 1200, 0.3);
           }
           break;
-<<<<<<< Updated upstream
-        case 'bar':
-=======
         case "bar":
           if (this.beat === 1) {
             this._triggerBeat(audioTime, freq, 1);
           }
->>>>>>> Stashed changes
           break;
         case 'odd':
+          if (this.beat%2 === 1) {
+            this._triggerBeat(audioTime, freq, 1);
+          }
           break;
         case 'even':
+          if (this.beat%2 === 0) {
+            this._triggerBeat(audioTime, freq, 1);
+          }
           break;
       }
 

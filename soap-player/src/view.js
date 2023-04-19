@@ -73,7 +73,6 @@ function renderTimeSignature(soapEngine) {
     return null;
   }
 
-  // console.log(soapEngine);
   const { signature } = soapEngine.current.event;
 
   const div = document.getElementById('timesignature');
@@ -149,18 +148,9 @@ export function renderScreen(viewState) {
 
     <h3>controle</h3>
     <div style="margin: 4px 0;">
-      <sc-return
-        @input="${e => {
-          const now = getTime() + 0.05;
-
-          viewState.seekBarBeat.bar = 1;
-          viewState.seekBarBeat.beat = 1;
-          transport.seek(now, 0);
-
-        }}"
-      ></sc-return>
       <sc-transport
-        buttons="[play, pause, stop]"
+        buttons="[play, stop]"
+        width="50"
         state="${viewState.transportState}"
         @change=${e => {
           const now = getTime() + 0.05;
@@ -168,13 +158,6 @@ export function renderScreen(viewState) {
           switch (e.detail.value) {
             case 'play': {
               transport.play(now);
-              break;
-            }
-            case 'pause': {
-              transport.pause(now);
-              // store marker at current score position
-              viewState.seekBarBeat.bar = soapEngine.bar;
-              viewState.seekBarBeat.beat = soapEngine.beat;
               break;
             }
             case 'stop': {
@@ -188,22 +171,32 @@ export function renderScreen(viewState) {
           }
         }}
       ></sc-transport>
-      <sc-loop
-        @change="${e => transport.loop(getTime(), e.detail.value)}"
-      ></sc-loop>
     </div>
     <div style="margin: 4px 0;">
       <sc-text
-        value="go to bar.beat"
+        value="start at position"
         readonly
       ></sc-text>
+      <sc-return
+        @input="${e => {
+          const now = getTime() + 0.05;
+
+          seekBarBeat.bar = 1;
+          seekBarBeat.beat = 1;
+
+          transport.seek(now, 0);
+        }}"
+      ></sc-return>
       <sc-number
         min="1"
         value="${viewState.seekBarBeat.bar}"
         @change=${(e) => {
-          const now = getTime() + 0.05;
           seekBarBeat.bar = e.detail.value;
-          const pos = soapEngine.interpreter.getPositionAtLocation(viewState.seekBarBeat.bar, viewState.seekBarBeat.beat);
+
+          const { bar, beat } = seekBarBeat;
+          const pos = soapEngine.interpreter.getPositionAtLocation(bar, beat);
+          const now = getTime() + 0.05;
+
           transport.seek(now, pos);
         }}
       ></sc-number>
@@ -211,9 +204,12 @@ export function renderScreen(viewState) {
         min="1"
         value="${viewState.seekBarBeat.beat}"
         @change=${(e) => {
+          seekBarBeat.beat = e.detail.value;
+
+          const { bar, beat } = viewState.seekBarBeat;
+          const pos = soapEngine.interpreter.getPositionAtLocation(bar, beat);
           const now = getTime() + 0.05;
-          seekBarBeat.bar = e.detail.value;
-          const pos = soapEngine.interpreter.getPositionAtLocation(viewState.seekBarBeat.bar, viewState.seekBarBeat.beat);
+
           transport.seek(now, pos);
         }}
       ></sc-number>
@@ -223,38 +219,62 @@ export function renderScreen(viewState) {
         value="loop"
         readonly
       ></sc-text>
-      from
+      <sc-loop
+        @change="${e => transport.loop(getTime(), e.detail.value)}"
+      ></sc-loop>
+      <br />
+      <sc-text
+        value="from"
+        readonly
+        width="40"
+      ></sc-text>
       <sc-number
         min="1"
         value="${viewState.loopState.start.bar}"
         @change="${e => {
-          viewState.loopState.start.bar = e.detail.value;
-          transport.loopStart = soapEngine.interpreter.getPositionAtLocation(viewState.loopState.start.bar, viewState.loopState.start.beat);
+          loopState.start.bar = e.detail.value;
+
+          const { bar, beat } = viewState.loopState.start;
+          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
+          transport.loopStart = position;
         }}"
       ></sc-number>
       <sc-number
         min="1"
         value="${viewState.loopState.start.beat}"
         @change="${e => {
-          viewState.loopState.start.beat = e.detail.value;
-          transport.loopStart = soapEngine.interpreter.getPositionAtLocation(viewState.loopState.start.bar, viewState.loopState.start.beat);
+          loopState.start.beat = e.detail.value;
+
+          const { bar, beat } = viewState.loopState.start;
+          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
+          transport.loopStart = position;
         }}"
       ></sc-number>
-      to
+      <sc-text
+        value="to"
+        readonly
+        width="40"
+      ></sc-text>
       <sc-number
         min="1"
         value="${viewState.loopState.end.bar}"
         @change="${e => {
-          viewState.loopState.end.bar = e.detail.value;
-          transport.loopEnd = soapEngine.interpreter.getPositionAtLocation(viewState.loopState.end.bar, viewState.loopState.end.beat);
+          loopState.end.bar = e.detail.value;
+
+          const { bar, beat } = viewState.loopState.end;
+          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
+          transport.loopStart = position;
         }}"
       ></sc-number>
       <sc-number
         min="1"
         value="${viewState.loopState.end.beat}"
         @change="${e => {
-          viewState.loopState.end.beat = e.detail.value;
-          transport.loopEnd = soapEngine.interpreter.getPositionAtLocation(viewState.loopState.end.bar, viewState.loopState.end.beat);
+          loopState.end.beat = e.detail.value;
+
+          const { bar, beat } = viewState.loopState.end;
+          const position = soapEngine.interpreter.getPositionAtLocation(bar, beat);
+          transport.loopStart = position;
         }}"
       ></sc-number>
     </div>
@@ -341,7 +361,7 @@ export function renderScreen(viewState) {
         readonly
       ></sc-text>
       <select @change="${(e) => {
-        console.log(e.target.value)
+        soapEngine.sonifyMode = e.target.value;
       }}">
         <option value="beat">beat</option>
         <option value="double">double</option>
@@ -349,12 +369,6 @@ export function renderScreen(viewState) {
         <option value="odd">odd</option>
         <option value="even">even</option>
       </select>
-    </div>
-
-      <sc-toggle
-        ?active=${soapEngine.sonifySubBeats}
-        @change=${e => soapEngine.sonifySubBeats = e.detail.value}
-      ></sc-toggle>
     </div>
 
     <h3>tests</h3>
