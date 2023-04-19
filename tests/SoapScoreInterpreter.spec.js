@@ -563,29 +563,29 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, duration, dt, event, position, basis  } = interpreter.getLocationInfos(1, 1);
-        assert.equal(bar, 1, 'bar');
-        assert.equal(beat, 1, 'beat');
-        assert.equal(position, 0, 'position');
-        assert.equal(duration, 1, 'duration');
-        assert.equal(dt, 0.5, 'duration');
+        assert.equal(bar, 1, 'bar 1');
+        assert.equal(beat, 1, 'beat 1');
+        assert.equal(position, 0, 'position 1');
+        assert.equal(duration, 1, 'duration 1');
+        assert.equal(dt, 0.5, 'dt 1');
       }
 
       {
         let { bar, beat, duration, dt, event, position, basis  } = interpreter.getNextLocationInfos(1, 1);
-        assert.equal(bar, 1, 'bar');
-        assert.equal(beat, 1.5, 'beat');
-        assert.equal(position, 0.5, 'position');
-        assert.equal(duration, 0.5, 'duration');
-        assert.equal(dt, 0.5, 'duration');
+        assert.equal(bar, 1, 'bar 2');
+        assert.equal(beat, 1.5, 'beat 2');
+        assert.equal(position, 0.5, 'position 2');
+        assert.equal(duration, 0.5, 'duration 2');
+        assert.equal(dt, 0.5, 'dt 2');
       }
 
       {
         let { bar, beat, duration, dt, event, position, basis  } = interpreter.getNextLocationInfos(1, 1.5);
-        assert.equal(bar, 1, 'bar');
-        assert.equal(beat, 2, 'beat');
-        assert.equal(position, 1, 'position');
-        assert.equal(duration, 1, 'duration');
-        assert.equal(dt, 1, 'duration');
+        assert.equal(bar, 1, 'bar 3');
+        assert.equal(beat, 2, 'beat 3');
+        assert.equal(position, 1, 'position 3');
+        assert.equal(duration, 1, 'duration 3');
+        assert.equal(dt, 1, 'dt 3');
       }
     });
 
@@ -598,30 +598,33 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, dt, event, position, basis, duration } = interpreter.getLocationInfos(1, 1);
-        assert.equal(bar, 1);
-        assert.equal(beat, 1);
-        assert.equal(position, 0);
-        assert.isBelow(Math.abs(dt - 0.6), 1e-9); // 0.6000000000000001
+        assert.equal(bar, 1, 'bar 1');
+        assert.equal(beat, 1, 'beat 1');
+        assert.equal(duration, 1, 'duration 1');
+        assert.equal(position, 0, 'position 1');
+        assert.isBelow(Math.abs(dt - 0.6), 1e-9, 'dt 1'); // 0.6000000000000001
       }
 
       {
         let { bar, beat, dt, event, position, basis, duration } = interpreter.getNextLocationInfos(1, 1);
-        assert.equal(bar, 1);
-        assert.equal(beat, 1.6);
-        assert.isBelow(Math.abs(position - 0.6), 1e-9); // 0.6000000000000001
-        assert.isBelow(Math.abs(dt - 0.4), 1e-9);
+        assert.equal(bar, 1, 'bar 2');
+        assert.equal(beat, 1.6, 'beat 2');
+        assert.isBelow(Math.abs(duration - 0.4), 1e-9, 'duration 2');
+        assert.isBelow(Math.abs(position - 0.6), 1e-9, 'position 2'); // 0.6000000000000001
+        assert.isBelow(Math.abs(dt - 0.4), 1e-9, 'dt 2');
       }
 
       {
         let { bar, beat, dt, event, position, basis, duration } = interpreter.getNextLocationInfos(1, 1.6);
-        assert.equal(bar, 1);
-        assert.equal(beat, 2);
-        assert.equal(position, 1);
-        assert.equal(dt, 1);
+        assert.equal(bar, 1, 'bar 3');
+        assert.equal(beat, 2, 'beat 3');
+        assert.equal(duration, 1, 'duration 3');
+        assert.equal(position, 1, 'position 3');
+        assert.equal(dt, 1, 'dt 3');
       }
     });
 
-    it.only('events in between beats 3', () => {
+    it('events in between beats 3', () => {
       const score = `
         BAR 1 [4/4] TEMPO [1/4]=120
         |4.5 "label"
@@ -630,38 +633,38 @@ describe('# SoapScoreInterpreter', () => {
 
       {
         let { bar, beat, duration, dt, event, position, basis  } = interpreter.getLocationInfos(1, 1);
-        assert.equal(bar, 1, 'bar');
-        assert.equal(beat, 1, 'beat');
-        assert.equal(position, 0, 'position');
-        assert.equal(duration, 0.5, 'duration');
-        assert.equal(dt, 0.5, 'dt');
+        assert.equal(bar, 1, 'bar 1');
+        assert.equal(beat, 1, 'beat 1');
+        assert.equal(position, 0, 'position 1');
+        assert.equal(duration, 0.5, 'duration 1');
+        assert.equal(dt, 0.5, 'dt 1');
       }
 
       {
         let { bar, beat, duration, dt, event, position, basis  } = interpreter.getLocationInfos(1, 4);
-        assert.equal(bar, 1, 'bar');
-        assert.equal(beat, 4, 'beat');
-        assert.equal(position, 1.5, 'position');
-        assert.equal(duration, 0.5, 'duration');
-        assert.equal(dt, 0.25, 'dt');
+        assert.equal(bar, 1, 'bar 2');
+        assert.equal(beat, 4, 'beat 2');
+        assert.equal(position, 1.5, 'position 2');
+        assert.equal(duration, 0.5, 'duration 2');
+        assert.equal(dt, 0.25, 'dt 2');
       }
 
       {
         let { bar, beat, duration, dt, event, position, basis  } = interpreter.getNextLocationInfos(1, 4);
-        assert.equal(bar, 1, 'bar');
-        assert.equal(beat, 4.5, 'beat');
-        assert.equal(position, 1.75, 'position');
-        assert.equal(duration, 0.25, 'duration');
-        assert.equal(dt, 0.25, 'dt');
+        assert.equal(bar, 1, 'bar 3');
+        assert.equal(beat, 4.5, 'beat 3');
+        assert.equal(position, 1.75, 'position 3');
+        assert.equal(duration, 0.25, 'duration 3');
+        assert.equal(dt, 0.25, 'dt 3');
       }
 
       {
         let { bar, beat, duration, dt, event, position, basis  } = interpreter.getLocationInfos(1, 4.5);
-        assert.equal(bar, 1, 'bar');
-        assert.equal(beat, 4.5, 'beat');
-        assert.equal(position, 1.75, 'position');
-        assert.equal(duration, 0.25, 'duration');
-        assert.equal(dt, 0.25, 'dt');
+        assert.equal(bar, 1, 'bar 4');
+        assert.equal(beat, 4.5, 'beat 4');
+        assert.equal(position, 1.75, 'position 4');
+        assert.equal(duration, 0.25, 'duration 4');
+        assert.equal(dt, 0.25, 'dt 4');
       }
     });
   });

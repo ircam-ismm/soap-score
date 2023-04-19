@@ -59,7 +59,7 @@ export default class SoapEngine {
       const freq = this.beat === 1 ? 900 : 600;
       const gain = this.beat === 1 ? 1 : 0.4;
 
-      const { upper, lower } = this.current.basis;
+      let { upper, lower } = this.current.basis;
 
       switch (this.application.model.sonificationMode) {
         case 'auto':
