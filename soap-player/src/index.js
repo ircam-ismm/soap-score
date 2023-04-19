@@ -18,6 +18,22 @@ for (let name in fixtures) {
 }
 // console.log(scores);
 
+const seekBarBeat = {
+  bar: 1,
+  beat: 1,
+};
+
+const loopState = {
+  start: {
+    bar: 1,
+    beat: 1,
+  },
+  end: {
+    bar: 2,
+    beat: 1,
+  },
+}
+
 console.info('> self.crossOriginIsolated', self.crossOriginIsolated);
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -43,7 +59,11 @@ const viewState = {
   setScore: setScore,
   jumpToLabel: jumpToLabel,
   transportState: 'stop',
+  seekBarBeat: seekBarBeat,
+  loopState: loopState,
 };
+
+
 
 function setScore(newScore) {
   // console.log(newScore);
@@ -66,6 +86,9 @@ function setScore(newScore) {
 
   viewState.transportState = 'stop';
 
+  transport.loopStart = 0;
+  transport.loopEnd = soapEngine.interpreter.getPositionAtLocation(loopState.end.bar, loopState.end.beat);
+
   renderScreen(viewState);
 }
 
@@ -87,3 +110,42 @@ function jumpToLabel(label) {
   await resumeAudioContext(audioContext);
   setScore(score);
 }());
+
+
+document.body.addEventListener('keypress', e => {
+  // console.log(e);
+  if (e.key == "Enter" || e.code == "Enter" || e.keyCode == 13) {
+    const now = getTime();
+    e.preventDefault();
+
+    transport.seek(now, 0);
+    viewState.seekBarBeat.bar = 1;
+    viewState.seekBarBeat.beat = 1;
+
+  }
+  if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
+    const now = getTime();
+    e.preventDefault();
+
+    switch (viewState.transportState) {
+      case "play":
+        // need to stop
+        const pos = soapEngine.interpreter.getPositionAtLocation(seekBarBeat.bar, seekBarBeat.beat);
+        transport.pause(now);
+        transport.seek(now, pos);
+        viewState.transportState = "stop";
+        break;
+      case "pause":
+        // need to play
+        transport.play(now);
+        viewState.transportState = "play";
+        break;
+      case "stop":
+        // need to play
+        transport.play(now);
+        viewState.transportState = "play";
+        break;
+    }
+    renderScreen(viewState);
+  }
+});
