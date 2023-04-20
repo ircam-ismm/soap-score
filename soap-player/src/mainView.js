@@ -15,7 +15,9 @@ import '@ircam/simple-components/sc-slider.js';
 import '@ircam/simple-components/sc-tap-tempo.js';
 import '@ircam/simple-components/sc-return.js';
 import '@ircam/simple-components/sc-loop.js';
+import '@ircam/simple-components/sc-dragndrop.js';
 import '@ircam/simple-components/sc-clock.js';
+
 
 function renderTempo(soapEngine) {
   if (!soapEngine.current) {
@@ -119,6 +121,13 @@ export default function mainView(app) {
           readonly
         ></sc-text>
       </div>
+      <div>
+        <sc-text
+          width="500"
+          value="@TODO barre d'avancement pour les durées absolues"
+          readonly
+        ></sc-text>
+      </div>
     </div>
 
     <h3>controle</h3>
@@ -189,6 +198,22 @@ export default function mainView(app) {
         @change=${e => app.setLoopEndLocation(app.model.loopState.end.bar, e.detail.value)}
       ></sc-number>
     </div>
+    <div style="margin: 4px 0;">
+      <sc-text
+        style="margin: 4px 0;"
+        value="labels"
+        readonly
+      ></sc-text>
+      <br />
+      ${app.soapEngine.interpreter.getLabels().map(name => {
+        return html`<sc-button
+          style="padding-bottom: 2px;"
+          value="${name}"
+          @input=${e => app.jumpToLabel(name)}
+        ></sc-button>
+        `;
+      })}
+    </div>
 
 
     <h4>basic</h4>
@@ -242,12 +267,45 @@ export default function mainView(app) {
     </div>
 
     <div>
-      <h4>editor</h4>
+      <h3>score</h3>
+      <h4>dragndrop</h4>
+      <div style="margin: 4px 0;">
+        <sc-dragndrop
+          width="100"
+          height="40"
+          label="soap"
+          format="load"
+          @change=${(e) => {app.setScore(e.detail.value[Object.keys(e.detail.value)[0]])
+          }}
+        ></sc-dragndrop>
+        <sc-dragndrop
+          width="100"
+          height="40"
+          label="midi"
+          @change=${(e) => {
+            app.parseMidi(e.detail.value[Object.keys(e.detail.value)[0]])
+          }}
+        ></sc-dragndrop>
+        <sc-dragndrop
+          width="100"
+          height="40"
+          label="augustin"
+          @change=${(e) => {
+            app.parseAugustin(e.detail.value[Object.keys(e.detail.value)[0]])
+          }}
+        ></sc-dragndrop>
+      </div>
       <div style="margin: 4px 0;">
         <sc-editor
           value="${app.model.score}"
           @change=${e => app.setScore(e.detail.value)}
         ></sc-editor>
+      </div>
+      <h4>exports</h4>
+      <div style="margin: 4px 0;">
+        <sc-button
+          value="antescofo @todo"
+        ></sc-button>
       </div>
     </div>
 
@@ -267,7 +325,16 @@ export default function mainView(app) {
         <option value="even">even</option>
       </select>
     </div>
-
+    <div style="margin: 4px 0;">
+      <sc-text
+        value="sound"
+        readonly
+      ></sc-text>
+      <select @change=${(e) => console.log(e.target.value)}>
+        <option value="default">default</option>
+        <option value="vintage">vintage</option>
+      </select>
+    </div>
     <h3>tests</h3>
     <div style="margin: 4px 0;">
       <br />
@@ -276,21 +343,6 @@ export default function mainView(app) {
           style="padding-bottom: 2px;"
           value="${name}"
           @input=${e => app.setScore(app.model.scoreList[name])}
-        ></sc-button>
-        `;
-      })}
-
-      <sc-text
-        style="margin: 4px 0;"
-        value="labels"
-        readonly
-      ></sc-text>
-      <br />
-      ${app.soapEngine.interpreter.getLabels().map(name => {
-        return html`<sc-button
-          style="padding-bottom: 2px;"
-          value="${name}"
-          @input=${e => jumpToLabel(name)}
         ></sc-button>
         `;
       })}

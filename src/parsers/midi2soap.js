@@ -1,5 +1,5 @@
-import fs from 'node:fs';
-import path from 'node:path';
+// import fs from 'node:fs';
+// import path from 'node:path';
 
 import midiParser from 'midi-parser-js';
 
@@ -14,11 +14,24 @@ function computeMetricLocation(events) {
 
   events.forEach( (e,i) => {
     // compute floatingBar
-    floatingBar += e.relBeat / ( (4/previousMetricAtTime.lower)*previousMetricAtTime.upper );
+    floatingBar += e.relBeat / ((4/previousMetricAtTime.lower)*previousMetricAtTime.upper);
+    // console.log(floatingBar, e.relBeat, previousMetricAtTime.lower, previousMetricAtTime.upper);
+
+    // console.log(floatingBar);
     // add bar and beat to event
-    e.bar = Math.floor(floatingBar);
-    e.beat = 1 + ( (floatingBar - Math.floor(floatingBar)) * (e.signature.upper * 4 / e.signature.lower) );
-    // previousMetric devient currentMetric
+    const bar = Math.floor(Math.round(floatingBar*100)/100);
+    const beat = 1 + ( (floatingBar - Math.floor(floatingBar)) * (e.signature.upper * 4 / e.signature.lower) );
+
+    // solve round erreurs
+    if ((e.signature.upper+1) - (Math.round(beat*100)/100) === 0) {
+      e.bar = bar;
+      e.beat = 1;
+    } else {
+      e.bar = bar;
+      e.beat = Math.round(beat*100)/100;
+    }
+    // console.log(e.bar, e.beat, floatingBar, e.relBeat);
+
     previousMetricAtTime = e.signature;
   });
 
@@ -28,9 +41,12 @@ function computeMetricLocation(events) {
 }
 
 const midi2soap = {
-  fromFile: function(input, output) {
+  write: function(output, soapScore) {
+    fs.writeFileSync(output, soapScore);
+  },
+  readFile(input) {
     if (!fs.existsSync(input)) {
-      throw new Error(`coucou`);
+      throw new Error(`file do not exist`);
     }
 
     // Parse the obtainer base64 string ...
@@ -39,32 +55,57 @@ const midi2soap = {
     const data = midi.track[0].event;
     const timeDiv = midi.timeDivision;
     const soapScore = this.parse(data, timeDiv);
-    // log raw midi info
-    console.log(data);
 
-    fs.writeFileSync(output, soapScore);
+    return soapScore;
+  },
+  readString(input) {
+    const midi = midiParser.parse(input);
+    const data = midi.track[0].event;
+    const timeDiv = midi.timeDivision;
+    const soapScore = this.parse(data, timeDiv);
+    return soapScore;
+  },
+  createSoapFile(input, output) {
+    write(output, read(input))
+  },
+  outputLineForDebug(input) {
+    const midi = midiParser.parse(input);
+    // console.log(midi);
+    const data = midi.track[0].event;
+    const output = [];
+    data.forEach(line => {
+      output.push(line);
+    })
+    return output;
   },
   parse: function(data, timeDiv = 960) {
 
     let events = [];
-    let time = null;
-    let previousTime = 0;
+    let deltaTime = null;
+    let previousDeltaTime = 0;
     let signature = null;
     let bpm = null;
     let label = null;
+    let absTime = 0;
+    let previousAbsTime = 0;
 
-    data.forEach( (line,index) => {
+    data.forEach((line,index) => {
       // for debug
-      console.log(line);
-      time = line.deltaTime / timeDiv;
+      // console.log(line);
+      deltaTime = line.deltaTime / timeDiv;
+      deltaTime = Math.round(deltaTime*100)/100;
+      // console.log(deltaTime);
+      absTime += deltaTime;
+      // console.log("absTime ", absTime);
+      // console.log("delta time", deltaTime);
 
       // on publie à chaque changement de temps ou si c'est le dernier evenement de la liste
-      if (time !== previousTime || data.length === (index+1)) {
+      if ( absTime !== previousAbsTime || line.metaType === 47) {
         // push event
         events.push({
           bar: null,
           beat: null,
-          relBeat: previousTime,
+          relBeat: previousDeltaTime,
           signature: signature,
           duration: null,
           tempo: {
@@ -75,6 +116,7 @@ const midi2soap = {
           fermata: null,
           label: label,
         });
+        label = "";
       };
       // retrieves info from line
       switch (line.metaType) {
@@ -91,23 +133,27 @@ const midi2soap = {
           // compute label
           break;
         case 1:
-          // compute tempo curve
+          label = line.data;
           break;
         default:
           break;
       };
 
-      previousTime = time;
+      if (deltaTime !== 0) {
+        previousDeltaTime = deltaTime;
+      }
+      previousAbsTime = absTime;
 
     });
     events = computeMetricLocation(events);
+    // console.log(events);
     const output = writeScore(events);
+    // console.log(output);
     return output;
   },
 };
 
-midi2soap.fromFile('curve_score.mid');
+// midi2soap.fromFile('curve_score.mid');
 
 export default midi2soap;
-
 
