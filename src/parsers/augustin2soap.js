@@ -1,5 +1,5 @@
-import fs from 'node:fs';
-import path from 'node:path';
+// import fs from 'node:fs';
+// import path from 'node:path';
 
 import chunk from 'lodash.chunk';
 
@@ -41,7 +41,7 @@ function curveParsing(line) {
     line.push('1');
   }
   line = chunk(line,4);
-  console.log(line);
+  // console.log(line);
   line.forEach(curve => {
     // curve[0] is tempo of begin - curve[1] tempo of end - curve[2] duration - curve[3] first beat to start
   });
@@ -51,7 +51,8 @@ function curveParsing(line) {
 function simpleParsing(line) {
   let e = [];
   const command = line[1];
-  const bar = parseInt(line[0]);
+  //hack for 0 please change !
+  const bar = parseInt(line[0])+1;
   switch (command) {
     case 'fermata':
       e.push({
@@ -122,6 +123,11 @@ const augustin2soap = {
     const soapScore = this.parse(score);
 
     fs.writeFileSync(output, soapScore);
+  },
+
+  readString: (input) => {
+    const score = input.toString();
+
   },
 
   parse: (data) => {

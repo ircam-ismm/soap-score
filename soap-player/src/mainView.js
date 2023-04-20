@@ -304,7 +304,7 @@ export default function mainView(app) {
       <h4>exports</h4>
       <div style="margin: 4px 0;">
         <sc-button
-          value="antescofo"
+          value="antescofo @todo"
         ></sc-button>
       </div>
     </div>

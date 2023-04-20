@@ -14,11 +14,24 @@ function computeMetricLocation(events) {
 
   events.forEach( (e,i) => {
     // compute floatingBar
-    floatingBar += e.relBeat / ( (4/previousMetricAtTime.lower)*previousMetricAtTime.upper );
+    floatingBar += e.relBeat / ((4/previousMetricAtTime.lower)*previousMetricAtTime.upper);
+    // console.log(floatingBar, e.relBeat, previousMetricAtTime.lower, previousMetricAtTime.upper);
+
+    // console.log(floatingBar);
     // add bar and beat to event
-    e.bar = Math.floor(floatingBar);
-    e.beat = 1 + ( (floatingBar - Math.floor(floatingBar)) * (e.signature.upper * 4 / e.signature.lower) );
-    // previousMetric devient currentMetric
+    const bar = Math.floor(Math.round(floatingBar*100)/100);
+    const beat = 1 + ( (floatingBar - Math.floor(floatingBar)) * (e.signature.upper * 4 / e.signature.lower) );
+
+    // solve round erreurs
+    if ((e.signature.upper+1) - (Math.round(beat*100)/100) === 0) {
+      e.bar = bar;
+      e.beat = 1;
+    } else {
+      e.bar = bar;
+      e.beat = Math.round(beat*100)/100;
+    }
+    // console.log(e.bar, e.beat, floatingBar, e.relBeat);
+
     previousMetricAtTime = e.signature;
   });
 
@@ -57,6 +70,7 @@ const midi2soap = {
   },
   outputLineForDebug(input) {
     const midi = midiParser.parse(input);
+    // console.log(midi);
     const data = midi.track[0].event;
     const output = [];
     data.forEach(line => {
@@ -79,12 +93,14 @@ const midi2soap = {
       // for debug
       // console.log(line);
       deltaTime = line.deltaTime / timeDiv;
+      deltaTime = Math.round(deltaTime*100)/100;
+      // console.log(deltaTime);
       absTime += deltaTime;
       // console.log("absTime ", absTime);
       // console.log("delta time", deltaTime);
 
       // on publie à chaque changement de temps ou si c'est le dernier evenement de la liste
-      if ( absTime !== previousAbsTime || data.length === (index+1)) {
+      if ( absTime !== previousAbsTime || line.metaType === 47) {
         // push event
         events.push({
           bar: null,
@@ -100,6 +116,7 @@ const midi2soap = {
           fermata: null,
           label: label,
         });
+        label = "";
       };
       // retrieves info from line
       switch (line.metaType) {
@@ -116,7 +133,7 @@ const midi2soap = {
           // compute label
           break;
         case 1:
-          // compute tempo curve
+          label = line.data;
           break;
         default:
           break;
@@ -131,6 +148,7 @@ const midi2soap = {
     events = computeMetricLocation(events);
     // console.log(events);
     const output = writeScore(events);
+    // console.log(output);
     return output;
   },
 };

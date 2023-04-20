@@ -5,6 +5,7 @@ import SoapEngine from './SoapEngine.js';
 import mainView from './mainView.js';
 
 import midi2soap from '../../src/parsers/midi2soap.js'
+import augustin2soap from '../../src/parsers/augustin2soap.js'
 
 export default class Application {
   constructor(audioContext, getTimeFunction, scheduler, defaultScore, scoreList = []) {
@@ -89,14 +90,15 @@ export default class Application {
 
   parseMidi(file) {
     const score = midi2soap.readString(file);
+    // console.log(midi2soap.outputLineForDebug(file));
+    console.log(score);
     this.setScore(score);
-    // console.log(score);
   }
 
   parseAugustin(file) {
     const score = augustin2soap.parse(file);
-    this.setScore(file);
     // console.log(score);
+    this.setScore(score);
   }
 
   setTransportState(state) {
