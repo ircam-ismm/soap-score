@@ -1,41 +1,36 @@
-// import fs from 'node:fs';
-// import path from 'node:path';
-
 import midiParser from 'midi-parser-js';
-
 import TimeSignature from '@tonaljs/time-signature';
 
 import { writeScore } from '../soap-score-writer.js';
 
 function computeMetricLocation(events) {
+  let bar = 1;
+  let beat = 1;
+  let signature = events[0].signature;
 
-  let previousMetricAtTime = events[0].signature;
-  let floatingBar = 1;
+  events.forEach((event ,index) => {
+    // real beat is expressed in quarter note, then in a m [3/8]
+    // signature, we have 1.5 relBeat, then we want to express realBeat
+    // normalized according to the bar signature
+    const numQuarterNoteInBar = (signature.upper / signature.lower) / (1 / 4);
+    const normRelBeat = event.relBeat / numQuarterNoteInBar;
+    const normBeat = (beat - 1) / numQuarterNoteInBar;
+    let nextNormBeat = normBeat + normRelBeat;
 
-  events.forEach( (e,i) => {
-    // compute floatingBar
-    floatingBar += e.relBeat / ((4/previousMetricAtTime.lower)*previousMetricAtTime.upper);
-    // console.log(floatingBar, e.relBeat, previousMetricAtTime.lower, previousMetricAtTime.upper);
-
-    // console.log(floatingBar);
-    // add bar and beat to event
-    const bar = Math.floor(Math.round(floatingBar*100)/100);
-    const beat = 1 + ( (floatingBar - Math.floor(floatingBar)) * (e.signature.upper * 4 / e.signature.lower) );
-
-    // solve round erreurs
-    if ((e.signature.upper+1) - (Math.round(beat*100)/100) === 0) {
-      e.bar = bar;
-      e.beat = 1;
-    } else {
-      e.bar = bar;
-      e.beat = Math.round(beat*100)/100;
+    if (Math.abs(Math.round(nextNormBeat) - nextNormBeat) < 1e-6) {
+      nextNormBeat = Math.round(nextNormBeat);
     }
-    // console.log(e.bar, e.beat, floatingBar, e.relBeat);
 
-    previousMetricAtTime = e.signature;
+    bar += Math.floor(nextNormBeat);
+
+    const remaining = nextNormBeat - Math.floor(nextNormBeat);
+    beat = remaining * numQuarterNoteInBar + 1;
+
+    event.bar = bar;
+    event.beat = beat;
+
+    signature = event.signature;
   });
-
-  // console.log(events);
 
   return events;
 }
@@ -93,11 +88,8 @@ const midi2soap = {
       // for debug
       // console.log(line);
       deltaTime = line.deltaTime / timeDiv;
-      deltaTime = Math.round(deltaTime*100)/100;
-      // console.log(deltaTime);
+
       absTime += deltaTime;
-      // console.log("absTime ", absTime);
-      // console.log("delta time", deltaTime);
 
       // on publie à chaque changement de temps ou si c'est le dernier evenement de la liste
       if ( absTime !== previousAbsTime || line.metaType === 47) {
@@ -142,9 +134,10 @@ const midi2soap = {
       if (deltaTime !== 0) {
         previousDeltaTime = deltaTime;
       }
-      previousAbsTime = absTime;
 
+      previousAbsTime = absTime;
     });
+
     events = computeMetricLocation(events);
     // console.log(events);
     const output = writeScore(events);

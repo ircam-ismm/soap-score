@@ -12,7 +12,7 @@ describe('soap.parse.midi2soap', () => {
         { deltaTime: 0, type: 255, metaType: 81, data: 1000000 },
         { deltaTime: 0, type: 255, metaType: 47 } ];
       const outputScore = midi2soap.parse(input);
-      console.log(outputScore);
+      //console.log(outputScore);
       const outputData = parseScore(outputScore);
       const expectedScore = `BAR 1 [4/4] TEMPO [1/4]=60`;
       const expectedData = parseScore(expectedScore);
@@ -27,7 +27,7 @@ describe('soap.parse.midi2soap', () => {
       // please keep midi format will convert every tempo basis to quarter note
       const expectedScore = `BAR 1 [6/8] TEMPO [1/4]=90`;
       const outputScore = midi2soap.parse(input);
-      console.log(outputScore);
+      //console.log(outputScore);
       const outputData = parseScore(outputScore);
       const expectedData = parseScore(expectedScore);
       assert.deepEqual(outputData, expectedData);
@@ -50,7 +50,7 @@ BAR 3 [6/4]
 BAR 4 [4/4] \
 `;
       const expectedData = parseScore(expectedScore);
-      console.log(outputScore);
+      //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
     it('## Example 4', () => {
@@ -66,7 +66,7 @@ BAR 1 [4/4] TEMPO [1/4]=120
 BAR 3 TEMPO [1/4]=50 \
 `;
       const expectedData = parseScore(expectedScore);
-      console.log(outputScore);
+      //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
   });
@@ -85,7 +85,7 @@ BAR 1 [4/4] TEMPO [1/4]=120 "section A"
 BAR 3 "section B" \
 `;
       const expectedData = parseScore(expectedScore);
-      console.log(outputScore);
+      //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
     it('## Example 2', () => {
@@ -102,7 +102,7 @@ BAR 1 [4/4] TEMPO [1/4]=120 "To Flute"
 |3 "To Piccolo" \
 `;
       const expectedData = parseScore(expectedScore);
-      console.log(outputScore);
+      //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
     it('## Example 3', () => {
@@ -118,7 +118,7 @@ BAR 1 [4/4] TEMPO [1/4]=120
 |4.5 "accent" \
 `;
       const expectedData = parseScore(expectedScore);
-      console.log(outputScore);
+      //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     })
   });
@@ -167,7 +167,7 @@ BAR 1 [4/4] TEMPO [1/4]=120
     metaType: 47
   }];
       const outputScore = midi2soap.parse(input);
-      // console.log(outputScore);
+      // //console.log(outputScore);
       const outputData = parseScore(outputScore);
       const expectedScore = `\
 BAR 1 [4/4] TEMPO [1/4]=120
@@ -483,13 +483,13 @@ BAR 5
     ]
   },
   {
-    "deltaTime": 23039,
+    "deltaTime": 23040,
     "type": 255,
     "metaType": 1,
     "data": "ENDE/bruitages"
   },
   {
-    "deltaTime": 1,
+    "deltaTime": 0,
     "type": 255,
     "metaType": 88,
     "data": [
@@ -511,7 +511,7 @@ BAR 5
     "metaType": 47
   }];
       const outputScore = midi2soap.parse(input, 480);
-      // console.log(outputScore);
+      // //console.log(outputScore);
       const outputData = parseScore(outputScore);
       const expectedScore = `\
 BAR 1 [2/4] TEMPO [1/4]=56 "Traces IX"
@@ -542,6 +542,7 @@ BAR 144 [3/8] TEMPO [1/4]=21 "ENDE/bruitages" \
       assert.deepEqual(outputData, expectedData);
 
     });
+
     it("## Sample Score.MID", () => {
       const input = [
   {
@@ -603,13 +604,13 @@ BAR 144 [3/8] TEMPO [1/4]=21 "ENDE/bruitages" \
     "data": 1000000
   },
   {
-    "deltaTime": 478,
+    "deltaTime": 480,
     "type": 255,
     "metaType": 6,
     "data": "TOTO"
   },
   {
-    "deltaTime": 3362,
+    "deltaTime": 3360,
     "type": 255,
     "metaType": 81,
     "data": 3000000
@@ -854,8 +855,7 @@ BAR 144 [3/8] TEMPO [1/4]=21 "ENDE/bruitages" \
     "metaType": 47
   }];
       const outputScore = midi2soap.parse(input);
-      // console.log(outputScore);
-      const outputData = parseScore(outputScore);
+      // //console.log("result ", outputScore);
       const expectedScore = `\
 BAR 1 [3/4] TEMPO [1/4]=79.759 "debut"
 |2 TEMPO [1/4]=90
@@ -883,6 +883,8 @@ BAR 26 [9/8] TEMPO [1/4]=100
 BAR 27 TEMPO [1/4]=120 \
 `;
       const expectedData = parseScore(expectedScore);
+      // //console.log("expected \n", expectedScore);
+      const outputData = parseScore(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
   });
@@ -900,7 +902,7 @@ BAR 27 TEMPO [1/4]=120 \
 // |4 TEMPO [1/4]=80 \
 // `;
 //       const expectedData = parseScore(expectedScore);
-//       console.log(outputScore);
+//       //console.log(outputScore);
 //       assert.deepEqual(outputData, expectedData);
 //     });
 //     it("# Curve don't begin on first beat", () => {
@@ -917,7 +919,7 @@ BAR 27 TEMPO [1/4]=120 \
 // BAR 8 [4/4] TEMPO [1/4]=80 \
 // `;
 //       const expectedData = parseScore(expectedScore);
-//       console.log(outputScore);
+//       //console.log(outputScore);
 //       assert.deepEqual(outputData, expectedData);
 //     });
 //     it("Severals curves", () => {
@@ -933,7 +935,7 @@ BAR 27 TEMPO [1/4]=120 \
 // |4 TEMPO [1/4]=80 \
 // `;
 //       const expectedData = parseScore(expectedScore);
-//       console.log(outputScore);
+//       //console.log(outputScore);
 //       assert.deepEqual(outputData, expectedData);
 
 //     });

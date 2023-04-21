@@ -11,7 +11,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.basicExample1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -20,7 +20,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.basicExample2Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -29,7 +29,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.basicExample3Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -38,7 +38,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.basicExample4Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -47,7 +47,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.basicExample5Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
   });
@@ -58,7 +58,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.absExemple1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -67,7 +67,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.absExemple2Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -76,7 +76,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.absExemple3Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
   });
@@ -87,7 +87,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.labelExample1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -96,7 +96,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.labelExample1bisData;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -105,7 +105,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.labelExample2Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
   });
@@ -116,7 +116,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.subExample1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -125,7 +125,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.subExample2Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -138,11 +138,11 @@ describe(`> soap.parseScore(score)`, () => {
       const data2 = parseScore(score2);
       const data3 = parseScore(score3);
 
-      console.log(score1);
-      console.log('> is equivalent to:');
-      console.log(score2);
-      console.log('> is equivalent to:');
-      console.log(score3);
+      //console.log(score1);
+      //console.log('> is equivalent to:');
+      //console.log(score2);
+      //console.log('> is equivalent to:');
+      //console.log(score3);
 
       assert.deepEqual(data1, data2);
       assert.deepEqual(data1, data3);
@@ -155,9 +155,9 @@ describe(`> soap.parseScore(score)`, () => {
       const data1 = parseScore(score1);
       const data2 = parseScore(score2);
 
-      console.log(score1);
-      console.log('> is equivalent to:');
-      console.log(score2);
+      //console.log(score1);
+      //console.log('> is equivalent to:');
+      //console.log(score2);
 
       assert.deepEqual(data1, data2);
     });
@@ -169,7 +169,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.fermataExample1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -178,7 +178,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.fermataExample2Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -187,7 +187,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.fermataExample3Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
   });
@@ -198,7 +198,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.composedExample1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
   });
@@ -209,7 +209,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.tempoCurveExample1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
 
@@ -218,7 +218,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.tempoCurveExample2Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
   });
@@ -229,7 +229,7 @@ describe(`> soap.parseScore(score)`, () => {
       const expected = fixtures.tempoEquivalencyExample1Data;
       const data = parseScore(score);
 
-      console.log(score);
+      //console.log(score);
       assert.deepEqual(data, expected);
     });
   });
@@ -242,7 +242,7 @@ describe(`> soap.parseScore(score)`, () => {
         const data = parseScore(undefined);
       } catch (err) {
         errored = true;
-        console.log(err.message);
+        //console.log(err.message);
       }
 
       if (!errored) {
@@ -259,7 +259,7 @@ describe(`> soap.parseScore(score)`, () => {
         const data = parseScore(score);
       } catch (err) {
         errored = true;
-        console.log(err.message);
+        //console.log(err.message);
       }
 
       if (!errored) {
@@ -276,7 +276,7 @@ describe(`> soap.parseScore(score)`, () => {
         const data = parseScore(score);
       } catch (err) {
         errored = true;
-        console.log(err.message);
+        //console.log(err.message);
       }
 
       if (!errored) {

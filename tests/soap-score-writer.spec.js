@@ -21,7 +21,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
 
       });
@@ -31,7 +31,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
     });
       it(`## Example 4`, () => {
@@ -40,7 +40,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       });
     });
@@ -50,7 +50,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       });
       it('# Example 2', () => {
@@ -58,7 +58,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       })
     })
@@ -68,7 +68,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
 
       });
@@ -78,7 +78,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
 
       });
@@ -89,7 +89,7 @@ describe('soap.writeScore', () => {
         const score = writeScore(data);
         const expected = parseScore(score);
 
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
 
 
@@ -100,7 +100,7 @@ describe('soap.writeScore', () => {
 
         const score = writeScore(data);
         const expected = parseScore(score);
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
 
 
@@ -112,21 +112,21 @@ describe('soap.writeScore', () => {
         const data = fixtures.fermataExample1Data;
         const score = writeScore(data);
         const expected = parseScore(score);
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       });
       it(`## Example 2`, () => {
         const data = fixtures.fermataExample2Data;
         const score = writeScore(data);
         const expected = parseScore(score);
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       });
       it(`## Example 3`, () => {
         const data = fixtures.fermataExample3Data;
         const score = writeScore(data);
         const expected = parseScore(score);
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       });
     });
@@ -135,7 +135,7 @@ describe('soap.writeScore', () => {
         const data = fixtures.composedExample1Data;
         const score = writeScore(data);
         const expected = parseScore(score);
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       });
     });
@@ -144,7 +144,7 @@ describe('soap.writeScore', () => {
         const data = fixtures.tempoCurveExample1Data;
         const score = writeScore(data);
         const expected = parseScore(score);
-        console.log(score);
+        //console.log(score);
         assert.deepEqual(data, expected);
       });
     });

@@ -43,9 +43,11 @@ export default class Application {
         basis: '1/4',
       },
       sonificationMode: 'auto',
+      duration: 0,
     };
 
     this.getTransportTime = this.getTransportTime.bind(this);
+    this.getNormalizedEventDuration = this.getNormalizedEventDuration.bind(this);
 
     this.setScore(defaultScore);
   }
@@ -126,6 +128,22 @@ export default class Application {
 
   getTransportTime() {
     return this.transport.getPositionAtTime(this.getTime());
+  }
+
+  getNormalizedEventDuration() {
+    if (!this.soapEngine.current) {
+      return 0;
+    }
+
+    const duration = this.soapEngine.current.duration;
+    const { bar, beat, interpreter } = this.soapEngine;
+    const startPosition = interpreter.getPositionAtLocation(bar, beat);
+    const currentPosition = this.getTransportTime();
+
+    const now = currentPosition - startPosition;
+    const normPosition = now / duration;
+
+    return normPosition;
   }
 
   setTransportLoop(value) {

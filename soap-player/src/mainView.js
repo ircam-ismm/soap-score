@@ -17,17 +17,16 @@ import '@ircam/simple-components/sc-return.js';
 import '@ircam/simple-components/sc-loop.js';
 import '@ircam/simple-components/sc-dragndrop.js';
 import '@ircam/simple-components/sc-clock.js';
+import '@ircam/simple-components/sc-progress-bar.js';
 
 
 function renderTempo(soapEngine) {
   if (!soapEngine.current) {
-    return null;
+    return nothing;
   }
 
-  if (!soapEngine.current.event.tempo) {
-    const div = document.getElementById('bpmBasis');
-    div.innerHTML = ``;
-    return null;
+  if (soapEngine.current.event.duration) {
+    return nothing;
   }
 
   const { basis, bpm } = soapEngine.current.event.tempo;
@@ -58,13 +57,11 @@ function renderTempo(soapEngine) {
 
 function renderTimeSignature(soapEngine) {
   if (!soapEngine.current) {
-    return null;
+    return nothing;
   }
 
-  if (!soapEngine.current.event.tempo) {
-    const div = document.getElementById('timesignature');
-    div.innerHTML = ``;
-    return null;
+  if (soapEngine.current.event.duration) {
+    return nothing;
   }
 
   const { signature } = soapEngine.current.event;
@@ -121,13 +118,14 @@ export default function mainView(app) {
           readonly
         ></sc-text>
       </div>
+      ${app.soapEngine.current && app.soapEngine.current.event.duration
+      ? html `
       <div>
-        <sc-text
-          width="500"
-          value="@TODO barre d'avancement pour les durées absolues"
-          readonly
-        ></sc-text>
-      </div>
+        <sc-progress-bar
+          .getProgressFunction=${app.getNormalizedEventDuration}
+        ></sc-progress-bar>
+      </div>` : null
+    }
     </div>
 
     <h3>controle</h3>
