@@ -8,16 +8,17 @@ class SoapScoreInterpreter {
     this._labels = this.score.filter(e => e.label !== null).map(e => e.label);
   }
 
-  _computeDurationFromEventToPosition(event, targetBar, targetBeat) {
-    // bar with absolute duration
+  _computeDurationFromEventToLocation(event, targetBar, targetBeat) {
+    // handle absolute duration
     if (event.duration) {
-      return event.duration;
+      // target beat should be between [1, 2[
+      const { duration, bar } = event;
+      const numBar = targetBar - bar;
+
+      return duration * numBar + Math.min(targetBeat - 1, 1) * duration;
     }
 
-    if (event.fermata) {
-      if (event.fermata.absDuration) {}
-    }
-
+    // most common behavior
     if (event.tempo.curve === null) {
       const basisDuration = 60 / event.tempo.bpm;
 
@@ -31,6 +32,8 @@ class SoapScoreInterpreter {
         + ((targetBeat - 1) / event.signature.upper);
 
       return numBarNormalized * barDuration;
+
+    // handle curve
     } else {
       // compute each beat one after the other
       const curve = event.tempo.curve;
@@ -101,7 +104,7 @@ class SoapScoreInterpreter {
 
       if (this.score[i + 1]) {
         let next = this.score[i + 1];
-        const delta = this._computeDurationFromEventToPosition(event, next.bar, next.beat);
+        const delta = this._computeDurationFromEventToLocation(event, next.bar, next.beat);
 
         if (position + delta >= targetPosition) {
           break;
@@ -202,17 +205,14 @@ class SoapScoreInterpreter {
           break;
         }
 
-        const delta = this._computeDurationFromEventToPosition(event, next.bar, next.beat);
+        const delta = this._computeDurationFromEventToLocation(event, next.bar, next.beat);
         position += delta;
       }
     }
 
     // compute from last event until given location
-    // ignore absolute duration event (@todo tbc)
-    if (event.duration === null) {
-      const delta = this._computeDurationFromEventToPosition(event, bar, beat);
-      position += delta;
-    }
+    const delta = this._computeDurationFromEventToLocation(event, bar, beat);
+    position += delta;
 
     return position;
   }
@@ -222,11 +222,17 @@ class SoapScoreInterpreter {
 
     // if event has an obsolute duration, beat can only be '1'
     if (event.duration) {
-      beat = 1;
-      const position = this.getPositionAtLocation(bar, beat);
       const basis = TimeSignature.get('1/1');
-      const duration = event.duration;
-      const dt = event.duration;
+      const position = this.getPositionAtLocation(bar, beat);
+
+      let duration = event.duration;
+      let dt = duration;
+
+      if (beat > 1) {
+        const remaining = (1 - (beat - 1));
+        duration *= remaining;
+        dt *= remaining;
+      }
 
       return { bar, beat, basis, duration, dt, event, position };
     }
@@ -286,16 +292,23 @@ class SoapScoreInterpreter {
 
     // `dt` is the time until next event whatever it is (inbetween event, etc)
     if (event.fermata) {
+      // in fermata
+      // - duration is the duration of fermata basis accroding to current tempo
+      // - dt is the delta to next event according to relDuration, absDuration, etc.
+      const fermataBasis = event.fermata.basis;
+      const tempoBasis = event.tempo.basis;
+      const bpm = event.tempo.bpm;
+      const basisDuration = 60 / bpm;
+
+      const numBasisInFermataBasis = (fermataBasis.upper / fermataBasis.lower) /
+         (tempoBasis.upper / tempoBasis.lower);
+
+      duration = numBasisInFermataBasis * basisDuration;
+
       if (event.fermata.absDuration) {
         dt = event.fermata.absDuration;
       } else if (event.fermata.relDuration) {
-        // basisDuration
-        const tempoBasis = event.tempo.basis;
-        const fermataBasis = event.fermata.basis;
-        const numBasisInFermataBasis = (fermataBasis.upper / fermataBasis.lower) /
-         (tempoBasis.upper / tempoBasis.lower);
-
-        dt = numBasisInFermataBasis * basisDuration * event.fermata.relDuration;
+        dt = duration * event.fermata.relDuration;
       }
     } else if (isStartBeat && inBetweenEvent !== null) {
       // compute dt between this beat and next event

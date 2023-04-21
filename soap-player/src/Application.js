@@ -2,10 +2,11 @@ import { render } from 'lit';
 import { Transport } from '@ircam/sc-scheduling';
 
 import SoapEngine from './SoapEngine.js';
+import layout from './views/layout.js';
 import mainView from './mainView.js';
 
-import midi2soap from '../../src/parsers/midi2soap.js'
-import augustin2soap from '../../src/parsers/augustin2soap.js'
+import midi2soap from '../../src/parsers/midi2soap.js';
+import augustin2soap from '../../src/parsers/augustin2soap.js';
 
 export default class Application {
   constructor(audioContext, getTimeFunction, scheduler, defaultScore, scoreList = []) {
@@ -46,8 +47,8 @@ export default class Application {
       duration: 0,
     };
 
-    this.getTransportTime = this.getTransportTime.bind(this);
-    this.getNormalizedEventDuration = this.getNormalizedEventDuration.bind(this);
+    this.getTransportPosition = this.getTransportPosition.bind(this);
+    this.getPositionInAbsoluteEvent = this.getPositionInAbsoluteEvent.bind(this);
 
     this.setScore(defaultScore);
   }
@@ -62,7 +63,7 @@ export default class Application {
       this.transport.remove(this.soapEngine);
     }
 
-    const soapEngine = new SoapEngine(this.audioContext, newScore, this);
+    const soapEngine = new SoapEngine(this.transport, this.scheduler, this.audioContext, newScore, this);
     this.transport.add(soapEngine);
 
     this.model.score = newScore;
@@ -108,6 +109,7 @@ export default class Application {
 
     switch (state) {
       case 'play': {
+        this.transport.cancel(now);
         this.transport.play(now);
         break;
       }
@@ -115,6 +117,7 @@ export default class Application {
         const { bar, beat } = this.model.seekLocation;
         const pos = this.soapEngine.interpreter.getPositionAtLocation(bar, beat);
 
+        this.transport.cancel(now);
         this.transport.pause(now);
         this.transport.seek(now, pos);
         break;
@@ -126,11 +129,11 @@ export default class Application {
     return this.transport.getState().currentState.speed === 0 ? 'stop' : 'play';
   }
 
-  getTransportTime() {
+  getTransportPosition() {
     return this.transport.getPositionAtTime(this.getTime());
   }
 
-  getNormalizedEventDuration() {
+  getPositionInAbsoluteEvent() {
     if (!this.soapEngine.current) {
       return 0;
     }
@@ -138,12 +141,11 @@ export default class Application {
     const duration = this.soapEngine.current.duration;
     const { bar, beat, interpreter } = this.soapEngine;
     const startPosition = interpreter.getPositionAtLocation(bar, beat);
-    const currentPosition = this.getTransportTime();
+    const currentPosition = this.getTransportPosition();
 
     const now = currentPosition - startPosition;
-    const normPosition = now / duration;
 
-    return normPosition;
+    return now;
   }
 
   setTransportLoop(value) {
@@ -206,6 +208,7 @@ export default class Application {
   }
 
   render() {
-    render(mainView(this), document.body);
+    render(layout(), document.body);
+    // render(mainView(this), document.body);
   }
 }

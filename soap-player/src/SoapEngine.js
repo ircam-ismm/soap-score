@@ -1,7 +1,7 @@
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
 
 export default class SoapEngine {
-  constructor(audioContext, score, application) {
+  constructor(transport, sceduler, audioContext, score, application) {
     this.audioContext = audioContext;
     this.interpreter = new SoapScoreInterpreter(score);
     this.application = application;
@@ -15,9 +15,8 @@ export default class SoapEngine {
   }
 
   onTransportEvent(event, position, audioTime, dt) {
-    const { bar, beat } = this.interpreter.getLocationAtPosition(position);
-
     if (event.type === 'play' || event.type === 'seek') {
+      const { bar, beat } = this.interpreter.getLocationAtPosition(position);
       let infos;
 
       if (Math.floor(beat) === beat) {
@@ -25,6 +24,16 @@ export default class SoapEngine {
       } else {
         infos = this.interpreter.getNextLocationInfos(bar, beat);
       }
+
+      this.current = infos;
+      this.bar = infos.bar;
+      this.beat = infos.beat;
+      this.next = null;
+    }
+
+    if (event.type === 'loop') {
+      const { bar, beat } = this.interpreter.getLocationAtPosition(event.loopStart);
+      const infos = this.interpreter.getLocationInfos(bar, beat);
 
       this.current = infos;
       this.bar = infos.bar;
@@ -49,6 +58,12 @@ export default class SoapEngine {
   }
 
   advanceTime(position, audioTime, dt) {
+    const { bar, beat } = this.interpreter.getLocationAtPosition(position);
+    // if { bar beat } is below current location, where are in a loop
+    if (bar < this.bar || (bar === this.bar && beat < this.beat)) {
+      this.next = this.interpreter.getLocationInfos(bar, beat);
+    }
+
     if (this.next) {
       this.current = this.next;
       this.bar = this.next.bar;
@@ -63,7 +78,7 @@ export default class SoapEngine {
     }
 
     // do not sonify event in between beats
-    if (Math.floor(this.beat) === this.beat) {
+    if (Math.abs(this.beat - Math.floor(this.beat)) < 1e-3) {
       const freq = this.beat === 1 ? 900 : 600;
       const gain = this.beat === 1 ? 1 : 0.4;
 
@@ -151,17 +166,28 @@ export default class SoapEngine {
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
     if (this.current.event.fermata) {
+      const { duration, dt } = this.current;
+      const { transport, scheduler } = this.application;
+      const currentTime = scheduler.currentTime;
+
+      transport.pause(currentTime + duration);
+      transport.play(currentTime + dt);
+
       const nextTempo = 60 / this.next.event.tempo.bpm;
       // sonofy two events before restarting flow
       for (let i = 1; i < 3; i++) {
-        const dt = this.current.dt - nextTempo * i;
+        const upBeatTime = currentTime + dt - nextTempo * i;
 
-        setTimeout(() => {
+        scheduler.defer((currentTime, audioTime, dt) => {
           this._triggerBeat(audioTime + dt, 1200, 0.3);
-          this.application.model.displayActiveBeat = true;
-          this.application.render();
-        }, dt * 1000);
+
+          setTimeout(() => {
+            this.application.model.displayActiveBeat = true;
+            this.application.render();
+          }, dt * 1000);
+        }, upBeatTime);
       }
+      return Infinity;
     }
 
     return position + this.current.dt;
