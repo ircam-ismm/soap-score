@@ -285,7 +285,19 @@ class SoapScoreInterpreter {
     }
 
     // `dt` is the time until next event whatever it is (inbetween event, etc)
-    if (isStartBeat && inBetweenEvent !== null) {
+    if (event.fermata) {
+      if (event.fermata.absDuration) {
+        dt = event.fermata.absDuration;
+      } else if (event.fermata.relDuration) {
+        // basisDuration
+        const tempoBasis = event.tempo.basis;
+        const fermataBasis = event.fermata.basis;
+        const numBasisInFermataBasis = (fermataBasis.upper / fermataBasis.lower) /
+         (tempoBasis.upper / tempoBasis.lower);
+
+        dt = numBasisInFermataBasis * basisDuration * event.fermata.relDuration;
+      }
+    } else if (isStartBeat && inBetweenEvent !== null) {
       // compute dt between this beat and next event
       const ratio = inBetweenEvent.beat % 1;
       dt *= ratio;
@@ -304,6 +316,16 @@ class SoapScoreInterpreter {
   // @todo - do not assume input input beat is consistent (e.g. beat 5 in a [4/4] mesures)
   // or thow error
   getNextLocationInfos(bar, beat) {
+    const event = this.getEventAtLocation(bar, beat);
+
+    if (event.fermata !== null) {
+      // we skip all beats until next event
+      const index = this.score.indexOf(event);
+      const next = this.score[index + 1];
+
+      return this.getLocationInfos(next.bar, next.beat);
+    }
+
     let { nextBar, nextBeat } = this.getNextLocation(bar, beat);
     // check if we have an event between the two locations
     const inBetweenEvent = this.hasEventBetweenLocations(bar, beat, nextBar, nextBeat);

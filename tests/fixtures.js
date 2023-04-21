@@ -1031,13 +1031,40 @@ export const fermataExample1Data = [
     },
     label: null,
   },
+  {
+    bar: 4,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 120,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  }
 ];
 
 
 export const fermataExample2Score = `\
 BAR 1 [4/4]
 |1 TEMPO [1/4]=120
-|2 FERMATA [3/8]=? \
+|3 FERMATA [2/4]=? \
 `;
 export const fermataExample2Data = [
   {
@@ -1069,7 +1096,7 @@ export const fermataExample2Data = [
   },
   {
     bar: 1,
-    beat: 2,
+    beat: 3,
     duration: null,
     signature: {
       empty: false,
@@ -1094,10 +1121,10 @@ export const fermataExample2Data = [
     fermata: {
       basis: {
         empty: false,
-        name: '3/8',
-        type: 'compound',
-        upper: 3,
-        lower: 8,
+        name: '2/4',
+        type: 'simple',
+        upper: 2,
+        lower: 4,
         additive: []
       },
       absDuration: null,
@@ -1106,6 +1133,33 @@ export const fermataExample2Data = [
     },
     label: null,
   },
+  {
+    bar: 2,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 120,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  }
 ];
 
 
@@ -1179,6 +1233,33 @@ export const fermataExample3Data = [
       relDuration: 2,
       suspended: null,
     },
+    label: null,
+  },
+  {
+    bar: 1,
+    beat: 3.5,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 120,
+      curve: null,
+    },
+    fermata: null,
     label: null,
   },
 ];

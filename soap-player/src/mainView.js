@@ -122,7 +122,7 @@ export default function mainView(app) {
       ? html `
       <div>
         <sc-progress-bar
-          .getTimeFunction=${app.getNormalizedEventDuration}
+          .getProgressFunction=${app.getNormalizedEventDuration}
         ></sc-progress-bar>
       </div>` : null
     }

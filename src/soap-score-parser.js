@@ -341,7 +341,7 @@ function insertEventInList(event, list, source) {
     throw new Error(`Invalid bar definition: a bar with a signature should have a tempo defined: "${source}"`);
   }
 
-  list.push(event);
+  list.push(cloneDeep(event));
 }
 
 /**
@@ -396,6 +396,29 @@ export function parseScore(score) {
 
   let source = ir[0].source;
 
+  function insertEndFermata(currentEvent) {
+    insertEventInList(currentEvent, list, source);
+
+    const fermataBasis = currentEvent.fermata.basis;
+    const tempoBasis = currentEvent.tempo.basis;
+    const signature = currentEvent.signature;
+    // compute position of next event according to fermata basis
+    // express fermata basis according to tempo basis
+    const tempoRatio = tempoBasis.upper / tempoBasis.lower;
+    const relBasis = (fermataBasis.upper / fermataBasis.lower) / tempoRatio;
+
+    currentEvent.beat += relBasis;
+
+    // fermata should end at most at the end of the current bar
+    if (currentEvent.beat * tempoRatio > (signature.upper / signature.lower)) {
+      currentEvent.bar += 1;
+      currentEvent.beat = 1;
+    }
+
+    // reset fermata to null
+    currentEvent.fermata = null;
+  }
+
   for (let index = 0; index < ir.length; index++) {
     let event = ir[index];
 
@@ -403,7 +426,6 @@ export function parseScore(score) {
       // store current event
       insertEventInList(currentEvent, list, source);
       // deep copy current event and re-initialize
-      currentEvent = cloneDeep(currentEvent);
       currentEvent.bar = event.bar;
       currentEvent.beat = event.beat;
       // reset field that are not persisted
@@ -496,6 +518,8 @@ export function parseScore(score) {
         if ('suspended' in event) {
           currentEvent.fermata.suspended = event.suspended;
         }
+
+        insertEndFermata(currentEvent);
         break;
       case 'LABEL':
         currentEvent.label = event.label;
