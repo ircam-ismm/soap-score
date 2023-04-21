@@ -156,11 +156,11 @@ BAR 8 [3/4] TEMPO [1/4]=80 \
       const expectedData = parseScore(expectedScore);
       assert.deepEqual(outputData, expectedData);
     });
-    it.only("# Curve don't begin on first beat and signature change after line", () => {
+    it("# Curve don't begin on first beat and signature change after line", () => {
       const input = `\
 0, 4/4 60;
 6, 3/4 50 80 2 2;
-7, 6/8 \
+7, 6/8; \
 `;
       const outputScore = augustin2soap.parse(input);
       console.log(outputScore);
@@ -177,7 +177,8 @@ BAR 8 [6/8] TEMPO [1/8]=80 \
     it("Severals curves", () => {
       const input = `\
 0, 4/4 60;
-19, 5/4 120 80.5 3 1 80.5 100 2 4; \
+19, 5/4 120 80.5 3 1 80.5 100 2 4;
+20, 3/8 \
 `;
       const outputScore = augustin2soap.parse(input);
       console.log(outputScore);
@@ -185,11 +186,51 @@ BAR 8 [6/8] TEMPO [1/8]=80 \
       const expectedScore = `\
 BAR 1 [4/4] TEMPO [1/4]=60
 BAR 20 [5/4] TEMPO [1/4]=120 curve 1
-|4 TEMPO [1/4]=80 \
+|4 TEMPO [1/4]=80.5 curve 1
+BAR 21 [3/8] TEMPO [1/8]=100 \
 `;
       const expectedData = parseScore(expectedScore);
       assert.deepEqual(outputData, expectedData);
 
+    });
+    it("Severals curves 2", () => {
+      const input = `\
+0, 4/4 60;
+19, 5/4 120 80.5 3 1 80.5 100 4 4; \
+`;
+      const outputScore = augustin2soap.parse(input);
+      console.log(outputScore);
+      const outputData = parseScore(outputScore);
+      // because of roundness errors
+      const expectedScore = `\
+BAR 1 [4/4] TEMPO [1/4]=60
+BAR 20 [5/4] TEMPO [1/4]=120 curve 1
+|4 TEMPO [1/4]=80.5 curve 1
+BAR 21
+|3 TEMPO [1/4]=100 \
+`;
+      const expectedData = parseScore(expectedScore);
+      assert.deepEqual(outputData, expectedData);
+    });
+    it("Severals curves 3", () => {
+      const input = `\
+0, 4/4 60;
+19, 5/4 120 80.5 3 1 80.5 100 6 6; \
+`;
+      const outputScore = augustin2soap.parse(input);
+      console.log(outputScore);
+      const outputData = parseScore(outputScore);
+      // because of roundness errors
+      const expectedScore = `\
+BAR 1 [4/4] TEMPO [1/4]=60
+BAR 20 [5/4] TEMPO [1/4]=120 curve 1
+|4 TEMPO [1/4]=80.5
+BAR 21 TEMPO [1/4]=80.5 curve 1
+BAR 22
+|2 TEMPO [1/4]=100 \
+`;
+      const expectedData = parseScore(expectedScore);
+      assert.deepEqual(outputData, expectedData);
     });
   })
 });
