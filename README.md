@@ -6,6 +6,8 @@
 - position  - [sec] non-linear transport position
 - location  - [bar, beat] specific position in the score expressed in musical units
 
+## Documentation
+please see documentation.pdf
 
 ## FIXME
 
