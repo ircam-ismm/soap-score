@@ -6,6 +6,8 @@ export default class SoapEngine {
     this.interpreter = new SoapScoreInterpreter(score);
     this.application = application;
 
+    // create transport dedicated to fermata
+
     this.bar = 1;
     this.beat = 1;
     this.current = null;
@@ -52,6 +54,12 @@ export default class SoapEngine {
       this.bar = this.next.bar;
       this.beat = this.next.beat;
       this.next = null;
+    }
+
+    let sonificationMode = this.application.model.sonificationMode;
+
+    if (this.current.event.fermata) {
+      sonificationMode = 'beat';
     }
 
     // do not sonify event in between beats
@@ -141,6 +149,20 @@ export default class SoapEngine {
     // update values for next call, we don't update right now as we want to
     // display the right infos
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
+
+    if (this.current.event.fermata) {
+      const nextTempo = 60 / this.next.event.tempo.bpm;
+      // sonofy two events before restarting flow
+      for (let i = 1; i < 3; i++) {
+        const dt = this.current.dt - nextTempo * i;
+
+        setTimeout(() => {
+          this._triggerBeat(audioTime + dt, 1200, 0.3);
+          this.application.model.displayActiveBeat = true;
+          this.application.render();
+        }, dt * 1000);
+      }
+    }
 
     return position + this.current.dt;
   }
