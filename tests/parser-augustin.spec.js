@@ -112,6 +112,7 @@ BAR 32 [6/8] \
 2, 4/4 120 80 3; \
 `;
       const outputScore = augustin2soap.parse(input);
+      console.log(outputScore);
       const outputData = parseScore(outputScore);
       const expectedScore = `\
 BAR 1 [4/4] TEMPO [1/4]=60
@@ -119,10 +120,9 @@ BAR 3 TEMPO [1/4]=120 curve 1
 |4 TEMPO [1/4]=80 \
 `;
       const expectedData = parseScore(expectedScore);
-      // console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
-    it.only('# Curve begin on first beat', () => {
+    it('# Curve begin on first beat', () => {
       const input = `\
 0, 4/4 60;
 2, 4/4 120 80 5; \
@@ -136,7 +136,7 @@ BAR 4
 |2 TEMPO [1/4]=80 \
 `;
       const expectedData = parseScore(expectedScore);
-      // console.log(outputScore);
+      console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
     it("# Curve don't begin on first beat", () => {
@@ -145,6 +145,7 @@ BAR 4
 6, 3/4 50 80 2 2; \
 `;
       const outputScore = augustin2soap.parse(input);
+      console.log(outputScore);
       const outputData = parseScore(outputScore);
       const expectedScore = `\
 BAR 1 [4/4] TEMPO [1/4]=60
@@ -153,7 +154,24 @@ BAR 7 [3/4] TEMPO [1/4]=50
 BAR 8 [3/4] TEMPO [1/4]=80 \
 `;
       const expectedData = parseScore(expectedScore);
-      //console.log(outputScore);
+      assert.deepEqual(outputData, expectedData);
+    });
+    it.only("# Curve don't begin on first beat and signature change after line", () => {
+      const input = `\
+0, 4/4 60;
+6, 3/4 50 80 2 2;
+7, 6/8 \
+`;
+      const outputScore = augustin2soap.parse(input);
+      console.log(outputScore);
+      const outputData = parseScore(outputScore);
+      const expectedScore = `\
+BAR 1 [4/4] TEMPO [1/4]=60
+BAR 7 [3/4] TEMPO [1/4]=50
+|2 TEMPO [1/4]=50 curve 1
+BAR 8 [6/8] TEMPO [1/8]=80 \
+`;
+      const expectedData = parseScore(expectedScore);
       assert.deepEqual(outputData, expectedData);
     });
     it("Severals curves", () => {
@@ -162,6 +180,7 @@ BAR 8 [3/4] TEMPO [1/4]=80 \
 19, 5/4 120 80.5 3 1 80.5 100 2 4; \
 `;
       const outputScore = augustin2soap.parse(input);
+      console.log(outputScore);
       const outputData = parseScore(outputScore);
       const expectedScore = `\
 BAR 1 [4/4] TEMPO [1/4]=60
@@ -169,7 +188,6 @@ BAR 20 [5/4] TEMPO [1/4]=120 curve 1
 |4 TEMPO [1/4]=80 \
 `;
       const expectedData = parseScore(expectedScore);
-      //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
 
     });

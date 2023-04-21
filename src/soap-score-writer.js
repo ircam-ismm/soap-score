@@ -30,6 +30,10 @@ export function writeScore(eventList) {
     }
 
     if (event.tempo && !isEqual(event.tempo, previous.tempo)) {
+      if (event.tempo.curve) {
+        event.tempo.bpm = event.tempo.curve.start.bpm;
+      }
+
       currentLine += `TEMPO [${event.tempo.basis.name}]=${event.tempo.bpm} `;
       previous.tempo = event.tempo;
 
