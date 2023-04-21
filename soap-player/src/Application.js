@@ -51,6 +51,8 @@ export default class Application {
     this.getPositionInAbsoluteEvent = this.getPositionInAbsoluteEvent.bind(this);
 
     this.setScore(defaultScore);
+
+    window.addEventListener('resize', () => this.render());
   }
 
   setScore(newScore) {
@@ -207,8 +209,20 @@ export default class Application {
     this.transport.seek(now, position);
   }
 
+  savetoDisk() {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.model.score));
+    element.setAttribute('download', 'score.soap');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
   render() {
-    render(layout(), document.body);
-    // render(mainView(this), document.body);
+    render(layout(this), document.body);
   }
 }

@@ -29,7 +29,7 @@ BAR 1 [4/4] TEMPO [1/4]=120
 `;
 
 (async function main() {
-  // await resumeAudioContext(audioContext);
+  await resumeAudioContext(audioContext);
 
   const application = new Application(audioContext, getTimeFunction, scheduler, defaultScore, scoreList);
 }());

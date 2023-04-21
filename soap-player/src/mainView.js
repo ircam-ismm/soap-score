@@ -1,7 +1,5 @@
 import { html, nothing } from 'lit/html.js';
 import { live } from 'lit/directives/live.js';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { TimeSignature } from 'tonal';
 import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
 import '@ircam/simple-components/sc-bang.js';
@@ -18,7 +16,6 @@ import '@ircam/simple-components/sc-loop.js';
 import '@ircam/simple-components/sc-dragndrop.js';
 import '@ircam/simple-components/sc-clock.js';
 import '@ircam/simple-components/sc-progress-bar.js';
-
 
 function renderTempo(soapEngine) {
   if (!soapEngine.current) {
@@ -80,6 +77,7 @@ function renderTimeSignature(soapEngine) {
   return div;
 }
 
+
 export default function mainView(app) {
   const $tempo = renderTempo(app.soapEngine);
   const $timeSignature = renderTimeSignature(app.soapEngine);
@@ -120,15 +118,15 @@ export default function mainView(app) {
       </div>
       ${app.soapEngine.current && app.soapEngine.current.event.duration
       ? html `
-      <div>
-        <sc-progress-bar
-          .getProgressFunction=${app.getPositionInAbsoluteEvent}
-          min="0"
-          max="${app.soapEngine.current.event.duration}"
-          displayNumber
-        ></sc-progress-bar>
-      </div>` : null
-    }
+        <div>
+          <sc-progress-bar
+            .getProgressFunction=${app.getPositionInAbsoluteEvent}
+            min="0"
+            max="${app.soapEngine.current.event.duration}"
+            displayNumber
+          ></sc-progress-bar>
+        </div>` : null
+      }
     </div>
 
     <h3>controle</h3>
