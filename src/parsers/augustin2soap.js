@@ -37,64 +37,183 @@ function shiftMeasure(events, shift) {
   return events;
 }
 
-function computeEndCurveLocation(events) {
+function getBarBeatFromDuration(events, bar = 1, beat = 1, duration, signature, basis) {
 
-  let signature = events[0].signature;
+  // on calcule la durée dans l'unitée de départ - donc à faire une seule fois
+  const numQuarterNoteInBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
+  const normRelBeat = duration / numQuarterNoteInBar;
 
-  events.forEach((event, index) => {
-    // console.log(signature);
-    // console.log(event)
+  events.every((event ,index) => {
 
-    // console.log(`${signature.upper}/${signature.lower}`);
+    const normBeat = (beat - 1) / numQuarterNoteInBar;
+    let nextNormBeat = normBeat + normRelBeat;
 
-    if (event.tempo && event.tempo.curve) {
-      // const basis = event.tempo.basis;
-      // const basisRatio = basis.upper / basis.lower;
-      const relBeat = event.tempo.curve.duration;
+    if (Math.abs(Math.round(nextNormBeat) - nextNormBeat) < 1e-6) {
+      nextNormBeat = Math.round(nextNormBeat);
+    }
 
-      let bar = event.tempo.curve.start.bar;
-      let beat = event.tempo.curve.start.beat;
+    bar += Math.floor(nextNormBeat);
 
-      // for (i = index)
+    const remaining = nextNormBeat - Math.floor(nextNormBeat);
+    beat = remaining * numQuarterNoteInBar + 1;
 
-
-      beat += relBeat;
-
-      if (beat > event.signature.upper) {
-        let numBar = 0;
-        while (beat > event.signature.upper) {
-          beat -= signature.upper;
-          bar += 1;
-        }
-        beat = relBeat % event.signature.upper;
-        bar += Math.floor((relBeat - beat) / event.signature.upper);
-        console.log('switch', bar, beat);
-        beat -= event.signature.upper;
-      }
-
-      event.tempo.curve.end.bar = bar;
-      event.tempo.curve.end.beat = beat;
-
-
-
-
-      // console.log(event.bar, event.beat);
-      console.log(event.tempo);
-    };
-    // console.log("avant", signature.upper, event.signature.upper);
+    console.log("___________________________");
+    console.log(`event ${event.bar}|${event.beat}`);
+    console.log(`numQuarterNoteInBar ${numQuarterNoteInBar}`);
+    console.log(`normRelBeat ${normRelBeat}`);
+    console.log('normBeat', normBeat);
+    console.log('nextNormBeat', nextNormBeat);
+    console.log('remaining', remaining);
+    console.log('bar', bar);
+    console.log('beat', beat);
+    console.log("event", event);
+    if (remaining < 1) {
+      return false;
+    } else {
+      return true;
+    }
     signature = event.signature;
-    // console.log("après", signature.upper, event.signature.upper);
+  });
+  // console.log("bar", bar, "beat", beat);
+  return { bar, beat, signature };
+}
+
+function pushLineInEventList(events, lineEventList) {
+
+  // find some tempo events
+  lineEventList.forEach((line, index) => {
+
+
+    const duration = line.duration;
+    const signature = line.signature;
+    const basis = TimeSignature.get(`1/${signature.lower}`);
+    let firstBeat;
+    const startTempo = line.bpm.start;
+    const endTempo = line.bpm.end;
+    const tempoExponent = line.bpm.exponent;
+
+    // need to compute REAL FIRST BEAT.
+    // line.beat can be greater than signature.upper
+    const { bar:startBar, beat:startBeat } = getBarBeatFromDuration(events, line.bar, 1, (line.beat-1), signature, basis);
+    // console.log("line.bar", line.bar);
+    // console.log("line.beat", line.beat);
+    // console.log("startBar", startBar);
+    // console.log("startBeat", startBeat);
+
+    const { bar:endBar, beat:endBeat, signature:endSignature } = getBarBeatFromDuration(events, startBar, startBeat, duration, signature, basis);
+
+    // console.log("______");
+    // console.log("startBar", startBar);
+    // console.log("startBeat", startBeat);
+    // console.log("endBar", endBar);
+    // console.log("endBeat", endBeat);
+    // console.log("duration", duration);
+    // console.log("endSignature", endSignature);
+
+
+    if (startBar === line.bar && startBeat === 1) {
+      firstBeat = true;
+    } else {
+      firstBeat = false;
+    }
+    // if tempo curve is not on a firstBeat, need to add a simpleElement on firstBeat
+    // if line.bar !== startBar, need to add an element on bar, because signature AND tempo will be applied on line.bar in every case
+    if (!firstBeat) {
+      // we're not on first beat
+      // so we need to add an element on first beat with tempo and signature
+      events.push({
+        bar: line.bar,
+        beat: 1,
+        signature: signature,
+        duration: null,
+        tempo: {
+          basis: TimeSignature.get(`1/${signature.lower}`),
+          bpm: startTempo,
+          curve: null,
+        },
+        fermata: null,
+        label: null,
+      });
+      // now, we need to add an element on startBeat for curve event.
+      events.push({
+        bar: startBar,
+        beat: startBeat,
+        signature: signature,
+        duration: null,
+        tempo: {
+          basis: TimeSignature.get(`1/${signature.lower}`),
+          bpm: null,
+          curve: {
+            start: {
+              bar: startBar,
+              beat: startBeat,
+              bpm: startTempo,
+            },
+            end: {
+              bar: endBar,
+              beat: endBeat,
+              bpm: endTempo,
+            },
+            exponent: tempoExponent,
+          },
+        },
+        fermata: null,
+        label: null,
+      });
+    } else {
+      // we're on first beat !
+      // so we can add curve event right now
+      events.push({
+        bar: startBar,
+        beat: startBeat,
+        signature: signature,
+        duration: null,
+        tempo: {
+          basis: TimeSignature.get(`1/${signature.lower}`),
+          bpm: null,
+          curve: {
+            start: {
+              bar: startBar,
+              beat: startBeat,
+              bpm: startTempo,
+            },
+            end: {
+              bar: endBar,
+              beat: endBeat,
+              bpm: endTempo,
+            },
+            exponent: tempoExponent,
+          },
+        },
+        fermata: null,
+        label: null,
+      });
+    }
+
+  // now we need a add an event on endBar endBeat with tempo curve null.
+  events.push({
+    bar: endBar,
+    beat: endBeat,
+    signature: endSignature,
+    duration: null,
+    tempo: {
+      basis: TimeSignature.get(`1/${endSignature.lower}`),
+      bpm: endTempo,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  });
 
   });
   return events;
 }
 
 function curveParsing(line) {
-  let e = [];
-  line.pop();
+  let lineEventList = [];
   const bar = parseInt(line[0]) + 1;
-  const signature = TimeSignature.get(line[1]);
   line.shift();
+  const signature = TimeSignature.get(line[0]);
   line.shift();
   if (line.length === 3) {
     line.push('1');
@@ -102,38 +221,30 @@ function curveParsing(line) {
   line = chunk(line,4);
   // console.log(line);
   line.forEach(curve => {
-    // curve[0] is tempo of begin - curve[1] tempo of end - curve[2] duration - curve[3] first beat to start
+    // curve[0] is tempo of begin - curve[1] tempo of end - curve[2] duration (with basis of {startBar, startBeat}) - curve[3] first beat to start
     const beginTempo = parseFloat(curve[0]);
     const endTempo = parseFloat(curve[1]);
     const curveDuration = parseFloat(curve[2]);
     const beat = parseFloat(curve[3]);
-    e.push({
+
+    // console.log(curve);
+    // please note :
+    // beat can be greater than Signature...
+    // eg : 18, 3/4 120 80.5 3 4
+
+    lineEventList.push({
       bar: bar,
-      beat: 1,
+      beat: beat,
       signature: signature,
-      duration: null,
-      tempo: {
-        basis: TimeSignature.get(`1/${signature.lower}`),
-        bpm: null,
-        curve: {
-          start: {
-            bar: bar,
-            beat: beat,
-            bpm: beginTempo,
-          },
-          end: {
-            bar: null,
-            beat: null,
-            bpm: endTempo,
-          },
-          duration: curveDuration,
-        },
-      },
-      fermata: null,
-      label: null,
+      duration: curveDuration,
+      bpm: {
+        start: beginTempo,
+        end: endTempo,
+        exponent: 1,
+      }
     });
   });
-  return e;
+  return lineEventList;
 };
 
 function simpleParsing(line) {
@@ -224,6 +335,7 @@ const augustin2soap = {
     data = data.split("\n");
     let array = [];
     let events = [];
+    let lineEventList = [];
     let el = null;
 
     data.forEach(line => {
@@ -253,14 +365,14 @@ const augustin2soap = {
         default:
           el = curveParsing(line);
           el.forEach(e => {
-            events.push(e);
+            lineEventList.push(e);
           });
           break
       }
     });
 
-    // console.log(events.tempo);
-    events = computeEndCurveLocation(events);
+    events = pushLineInEventList(events, lineEventList);
+    // console.log(events);
     const output = writeScore(events);
     return output;
   },
