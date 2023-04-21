@@ -15,9 +15,8 @@ export default class SoapEngine {
   }
 
   onTransportEvent(event, position, audioTime, dt) {
-    const { bar, beat } = this.interpreter.getLocationAtPosition(position);
-
     if (event.type === 'play' || event.type === 'seek') {
+      const { bar, beat } = this.interpreter.getLocationAtPosition(position);
       let infos;
 
       if (Math.floor(beat) === beat) {
@@ -25,6 +24,16 @@ export default class SoapEngine {
       } else {
         infos = this.interpreter.getNextLocationInfos(bar, beat);
       }
+
+      this.current = infos;
+      this.bar = infos.bar;
+      this.beat = infos.beat;
+      this.next = null;
+    }
+
+    if (event.type === 'loop') {
+      const { bar, beat } = this.interpreter.getLocationAtPosition(event.loopStart);
+      const infos = this.interpreter.getLocationInfos(bar, beat);
 
       this.current = infos;
       this.bar = infos.bar;
@@ -49,6 +58,12 @@ export default class SoapEngine {
   }
 
   advanceTime(position, audioTime, dt) {
+    const { bar, beat } = this.interpreter.getLocationAtPosition(position);
+    // if { bar beat } is below current location, where are in a loop
+    if (bar < this.bar || (bar === this.bar && beat < this.beat)) {
+      this.next = this.interpreter.getLocationInfos(bar, beat);
+    }
+
     if (this.next) {
       this.current = this.next;
       this.bar = this.next.bar;
@@ -63,7 +78,7 @@ export default class SoapEngine {
     }
 
     // do not sonify event in between beats
-    if (Math.floor(this.beat) === this.beat) {
+    if (Math.abs(this.beat - Math.floor(this.beat)) < 1e-3) {
       const freq = this.beat === 1 ? 900 : 600;
       const gain = this.beat === 1 ? 1 : 0.4;
 

@@ -2,10 +2,11 @@ import { render } from 'lit';
 import { Transport } from '@ircam/sc-scheduling';
 
 import SoapEngine from './SoapEngine.js';
+import layout from './views/layout.js';
 import mainView from './mainView.js';
 
-import midi2soap from '../../src/parsers/midi2soap.js'
-import augustin2soap from '../../src/parsers/augustin2soap.js'
+import midi2soap from '../../src/parsers/midi2soap.js';
+import augustin2soap from '../../src/parsers/augustin2soap.js';
 
 export default class Application {
   constructor(audioContext, getTimeFunction, scheduler, defaultScore, scoreList = []) {
@@ -207,6 +208,7 @@ export default class Application {
   }
 
   render() {
-    render(mainView(this), document.body);
+    render(layout(), document.body);
+    // render(mainView(this), document.body);
   }
 }
