@@ -37,17 +37,27 @@ function shiftMeasure(events, shift) {
   return events;
 }
 
-function getBarBeatFromDuration(events, bar = 1, beat = 1, duration, signature, basis) {
-
+function getBarBeatFromDuration(events, bar, beat, duration, signature, basis) {
   // on calcule la durée dans l'unitée de départ - donc à faire une seule fois
-  const numQuarterNoteInBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
-  const normRelBeat = duration / numQuarterNoteInBar;
+  const numBasisInBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
+  const normRelBeat = duration / numBasisInBar;
 
   events.every((event ,index) => {
+    if (bar > event.bar && events[index+1]) {
+      // console.log(`gotonext this is next ${events[index+1].bar}|${events[index+1].beat}`);
+      // signature = event.signature;
+      return true;
+    } else {
+      // console.log(`event bar is ${event.bar}|${event.beat} - computed bar is ${bar}|${beat}`);
+    }
 
-    const normBeat = (beat - 1) / numQuarterNoteInBar;
+    const numBasisInBar = (signature.upper / signature.lower) / (basis.upper / basis.lower);
+    // a bar is 1, so 1er temps d'un 4/4 est 0, le 2nd est 0.25, 3e 0.5, 4e 0.75
+    const normBeat = (beat - 1) / numBasisInBar;
+    //
     let nextNormBeat = normBeat + normRelBeat;
 
+    // handle erreur d'arrondi
     if (Math.abs(Math.round(nextNormBeat) - nextNormBeat) < 1e-6) {
       nextNormBeat = Math.round(nextNormBeat);
     }
@@ -55,21 +65,34 @@ function getBarBeatFromDuration(events, bar = 1, beat = 1, duration, signature, 
     bar += Math.floor(nextNormBeat);
 
     const remaining = nextNormBeat - Math.floor(nextNormBeat);
-    beat = remaining * numQuarterNoteInBar + 1;
+    beat = remaining * numBasisInBar + 1;
 
-    console.log("___________________________");
-    console.log(`event ${event.bar}|${event.beat}`);
-    console.log(`numQuarterNoteInBar ${numQuarterNoteInBar}`);
-    console.log(`normRelBeat ${normRelBeat}`);
-    console.log('normBeat', normBeat);
-    console.log('nextNormBeat', nextNormBeat);
-    console.log('remaining', remaining);
-    console.log('bar', bar);
-    console.log('beat', beat);
-    console.log("event", event);
+    // console.log("___________________________");
+    // console.log(`event ${event.bar}|${event.beat}`);
+    // console.log(`numBasisInBar ${numBasisInBar}`);
+    // console.log(`normRelBeat ${normRelBeat}`);
+    // console.log('normBeat', normBeat);
+    // console.log('nextNormBeat', nextNormBeat);
+    // console.log('remaining', remaining);
+    // console.log('bar', bar);
+    // console.log('beat', beat);
+    // console.log("event", event);
     if (remaining < 1) {
+      // console.log("__________");
+      // console.log("end of trip");
+      // console.log(`position ${bar}|${beat}`);
+      // console.log(`current event in loop ${event.bar}|${event.beat} with ${event.signature.upper}/${event.signature.lower}`);
+      // console.log(`signature at position is ${signature.upper}/${signature.lower}`);
+      if (events[index + 1] && remaining === 0) {
+        signature = events[index + 1].signature;
+        // console.log(`next event in loop ${events[index+1].bar}|${events[index+1].beat} with signature ${events[index+1].signature.upper}/${events[index+1].signature.lower}`);
+
+      }
+      // console.log("__________");
+
       return false;
     } else {
+      // console.log(signature);
       return true;
     }
     signature = event.signature;
@@ -94,19 +117,22 @@ function pushLineInEventList(events, lineEventList) {
 
     // need to compute REAL FIRST BEAT.
     // line.beat can be greater than signature.upper
-    const { bar:startBar, beat:startBeat } = getBarBeatFromDuration(events, line.bar, 1, (line.beat-1), signature, basis);
-    // console.log("line.bar", line.bar);
-    // console.log("line.beat", line.beat);
-    // console.log("startBar", startBar);
-    // console.log("startBeat", startBeat);
+    let { bar:startBar, beat:startBeat } = getBarBeatFromDuration(events, line.bar, 1, (line.beat-1), signature, basis);
 
-    const { bar:endBar, beat:endBeat, signature:endSignature } = getBarBeatFromDuration(events, startBar, startBeat, duration, signature, basis);
+    let { bar:endBar, beat:endBeat, signature:endSignature } = getBarBeatFromDuration(events, startBar, startBeat, duration, signature, basis);
+
+    endBeat = Math.round(endBeat*10)/10;
+    startBeat = Math.round(startBeat*10)/10;
 
     // console.log("______");
+    // // console.log("line.bar", line.bar);
+    // // console.log("line.beat", line.beat);
     // console.log("startBar", startBar);
     // console.log("startBeat", startBeat);
+    // console.log("startTempo", startTempo);
     // console.log("endBar", endBar);
     // console.log("endBeat", endBeat);
+    // console.log("endTempo", endTempo);
     // console.log("duration", duration);
     // console.log("endSignature", endSignature);
 
@@ -119,22 +145,7 @@ function pushLineInEventList(events, lineEventList) {
     // if tempo curve is not on a firstBeat, need to add a simpleElement on firstBeat
     // if line.bar !== startBar, need to add an element on bar, because signature AND tempo will be applied on line.bar in every case
     if (!firstBeat) {
-      // we're not on first beat
-      // so we need to add an element on first beat with tempo and signature
-      events.push({
-        bar: line.bar,
-        beat: 1,
-        signature: signature,
-        duration: null,
-        tempo: {
-          basis: TimeSignature.get(`1/${signature.lower}`),
-          bpm: startTempo,
-          curve: null,
-        },
-        fermata: null,
-        label: null,
-      });
-      // now, we need to add an element on startBeat for curve event.
+      // we need to add an element on startBeat for curve event.
       events.push({
         bar: startBar,
         beat: startBeat,
@@ -190,20 +201,22 @@ function pushLineInEventList(events, lineEventList) {
       });
     }
 
-  // now we need a add an event on endBar endBeat with tempo curve null.
-  events.push({
-    bar: endBar,
-    beat: endBeat,
-    signature: endSignature,
-    duration: null,
-    tempo: {
-      basis: TimeSignature.get(`1/${endSignature.lower}`),
-      bpm: endTempo,
-      curve: null,
-    },
-    fermata: null,
-    label: null,
-  });
+    // now we need a add an event on endBar endBeat with tempo curve null.
+    // (only if it is the last event of the line list) -> ?!?
+    events.push({
+      pouet:"toto",
+      bar: endBar,
+      beat: endBeat,
+      signature: endSignature,
+      duration: null,
+      tempo: {
+        basis: TimeSignature.get(`1/${endSignature.lower}`),
+        bpm: endTempo,
+        curve: null,
+      },
+      fermata: null,
+      label: null,
+    });
 
   });
   return events;
@@ -211,6 +224,12 @@ function pushLineInEventList(events, lineEventList) {
 
 function curveParsing(line) {
   let lineEventList = [];
+  let events = [];
+  //remove ";"
+  if (line[line.length-1] === '') {
+    line.pop();
+  }
+  // console.log(line);
   const bar = parseInt(line[0]) + 1;
   line.shift();
   const signature = TimeSignature.get(line[0]);
@@ -219,13 +238,32 @@ function curveParsing(line) {
     line.push('1');
   }
   line = chunk(line,4);
+
   // console.log(line);
-  line.forEach(curve => {
+  line.forEach((curve, index) => {
     // curve[0] is tempo of begin - curve[1] tempo of end - curve[2] duration (with basis of {startBar, startBeat}) - curve[3] first beat to start
     const beginTempo = parseFloat(curve[0]);
     const endTempo = parseFloat(curve[1]);
-    const curveDuration = parseFloat(curve[2]);
     const beat = parseFloat(curve[3]);
+    const curveDuration = parseFloat(curve[2]);
+
+    if (beat !== 1 && index === 0) {
+      // we're not on first beat, we need to add a simple element to the beginning of the bar -
+      // we need to do that only if it is the first element to push!
+      events.push({
+        bar: bar,
+        beat: 1,
+        signature: signature,
+        duration: null,
+        tempo: {
+          basis: TimeSignature.get(`1/${signature.lower}`),
+          bpm: beginTempo,
+          curve: null,
+        },
+        fermata: null,
+        label: null,
+      });
+    }
 
     // console.log(curve);
     // please note :
@@ -244,7 +282,7 @@ function curveParsing(line) {
       }
     });
   });
-  return lineEventList;
+  return { lineEventList, events };
 };
 
 function simpleParsing(line) {
@@ -336,7 +374,6 @@ const augustin2soap = {
     let array = [];
     let events = [];
     let lineEventList = [];
-    let el = null;
 
     data.forEach(line => {
       line = line.replace(",", "");
@@ -351,27 +388,53 @@ const augustin2soap = {
         case 1:
           break;
         case 2:
-          el = simpleParsing(line);
+          {
+          const el = simpleParsing(line);
           el.forEach(e => {
             events.push(e);
           });
+          };
           break;
-        case 3:
-          el = simpleParsing(line);
+        case 3: {
+          const el = simpleParsing(line);
           el.forEach(e => {
             events.push(e);
           });
+          };
           break;
         default:
-          el = curveParsing(line);
-          el.forEach(e => {
+          {
+          const { lineEventList: lineEl, events: el } = curveParsing(line);
+          // little additional list of curve events (will be parsed at the end
+          // by pushLineInEventList() function)
+          lineEl.forEach(e => {
             lineEventList.push(e);
           });
-          break
+          // list of simple events extracted from curveParsing
+          el.forEach(e => {
+            events.push(e);
+          })
+          };
+          break;
       }
     });
 
     events = pushLineInEventList(events, lineEventList);
+    events.sort((a, b) => {
+      if (a.bar < b.bar) {
+        return -1;
+      } else if (a.bar > b.bar) {
+        return 1;
+      } else {
+        if (a.beat < b.beat) {
+          return -1;
+        } else if (a.beat > b.beat) {
+          return 1;
+        } else {
+          // console.log("same event, MERGE");
+        }
+      }
+    });
     // console.log(events);
     const output = writeScore(events);
     return output;
