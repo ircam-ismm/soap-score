@@ -103,7 +103,7 @@ export default function mainView(app) {
       <div>
         <sc-clock
           style="margin: 4px 0; display: block;"
-          .getTimeFunction=${app.getTransportTime}
+          .getTimeFunction=${app.getTransportPosition}
           font-size="20"
           twinkle="[0, 0.5]"
         ></sc-clock>
@@ -122,7 +122,10 @@ export default function mainView(app) {
       ? html `
       <div>
         <sc-progress-bar
-          .getProgressFunction=${app.getNormalizedEventDuration}
+          .getProgressFunction=${app.getPositionInAbsoluteEvent}
+          min="0"
+          max="${app.soapEngine.current.event.duration}"
+          displayNumber
         ></sc-progress-bar>
       </div>` : null
     }
@@ -153,7 +156,7 @@ export default function mainView(app) {
       <sc-number
         min="1"
         value="${app.model.seekLocation.beat}"
-        @change=${e => app.seekToLocation(sapp.model.seekLocation.bar, e.detail.value)}
+        @change=${e => app.seekToLocation(app.model.seekLocation.bar, e.detail.value)}
       ></sc-number>
     </div>
     <div style="margin: 4px 0;">

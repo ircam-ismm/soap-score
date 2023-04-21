@@ -189,6 +189,41 @@ describe('# SoapScoreInterpreter', () => {
         assert.equal(position, 60 / 72 + (60 / 84) * 0.5);
       }
     });
+
+    it(`should work with absolute duration`, () => {
+      const score = `
+        BAR 1 10s
+        BAR 3 5s
+      `;
+
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        const position = interpreter.getPositionAtLocation(1, 1);
+        assert.equal(position, 0);
+      }
+
+      {
+        const position = interpreter.getPositionAtLocation(1, 1.5);
+        assert.equal(position, 5);
+      }
+
+      {
+        const position = interpreter.getPositionAtLocation(2, 1);
+        assert.equal(position, 10);
+      }
+
+      {
+        const position = interpreter.getPositionAtLocation(3, 1);
+        assert.equal(position, 20);
+      }
+
+      {
+        const position = interpreter.getPositionAtLocation(4, 1);
+        assert.equal(position, 25);
+      }
+
+    });
   });
 
   describe('## getLocationAtPosition(position)', () => {
@@ -545,12 +580,33 @@ describe('# SoapScoreInterpreter', () => {
       const interpreter = new SoapScoreInterpreter(score);
 
       {
-        let { bar, beat, basis, duration } = interpreter.getLocationInfos(1, 2);
+        let { bar, beat, basis, duration, dt } = interpreter.getLocationInfos(1, 1);
         assert.equal(bar, 1);
         assert.equal(beat, 1);
         assert.equal(basis.upper, 1);
         assert.equal(basis.lower, 1);
         assert.equal(duration, 2);
+        assert.equal(dt, 2);
+      }
+
+      {
+        let { bar, beat, basis, duration, dt } = interpreter.getLocationInfos(1, 1.5);
+        assert.equal(bar, 1);
+        assert.equal(beat, 1.5);
+        assert.equal(basis.upper, 1);
+        assert.equal(basis.lower, 1);
+        assert.equal(duration, 1);
+        assert.equal(dt, 1);
+      }
+
+      {
+        let { bar, beat, basis, duration, dt } = interpreter.getLocationInfos(2, 1);
+        assert.equal(bar, 2);
+        assert.equal(beat, 1);
+        assert.equal(basis.upper, 1);
+        assert.equal(basis.lower, 1);
+        assert.equal(duration, 2);
+        assert.equal(dt, 2);
       }
     });
 
@@ -689,7 +745,8 @@ describe('# SoapScoreInterpreter', () => {
         assert.equal(bar, 1, 'bar 2');
         assert.equal(beat, 3, 'beat 2');
         assert.equal(position, 2, 'position 2');
-        assert.equal(duration, 1, 'duration 2');
+        // duration is computed according fermata basis
+        assert.equal(duration, 2, 'duration 2');
         assert.equal(dt, 10, 'dt 2');
       }
 
@@ -724,7 +781,8 @@ describe('# SoapScoreInterpreter', () => {
         assert.equal(bar, 1, 'bar 2');
         assert.equal(beat, 3, 'beat 2');
         assert.equal(position, 2, 'position 2');
-        assert.equal(duration, 1, 'duration 2');
+        // duration is computed according fermata basis
+        assert.equal(duration, 2, 'duration 2');
         assert.equal(dt, 4, 'dt 2');
       }
 

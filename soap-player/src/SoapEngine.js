@@ -1,7 +1,7 @@
 import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
 
 export default class SoapEngine {
-  constructor(audioContext, score, application) {
+  constructor(transport, sceduler, audioContext, score, application) {
     this.audioContext = audioContext;
     this.interpreter = new SoapScoreInterpreter(score);
     this.application = application;
@@ -151,17 +151,28 @@ export default class SoapEngine {
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
     if (this.current.event.fermata) {
+      const { duration, dt } = this.current;
+      const { transport, scheduler } = this.application;
+      const currentTime = scheduler.currentTime;
+
+      transport.pause(currentTime + duration);
+      transport.play(currentTime + dt);
+
       const nextTempo = 60 / this.next.event.tempo.bpm;
       // sonofy two events before restarting flow
       for (let i = 1; i < 3; i++) {
-        const dt = this.current.dt - nextTempo * i;
+        const upBeatTime = currentTime + dt - nextTempo * i;
 
-        setTimeout(() => {
+        scheduler.defer((currentTime, audioTime, dt) => {
           this._triggerBeat(audioTime + dt, 1200, 0.3);
-          this.application.model.displayActiveBeat = true;
-          this.application.render();
-        }, dt * 1000);
+
+          setTimeout(() => {
+            this.application.model.displayActiveBeat = true;
+            this.application.render();
+          }, dt * 1000);
+        }, upBeatTime);
       }
+      return Infinity;
     }
 
     return position + this.current.dt;
