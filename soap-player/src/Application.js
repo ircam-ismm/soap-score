@@ -49,6 +49,7 @@ export default class Application {
 
     this.getTransportPosition = this.getTransportPosition.bind(this);
     this.getPositionInAbsoluteEvent = this.getPositionInAbsoluteEvent.bind(this);
+    this.getTempoPosition = this.getTempoPosition.bind(this);
 
     this.setScore(defaultScore);
 
@@ -133,6 +134,15 @@ export default class Application {
 
   getTransportPosition() {
     return this.transport.getPositionAtTime(this.getTime());
+  }
+
+  getTempoPosition() {
+    // this is shit sorry
+    if (this.soapEngine.current) {
+      return this.transport.getPositionAtTime(this.getTime() * (this.soapEngine.current.event.tempo.bpm) / 60 + 0.5);
+    } else {
+      return 0;
+  }
   }
 
   getPositionInAbsoluteEvent() {

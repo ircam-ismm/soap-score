@@ -15,12 +15,11 @@ import '@ircam/simple-components/sc-loop.js';
 import '@ircam/simple-components/sc-dragndrop.js';
 import '@ircam/simple-components/sc-clock.js';
 import '@ircam/simple-components/sc-progress-bar.js';
+import '@ircam/simple-components/sc-chenillard.js';
 
 import { renderTempo, renderTimeSignature } from './staves.js';
 
 export default function layout(app) {
-
-  console.log(app)
 
   const width = window.innerWidth;
   const height = window.innerHeight - 40;
@@ -36,6 +35,10 @@ export default function layout(app) {
           <div class="bar-infos">
             ${renderTimeSignature(app.soapEngine)}
             ${renderTempo(app.soapEngine)}
+            <sc-chenillard
+              .getProgressFunction=${app.getTempoPosition}
+              width="${Math.min(120, parseInt(height * headerRatio))}"
+            ></sc-chenillard>
           </div>
           <div class="beats">
             <sc-bang
