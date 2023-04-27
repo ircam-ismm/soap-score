@@ -59,6 +59,7 @@ export default class SoapEngine {
 
   advanceTime(position, audioTime, dt) {
     const { bar, beat } = this.interpreter.getLocationAtPosition(position);
+    console.log('> advanceTime|getLocationAtPosition', bar, beat);
     // if { bar beat } is below current location, where are in a loop
     if (bar < this.bar || (bar === this.bar && beat < this.beat)) {
       this.next = this.interpreter.getLocationInfos(bar, beat);
@@ -93,7 +94,13 @@ export default class SoapEngine {
         return position + this.current.dt;
       }
 
-      let { upper, lower } = this.current.basis;
+      // Computed unit according to signature, e.g.:
+      // BAR 1 [6/8] TEMPO [1/8]=80 will have a unit of [3/8]
+      //
+      // In case of irregular mesure, unit.upper is adapted to contain the number
+      // units for this particular beat, e.g.:
+      // BAR 1 [5/8] TEMPO [1/8]=80 will be [3/8] on first beat and [2/8] on the second one
+      let { upper, lower } = this.current.unit;
 
       switch (this.application.model.sonificationMode) {
         case 'auto':

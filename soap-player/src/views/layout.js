@@ -19,9 +19,6 @@ import '@ircam/simple-components/sc-progress-bar.js';
 import { renderTempo, renderTimeSignature } from './staves.js';
 
 export default function layout(app) {
-
-  console.log(app)
-
   const width = window.innerWidth;
   const height = window.innerHeight - 40;
   const headerRatio = 0.20;
