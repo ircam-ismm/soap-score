@@ -222,20 +222,6 @@ export default function layout(app) {
           <div class="generate-score">
             <div style="margin: 4px 0;">
               <sc-text
-                value="set tempo"
-                readonly
-              ></sc-text>
-              <sc-number
-                min="0"
-                value="${app.model.generatedScore.tempo}"
-                @change=${e => app.generateScore('tempo', e.detail.value)}
-              ></sc-number>
-              <sc-tap-tempo
-                @change=${e => app.generateScore('tempo', parseFloat(e.detail.value.toFixed(2)))}
-              ></sc-tap-tempo>
-            </div>
-            <div style="margin: 4px 0;">
-              <sc-text
                 value="Time signature"
                 readonly
               ></sc-text>
@@ -258,6 +244,20 @@ export default function layout(app) {
                 integer
                 @change=${e => app.generateScore('signatureLower', e.detail.value)}
               ></sc-number>
+            </div>
+            <div style="margin: 4px 0;">
+              <sc-text
+                value="Tempo"
+                readonly
+              ></sc-text>
+              <sc-number
+                min="0"
+                value="${app.model.generatedScore.tempo}"
+                @change=${e => app.generateScore('tempo', e.detail.value)}
+              ></sc-number>
+              <sc-tap-tempo
+                @change=${e => app.generateScore('tempo', parseFloat(e.detail.value.toFixed(2)))}
+              ></sc-tap-tempo>
             </div>
             <div style="margin: 4px 0;">
               <sc-text

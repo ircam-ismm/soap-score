@@ -59,7 +59,7 @@ export default class SoapEngine {
 
   advanceTime(position, audioTime, dt) {
     const { bar, beat } = this.interpreter.getLocationAtPosition(position);
-    console.log('> advanceTime|getLocationAtPosition', bar, beat);
+
     // if { bar beat } is below current location, where are in a loop
     if (bar < this.bar || (bar === this.bar && beat < this.beat)) {
       this.next = this.interpreter.getLocationInfos(bar, beat);
@@ -178,7 +178,8 @@ export default class SoapEngine {
       const currentTime = scheduler.currentTime;
 
       transport.pause(currentTime + duration);
-      transport.play(currentTime + dt);
+      // this 0.120 is arbitrary, but it appears more natural after the upbeats
+      transport.play(currentTime + dt + 0.120);
 
       const nextTempo = 60 / this.next.event.tempo.bpm;
       // sonofy two events before restarting flow

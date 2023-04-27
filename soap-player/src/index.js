@@ -25,8 +25,9 @@ const getTimeFunction = () => audioContext.currentTime;
 const scheduler = new Scheduler(getTimeFunction);
 
 const defaultScore = `\
-BAR 1 [6/8] TEMPO [1/8]=60
-BAR 2 [6/8] TEMPO [3/8]=60
+BAR 1 [3+2+2/8] TEMPO [3/8]=60
+BAR 2 [3+2+2/8] TEMPO [3/8]=60 curve 2
+BAR 4 [2+3+2/8] TEMPO [3/8]=120
 `;
 
 (async function main() {
