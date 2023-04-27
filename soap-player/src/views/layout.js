@@ -26,18 +26,19 @@ export default function layout(app) {
 
   return html`
     <header>
-      <h1>SO(a)P Metro</h1>
+      <h1>SO(a)P Metronome</h1>
     </header>
     <section>
       <div class="feedback">
         <div>
           <div class="bar-infos">
-            ${renderTimeSignature(app.soapEngine)}
-            ${renderTempo(app.soapEngine)}
-            <sc-chenillard
-              .getProgressFunction=${app.getTempoPosition}
-              width="${Math.min(120, parseInt(height * headerRatio))}"
-            ></sc-chenillard>
+            ${app.soapEngine.current && app.soapEngine.current.event.duration
+              ? html`Duration: ${app.soapEngine.current.event.duration}s`
+              : html`
+                ${renderTimeSignature(app.soapEngine)}
+                ${renderTempo(app.soapEngine)}
+              `
+            }
           </div>
           <div class="beats">
             <sc-bang
@@ -50,20 +51,26 @@ export default function layout(app) {
             ></sc-bang>
           </div>
 
+          <div class="progress-bar">
           ${app.soapEngine.current && app.soapEngine.current.event.duration
             ? html `
-            <div class="progress-bar">
               <sc-progress-bar
                 .getProgressFunction=${app.getPositionInAbsoluteEvent}
                 min="0"
                 max="${app.soapEngine.current && app.soapEngine.current.event.duration ? app.soapEngine.current.event.duration : 1}"
                 width="${parseInt(width / 2)}"
-                heigh="50"
+                height="40"
                 displayNumber
-              ></sc-progress-bar>
-            </div>`
-            : nothing
+              ></sc-progress-bar>`
+            : html`
+              <sc-chenillard
+                .getProgressFunction=${app.getTempoPosition}
+                width="${parseInt(width / 2)}"
+                height="40"
+              ></sc-chenillard>
+            `
           }
+          </div>
         </div>
         <div>
           <sc-clock

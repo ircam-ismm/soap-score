@@ -77,6 +77,8 @@ section .feedback > div:first-child .bar-infos {
   justify-content: space-evenly;
   flex-wrap: wrap;
   align-content: space-around;
+  font-size: 20px;
+  color: black;
 }
 
 section .feedback > div:first-child .beats {
@@ -88,10 +90,10 @@ section .feedback > div:first-child .beats {
 
 section .feedback > div:first-child .progress-bar {
   position: absolute;
-  left: 0;
-  bottom: 0;
+  right: 0;
+  bottom: -20px;
   width: 100%;
-  height: 0;
+  height: 40px;
 }
 
 section .feedback .bar-beat {

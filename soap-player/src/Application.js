@@ -51,6 +51,11 @@ export default class Application {
     this.getPositionInAbsoluteEvent = this.getPositionInAbsoluteEvent.bind(this);
     this.getTempoPosition = this.getTempoPosition.bind(this);
 
+    // for the chenillard (should be cleaned)
+    this._current = { position: null, duration: null };
+    this._next = null;
+    this._direction = true;
+
     this.setScore(defaultScore);
 
     window.addEventListener('resize', () => this.render());
@@ -139,10 +144,31 @@ export default class Application {
   getTempoPosition() {
     // this is shit sorry
     if (this.soapEngine.current) {
-      return this.transport.getPositionAtTime(this.getTime() * (this.soapEngine.current.event.tempo.bpm) / 60 + 0.5);
+      const now = this.transport.getPositionAtTime(this.getTime());
+      const { position, duration, beat } = this.soapEngine.current;
+
+      // console.log(this._current)
+      if (position !== this._current.position && Math.floor(beat) === beat) {
+        this._next = { position, duration };
+      }
+
+      // console.log(this._next)
+      if (this._next && now >= this._next.position) {
+        this._current = this._next;
+        this._next = null;
+        this._direction = !this._direction;
+      }
+
+      const norm = (now - this._current.position) / this._current.duration;
+
+      if (this._direction) {
+        return 1 - norm;
+      } else {
+        return norm;
+      }
     } else {
       return 0;
-  }
+    }
   }
 
   getPositionInAbsoluteEvent() {
