@@ -27,6 +27,7 @@ export default function layout(app) {
   return html`
     <header>
       <h1>SO(a)P Metronome</h1>
+      <sc-clock height="40" width="100"></sc-clock>
     </header>
     <section>
       <div class="feedback">
