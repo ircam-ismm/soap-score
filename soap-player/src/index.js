@@ -24,11 +24,17 @@ const audioContext = new AudioContext();
 const getTimeFunction = () => audioContext.currentTime;
 const scheduler = new Scheduler(getTimeFunction);
 
-const defaultScore = `\
+let defaultScore = `\
 BAR 1 [3+2+2/8] TEMPO [3/8]=60
 BAR 2 [3+2+2/8] TEMPO [3/8]=60 curve 2
 BAR 4 [2+3+2/8] TEMPO [3/8]=120
 `;
+
+const searchParams = new URLSearchParams(window.location.search);
+
+if (searchParams.has('score')) {
+  defaultScore = decodeURIComponent(searchParams.get('score'));
+}
 
 (async function main() {
   await resumeAudioContext(audioContext);
@@ -37,40 +43,39 @@ BAR 4 [2+3+2/8] TEMPO [3/8]=120
 }());
 
 
-document.body.addEventListener('keypress', e => {
-  // console.log(e);
-  if (e.key == "Enter" || e.code == "Enter" || e.keyCode == 13) {
-    console.log('coucou');
-    // const now = getTime();
-    // e.preventDefault();
+// document.body.addEventListener('keypress', e => {
+//   // console.log(e);
+//   if (e.key == "Enter" || e.code == "Enter" || e.keyCode == 13) {
+//     const now = getTime();
+//     e.preventDefault();
 
-    // transport.seek(now, 0);
-    // this.model.seekBarBeat.bar = 1;
-    // this.model.seekBarBeat.beat = 1;
-  }
+//     transport.seek(now, 0);
+//     this.model.seekBarBeat.bar = 1;
+//     this.model.seekBarBeat.beat = 1;
+//   }
 
-  // if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
-  //   e.preventDefault();
+//   if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
+//     e.preventDefault();
 
-  //   console.log('coucou 22');
+//     console.log('coucou 22');
 
-  //   // const now = getTime();
+//     const now = getTime();
 
-  //   // switch (this.model.transportState) {
-  //   //   case "play":
-  //   //     // need to stop
-  //   //     const { bar, beat } = this.model.seekBarBeat;
-  //   //     const pos = this.soapEngine.interpreter.getPositionAtLocation(bar, beat);
-  //   //     transport.pause(now);
-  //   //     transport.seek(now, pos);
-  //   //     this.model.transportState = "stop";
-  //   //     break;
-  //   //   case "stop":
-  //   //     // need to play
-  //   //     transport.play(now);
-  //   //     this.model.transportState = "play";
-  //   //     break;
-  //   // }
-  //   // renderScreen(this.model);
-  // }
-});
+//     switch (this.model.transportState) {
+//       case "play":
+//         // need to stop
+//         const { bar, beat } = this.model.seekBarBeat;
+//         const pos = this.soapEngine.interpreter.getPositionAtLocation(bar, beat);
+//         transport.pause(now);
+//         transport.seek(now, pos);
+//         this.model.transportState = "stop";
+//         break;
+//       case "stop":
+//         // need to play
+//         transport.play(now);
+//         this.model.transportState = "play";
+//         break;
+//     }
+//     renderScreen(this.model);
+//   }
+// });

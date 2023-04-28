@@ -324,10 +324,16 @@ export default function layout(app) {
           ></sc-editor>
           <sc-button
             style="position: absolute; bottom: 4px; right: 130px;"
+            width="140"
             value="save to disk"
             @input="${e => app.savetoDisk()}"
           ></sc-button>
-
+          <sc-button
+            style="position: absolute; bottom: 4px; right: 276px;"
+            width="140"
+            value="share link"
+            @input="${e => app.copyToClipboard()}"
+          ></sc-button>
         </div>
       </div>
 

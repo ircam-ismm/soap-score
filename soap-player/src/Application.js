@@ -258,6 +258,16 @@ export default class Application {
     document.body.removeChild(element);
   }
 
+  copyToClipboard() {
+    const { origin, pathname } = window.location;
+    let url = `${origin}${pathname}`;
+
+    const encoded = encodeURIComponent(this.model.score);
+    url += `?score=${encoded}`;
+
+    navigator.clipboard.writeText(url);
+  }
+
   render() {
     render(layout(this), document.body);
   }
