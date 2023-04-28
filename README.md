@@ -1,18 +1,25 @@
-# README
+# SO(a)P Score
 
-## Terminology
+SO(a)P score is a mini-langage to describe structure of a score along with a javascript interpreter and audio engine to create application such as sequencers, metronomes, etc.
 
-- time      - [sec] linear increasing time (i.e. a clock)
-- position  - [sec] non-linear transport position
-- location  - [bar, beat] specific position in the score expressed in musical units
+## Example application
 
-## Documentation
-please see documentation.pdf 
+[https://ircam-ismm.github.io/soap-score/](https://ircam-ismm.github.io/soap-score/)
 
-## FIXME
+## Score syntax
 
-```soap
-BAR 1 [4/4] TEMPO [1/4]=80
-|2.5 "section A"
-BAR 2 [6/8] TEMPO [3/8]=[1/4] 
 ```
+BAR 1 [3+2+2/8] TEMPO [3/8]=60
+BAR 2 [3+2+2/8] TEMPO [3/8]=60 curve 2
+BAR 4 [2+3+2/8] TEMPO [3/8]=120
+```
+
+[Syntax documentation](./docs/SYNTAX.md)
+
+## Credits
+
+The project has received support from the SO(a)P UPI project financed by Ircam and from the DOTS project (ANR-22-CE33-0013-01) financed by the French National Research Agency (ANR).
+
+## License
+
+[BSD-3-Clause](./LICENSE)
