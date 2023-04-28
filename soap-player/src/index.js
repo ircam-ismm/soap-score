@@ -38,8 +38,10 @@ if (searchParams.has('score')) {
 
 (async function main() {
   await resumeAudioContext(audioContext);
+  const res = await fetch('./SYNTAX.md');
+  const syntaxDoc = await res.text();
 
-  const application = new Application(audioContext, getTimeFunction, scheduler, defaultScore, scoreList);
+  const application = new Application(audioContext, getTimeFunction, scheduler, defaultScore, scoreList, syntaxDoc);
 }());
 
 

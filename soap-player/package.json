@@ -18,14 +18,17 @@
     "@ircam/simple-components": "^2.2.2",
     "core-js": "^3.26.1",
     "lit": "^2.4.1",
+    "markdown-toc": "^1.2.0",
+    "marked": "^4.3.0",
     "regenerator-runtime": "^0.13.11",
     "tonal": "^4.14.0",
     "vexflow": "4.0.3"
   },
   "scripts": {
+    "toc": "markdown-toc -i ../docs/SYNTAX.md",
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --config webpack.config.js --watch",
-    "dev": "npm-run-all build --parallel start watch",
+    "dev": "npm-run-all toc build --parallel start watch",
     "start": "serve ../docs --config ../soap-player/serve.json --listen 5000"
   }
 }

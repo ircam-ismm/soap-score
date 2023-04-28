@@ -1,5 +1,7 @@
 import { html, nothing } from 'lit';
 import { live } from 'lit/directives/live.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { marked } from 'marked';
 
 import '@ircam/simple-components/sc-bang.js';
 import '@ircam/simple-components/sc-transport.js';
@@ -16,19 +18,37 @@ import '@ircam/simple-components/sc-dragndrop.js';
 import '@ircam/simple-components/sc-clock.js';
 import '@ircam/simple-components/sc-progress-bar.js';
 import '@ircam/simple-components/sc-chenillard.js';
+import '@ircam/simple-components/sc-gh-link.js';
 
 import { renderTempo, renderTimeSignature } from './staves.js';
+
+let renderDoc = false;
 
 export default function layout(app) {
   const width = window.innerWidth;
   const height = window.innerHeight - 40;
   const headerRatio = 0.20;
 
+  const doc = marked.parse(app.syntaxDoc, { gfm: true });
+
   return html`
     <header>
-      <h1>SO(a)P Metronome</h1>
-      <sc-clock height="40" width="100"></sc-clock>
+      <div>
+        <h1>SO(a)P Metronome</h1>
+        <a href="#" @click=${e => {
+          e.preventDefault();
+          renderDoc = !renderDoc;
+          app.render();
+        }}>Syntax documentation</a>
+      </div>
+      <div style="font-size: 0;">
+        <sc-gh-link height="40" href="https://github.com/ircam-ismm/soap-score"></sc-gh-link>
+        <sc-clock height="40" width="100"></sc-clock>
+      </div>
     </header>
+
+    ${renderDoc ? html`<div class="doc">${unsafeHTML(doc)}</div>` : nothing }
+
     <section>
       <div class="feedback">
         <div>
