@@ -19,8 +19,8 @@ BAR 4 [2+3+2/8] TEMPO [3/8]=120
 ## Credits
 
 The project has received support from:
-- the SO(a)P UPI project financed by Ircam 
-- the DOTS project (ANR-22-CE33-0013-01) financed by the French National Research Agency (ANR).
+- the SO(a)P UPI project funded by Ircam 
+- the DOTS project (ANR-22-CE33-0013-01) funded by the French National Research Agency (ANR).
 
 ## License
 
