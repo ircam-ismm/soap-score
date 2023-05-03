@@ -190,6 +190,7 @@ BAR 20 [5/4] TEMPO [1/4]=120 curve 1
 BAR 21 [3/8] TEMPO [1/8]=100 \
 `;
       const expectedData = parseScore(expectedScore);
+      // console.log(expectedScore);
       assert.deepEqual(outputData, expectedData);
 
     });
