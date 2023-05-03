@@ -56,7 +56,7 @@ const soap2asco = {
         infos = interpreter.getNextLocationInfos(currentBar, currentBeat);
       }
 
-      const { bar, beat, event, position, basis, duration } = infos;
+      const { bar, beat, event, position, duration, dt } = infos;
       // console.log(bar, beat, basis);
 
       if (event.label === 'end-of-score') {
@@ -72,9 +72,9 @@ const soap2asco = {
 
       if (bar !== currentBar) {
         // output += `; ----------- measure ${bar} --- time signature ${event.signature.name}\n`
-        output += `NOTE ${beat+59} ${basis.upper/basis.lower*4} MEASURE_${bar}`;
+        output += `NOTE ${beat+59} ${dt} MEASURE_${bar}`;
       } else {
-        output += `NOTE ${beat+59} ${basis.upper/basis.lower*4}`;
+        output += `NOTE ${beat+59} ${dt}`;
       }
 
       // check for a label
