@@ -1661,21 +1661,17 @@ export const augustinExampleScore = `\
 // testscore.txt
 BAR 1 2s
 BAR 3 [4/4] TEMPO [1/4]=120 curve 1
-BAR 3
 |4 TEMPO [1/4]=80
 BAR 5 [3/8] TEMPO [1/8]=160
 BAR 6 [1/8] TEMPO [1/8]=100
 BAR 7 [3/4] TEMPO [1/4]=50
-BAR 7
 |2 TEMPO [1/4]=50 curve 1
 BAR 8 [7/8] TEMPO [1/8]=80
 BAR 9 [4/4] TEMPO [1/4]=60
 BAR 10 TEMPO [1/4]=60 curve 1
 BAR 11 [3/4] TEMPO [1/4]=120
 BAR 12 [7/4]
-BAR 12
 |3 TEMPO [1/4]=120 curve 1
-BAR 12
 |6 TEMPO [1/4]=60
 BAR 13 [4/4]
 BAR 15 FERMATA [1/1]=?
@@ -1684,15 +1680,12 @@ BAR 17 15s
 BAR 18 [3/4] TEMPO [1/4]=63.5
 BAR 19 [4/4]
 BAR 20 [5/4] TEMPO [1/4]=120 curve 1
-BAR 20
 |4 TEMPO [1/4]=80.5 curve 1
 BAR 21 TEMPO [1/4]=100
 BAR 30 [4/4] TEMPO [1/4]=120
-BAR 30
 |3 TEMPO [1/4]=120 curve 1
 BAR 31 [2/4] TEMPO [1/4]=120
 BAR 32 [6/8]
-BAR 33
 BAR 33
 |3 TEMPO [1/8]=60 \
 `;
