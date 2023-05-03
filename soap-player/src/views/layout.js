@@ -19,6 +19,7 @@ import '@ircam/simple-components/sc-clock.js';
 import '@ircam/simple-components/sc-progress-bar.js';
 import '@ircam/simple-components/sc-chenillard.js';
 import '@ircam/simple-components/sc-gh-link.js';
+import '@ircam/simple-components/sc-flash.js';
 
 import { renderTempo, renderTimeSignature } from './staves.js';
 
@@ -62,14 +63,20 @@ export default function layout(app) {
             }
           </div>
           <div class="beats">
-            <sc-bang
+            <sc-flash
               width="${Math.min(120, parseInt(height * headerRatio))}"
+              height="${Math.min(120, parseInt(width * headerRatio))}"
+              flashTime="100"
+              color="brown"
               .active="${live(app.model.displayActiveBeat ? app.soapEngine.beat === 1 : false)}"
-            ></sc-bang>
-            <sc-bang
+            ></sc-flash>
+            <sc-flash
               width="${Math.min(120, parseInt(height * headerRatio))}"
+              height="${Math.min(120, parseInt(width * headerRatio))}"
+              flashTime="100"
+              color="limegreen"
               .active="${live(app.model.displayActiveBeat ? app.soapEngine.beat !== 1 : false)}"
-            ></sc-bang>
+            ></sc-flash>
           </div>
 
           <div class="progress-bar">
