@@ -8,6 +8,7 @@ import TimeSignature from '@tonaljs/time-signature';
 import parseDuration from 'parse-duration';
 
 import { writeScore } from '../soap-score-writer.js';
+import { parseScore } from '../soap-score-parser.js';
 
 // ----------------------------------------------------------
 // helpers
@@ -172,12 +173,9 @@ function pushLineInEventList(events, lineEventList) {
 function curveParsing(line) {
   let lineEventList = [];
   let events = [];
-  //remove ";"
-  if (line[line.length-1] === '') {
-    line.pop();
-  }
+
   // console.log(line);
-  const bar = parseInt(line[0]) + 1;
+  const bar = parseInt(line[0]);
   line.shift();
   const signature = TimeSignature.get(line[0]);
   line.shift();
@@ -234,8 +232,7 @@ function curveParsing(line) {
 function simpleParsing(line) {
   let e = [];
   const command = line[1];
-  // this is for consistency with other scores !
-  const bar = parseInt(line[0]) + 1;
+  const bar = parseInt(line[0]);
   switch (command) {
     case 'fermata':
       e.push({
@@ -269,6 +266,20 @@ function simpleParsing(line) {
         console.log("cannot parse ", line);
       };
       break;
+    case 'label':
+      const label = line.pop();
+      e.push({
+        bar: bar,
+        beat: 1,
+        duration: null,
+        signature: null,
+        tempo: null,
+        fermata: null,
+        label: label,
+      });
+      break;
+    case 'end':
+      break;
     default:
       let tempo = null;
       const signature = TimeSignature.get(line[1]);
@@ -297,7 +308,7 @@ function simpleParsing(line) {
 // ----------------------------------------------------------
 
 const augustin2soap = {
-  fromFile: (input, output) => {
+  fromFile(input, output) {
     if (!fs.existsSync(input)) {
       throw new Error(`coucou`);
     }
@@ -308,26 +319,53 @@ const augustin2soap = {
     fs.writeFileSync(output, soapScore);
   },
 
-  readString: (input) => {
-    const score = input.toString();
-
+  readString(data, name) {
+    let soapScore = this.parse(data);
+    soapScore = `// ${name}${soapScore}`;
+    return soapScore;
   },
 
-  parse: (data) => {
-
+  parse(data) {
     // parsing array from txt
     data = data.split("\n");
     let array = [];
     let events = [];
     let lineEventList = [];
+    let label = [];
 
     data.forEach(line => {
+      // here line is string
       line = line.replace(",", "");
       line = line.replace(";", "");
-      array.push((line.split(" ")));
+      line = line.replace("\r", "");
+      // here line is list
+      line = line.split(" ");
+      // remove empty caracter at end of line
+      if (line[line.length-1] === "") {
+        line.pop();
+      }
+      // parse labels
+      if (line[0] === "#") {
+        line.shift();
+        label = line;
+      } else {
+        array.push(line);
+        if (label.length !== 0) {
+          const strLabel = label.join(" ");
+          array.push([line[0], 'label', strLabel]);
+          label = [];
+        }
+      }
     });
 
-    array.forEach(line => {
+    // FILTER BAR 0
+    array.forEach((line, index) => {
+      if (line[0] === "0") {
+        array.splice(index, 1);
+      }
+    });
+
+    array.forEach((line, index) => {
       switch (line.length) {
         case 0:
           break;
@@ -364,11 +402,16 @@ const augustin2soap = {
           break;
       }
     });
-
-    events = pushLineInEventList(events, lineEventList);
-    events = sortEvents(events);
+    // normalize score before tempo curve
     // console.log(events);
+    events = parseScore(writeScore(events));
+    events = pushLineInEventList(events, lineEventList);
+    // sort events
+    events = sortEvents(events);
+    // normalize score after tempo curve
+    events = parseScore(writeScore(events));
     const output = writeScore(events);
+    // console.log(output);
     return output;
   },
 };

@@ -331,7 +331,7 @@ export default function layout(app) {
                 height="40"
                 label="drag'n'drop augustin"
                 @change=${(e) => {
-                  app.parseAugustin(e.detail.value[Object.keys(e.detail.value)[0]])
+                  app.parseAugustin(e.detail.value)
                 }}
               ></sc-dragndrop>
             </div>
