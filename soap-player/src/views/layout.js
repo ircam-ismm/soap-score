@@ -226,6 +226,19 @@ export default function layout(app) {
           </div>
           <div style="margin: 40px 0;">
             <sc-text
+              value="son du métronome"
+              readonly
+            ></sc-text>
+            <select @change=${(e) => app.setMetroSound(e.target.value)}>
+              <option value="sine">sine</option>
+              <option value="drum">drum</option>
+              <option value="old-numerical">old-numerical</option>
+              <option value="mechanical">mechanical</option>
+              <option value="drumstick">drumstick</option>
+            </select>
+          </div>
+          <div style="margin: 40px 0;">
+            <sc-text
               width="320"
               value="labels"
               readonly

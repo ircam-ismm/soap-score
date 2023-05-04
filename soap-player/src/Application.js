@@ -45,6 +45,7 @@ export default class Application {
         basis: '1/4',
       },
       sonificationMode: 'auto',
+      sound: 'sine',
       duration: 0,
     };
 
@@ -219,6 +220,10 @@ export default class Application {
 
   setSonificationMode(mode) {
     this.model.sonificationMode = mode;
+  }
+
+  setMetroSound(sound) {
+    this.model.sound = sound;
   }
 
   jumpToLabel(label) {
