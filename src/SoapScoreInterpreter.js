@@ -197,11 +197,11 @@ export default class SoapScoreInterpreter {
     let duration = this._getBeatDuration(event, bar, beat);
     // if no fermta and no event until next beat, dt is equal to duration
     let dt = duration;
-
     // handle all other case
     const next = this._getNextLocation(event, bar, beat);
 
-    let inBetweenEvent = false;
+    let inBetweenEvent = null;
+
     if (next !== null) {
       inBetweenEvent = this._hasEventBetweenLocations(bar, beat, next.bar, next.beat);
     }
