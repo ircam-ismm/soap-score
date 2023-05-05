@@ -8,6 +8,7 @@ import layout from './views/layout.js';
 
 import midi2soap from '../../src/parsers/midi2soap.js';
 import augustin2soap from '../../src/parsers/augustin2soap.js';
+import soap2asco from '../../src/parsers/soap2asco.js';
 
 export default class Application {
   constructor(audioContext, getTimeFunction, scheduler, defaultScore, scoreList, syntaxDoc) {
@@ -277,6 +278,18 @@ export default class Application {
     navigator.clipboard.writeText(url);
   }
 
+  exportToAntescofo() {
+    const asco = soap2asco.parse(this.model.score);
+    // console.log(asco);
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(asco));
+    element.setAttribute('download', 'score.asco');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
   async exportAudioFile() {
     const score = this.model.score;
     const interpreter = new SoapScoreInterpreter(score);
@@ -334,9 +347,7 @@ export default class Application {
     element.setAttribute('download', 'score.wav');
     element.style.display = 'none';
     document.body.appendChild(element);
-
     element.click();
-
     document.body.removeChild(element);
   }
 
