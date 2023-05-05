@@ -229,6 +229,7 @@ export default class SoapEngine {
       const currentTime = scheduler.currentTime;
       transport.pause(currentTime + this.current.duration);
       transport.seek(currentTime + this.current.duration, 0);
+      return Infinity;
     }
 
     if (this.current.event.fermata) {

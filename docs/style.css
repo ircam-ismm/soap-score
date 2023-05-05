@@ -91,12 +91,19 @@ section .feedback > div:first-child .bar-infos {
   color: black;
 }
 
-section .feedback > div:first-child .beats {
+section .feedback .beats {
   display: flex;
   justify-content: space-evenly;
   flex-wrap: wrap;
   align-content: space-around;
+  position: relative;
 }
+
+/*section .feedback .beats sc-flash {
+  position: absolute;
+  top: 0;
+  right: 0;
+}*/
 
 section .feedback > div:first-child .progress-bar {
   position: absolute;
@@ -124,32 +131,58 @@ section .controls > div {
 }
 
 section .controls > div:first-child {
-  padding: 20px;
   overflow-y: auto;
 }
 
 section .controls > div:first-child > div {
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
-section .controls > div:last-child {}
+section .controls {}
 
-section .controls > div:last-child .generate-score {
+section .controls .transport-control {
+  padding: 20px;
+}
+
+section .controls .transport-control > div {
+  margin-bottom: 4px;
+}
+
+section .controls .generate-score {
   height: 140px;
   padding: 10px;
   background-color: #232323;
   position: relative;
 }
 
-section .controls > div:last-child .generate-score .dragndrop {
+section .controls .generate-score .dragndrop {
   position: absolute;
   right: 10px;
   top: 0;
 }
 
-section .controls > div:last-child .generate-score .dragndrop sc-dragndrop {
+section .controls .generate-score .dragndrop sc-dragndrop {
   display: block;
   margin-top: 2px;
+}
+
+.advanced-options {
+  padding: 20px;
+  position: absolute;
+  right: 0;
+  height: calc(100vh - 40px);
+  z-index: 100;
+  width: 30%;
+  overflow-y: auto;
+  padding-bottom: 120px;
+  background-color: #121212;
+  border-left: 1px solid #454545;
+}
+
+.advanced-options h3 {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 20px 0;
 }
 
 .doc {
@@ -220,3 +253,54 @@ section .controls > div:last-child .generate-score .dragndrop sc-dragndrop {
 .doc p em strong {
   color: rgb(217, 83, 79);
 }
+
+
+@media (max-width: 960px) {
+/*  section {
+    flex-direction: column;
+  }
+*/
+  section .feedback {
+    flex-direction: column;
+    height: auto;
+  }
+
+  section .feedback > div {
+    width: 100%;
+  }
+
+  section .feedback .clocks {
+    margin-top: 40px;
+  }
+
+  section .controls {
+    flex-direction: column;
+    height: auto;
+  }
+
+  section .controls > div {
+    width: 100%;
+    height: auto;
+  }
+
+  .doc {
+    width: 100%;
+  }
+
+  .advanced-options {
+    width: 100%;
+  }
+}
+
+@media (max-width: 960px) {
+
+}
+
+@media (max-width: 768px) {
+
+}
+
+@media (min-width: 640px) {
+
+}
+
