@@ -1,7 +1,9 @@
 import { render } from 'lit';
 import { Transport } from '@ircam/sc-scheduling';
+import toWav from 'audiobuffer-to-wav';
 
 import SoapEngine from './SoapEngine.js';
+import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
 import layout from './views/layout.js';
 
 import midi2soap from '../../src/parsers/midi2soap.js';
@@ -282,14 +284,71 @@ export default class Application {
     const element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(asco));
     element.setAttribute('download', 'score.asco');
-
     element.style.display = 'none';
     document.body.appendChild(element);
-
     element.click();
-
     document.body.removeChild(element);
+  }
 
+  async exportAudioFile() {
+    const score = this.model.score;
+    const interpreter = new SoapScoreInterpreter(score);
+    // check that score has an end
+    const lastEvent = interpreter.score[interpreter.score.length - 1];
+
+    if (lastEvent.end !== true) {
+      throw new Error(`Cannot export file, no END tag found`);
+    }
+
+    const duration = interpreter.getPositionAtLocation(lastEvent.bar + 1, 1);
+    const sampleRate = 48000;
+    const audioContext = new OfflineAudioContext({
+      numberOfChannels: 1,
+      sampleRate: sampleRate,
+      length: Math.ceil(duration * sampleRate),
+    });
+
+    // find first event
+    const { bar, beat } = interpreter.getLocationAtPosition(0);
+    let infos = interpreter.getLocationInfos(bar, beat);
+
+    while (infos !== null) {
+      const { bar, beat, position } = infos;
+      // ignore in between events
+      if (Math.abs(beat - Math.floor(beat)) < 1e-3) {
+        const audioTime = position;
+
+        const freq = beat === 1 ? 900 : 600;
+        const gain = beat === 1 ? 1 : 0.4;
+        // produce the click for this beat
+        const env = audioContext.createGain();
+        env.connect(audioContext.destination);
+        env.gain.value = 0;
+        env.gain.setValueAtTime(0, audioTime);
+        env.gain.linearRampToValueAtTime(gain, audioTime + 0.002);
+        env.gain.exponentialRampToValueAtTime(0.001, audioTime + 0.100);
+
+        const src = audioContext.createOscillator();
+        src.connect(env);
+        src.frequency.value = freq;
+        src.start(audioTime);
+        src.stop(audioTime + 0.100);
+      }
+
+      infos = interpreter.getNextLocationInfos(bar, beat);
+    }
+
+    const buffer = await audioContext.startRendering();
+    const wav = toWav(buffer);
+    const wavObjectURL = URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
+
+    const element = document.createElement('a');
+    element.setAttribute('href', wavObjectURL);
+    element.setAttribute('download', 'score.wav');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   }
 
   render() {

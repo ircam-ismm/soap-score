@@ -28,7 +28,7 @@ const soap2asco = {
       }
     });
     if (isEndOfScore === false) {
-      throw new Error('no end-of-score, cannot parse score. Please add a "end-of-score" label at the end of your score');
+      throw new Error('Error: Cannot export file, no END tag found');
     }
 
     let output = ``;

@@ -27,6 +27,7 @@ BAR 4 [2+3+2/8] TEMPO [3/8]=120
 - [Additive signatures](#additive-signatures)
 - [Tempo curves](#tempo-curves)
 - [Tempo equivalences](#tempo-equivalences)
+- [End of score](#end-of-score)
 - [Misc & Special cases](#misc--special-cases)
 - [Special characters & shortcuts](#special-characters--shortcuts)
 

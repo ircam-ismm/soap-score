@@ -16,6 +16,7 @@
     "@ircam/resume-audio-context": "^1.0.2",
     "@ircam/sc-gettime": "^1.0.0",
     "@ircam/simple-components": "^2.2.2",
+    "audiobuffer-to-wav": "^1.0.0",
     "core-js": "^3.26.1",
     "lit": "^2.4.1",
     "markdown-toc": "^1.2.0",

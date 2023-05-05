@@ -1812,6 +1812,69 @@ export const endScoreExample2Data = [
   },
 ];
 
+export const endScoreExample3Score = `\
+BAR 1 [4/4] TEMPO [1/4]=60 |4.5 "coucou" END
+`;
+
+export const endScoreExample3Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 60,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  },
+  {
+    bar: 1,
+    beat: 4.5,
+    duration: null,
+    end: true,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 60,
+      curve: null,
+    },
+    fermata: null,
+    label: "coucou"
+  },
+]
+
+
 // -----------------------------------------------------
 // # Augustin exemple compliqué
 // -----------------------------------------------------

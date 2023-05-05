@@ -380,6 +380,12 @@ export default function layout(app) {
             value="export asco"
             @input="${e => app.exportToAntescofo()}"
           ></sc-button>
+          <sc-button
+            style="position: absolute; bottom: 4px; right: 568px;"
+            width="140"
+            value="export audio"
+            @input="${e => app.exportAudioFile()}"
+          ></sc-button>
         </div>
       </div>
 
