@@ -1,5 +1,5 @@
-import fs from 'node:fs';
-import path from 'node:path';
+// import fs from 'node:fs';
+// import path from 'node:path';
 
 import TimeSignature from '@tonaljs/time-signature';
 
@@ -19,7 +19,17 @@ const soap2asco = {
 
   parse: function(score, comment = false) {
     const interpreter = new SoapScoreInterpreter(score);
-    // console.log(interpreter.score);
+    let isEndOfScore = false;
+
+    // check to event.label === 'end-of-score' and throw error if not
+    interpreter.score.forEach( (e) => {
+      if (e.end) {
+        isEndOfScore = true;
+      }
+    });
+    if (isEndOfScore === false) {
+      throw new Error('no end-of-score, cannot parse score. Please add a "end-of-score" label at the end of your score');
+    }
 
     let output = ``;
     let currentBar = null;

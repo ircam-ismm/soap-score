@@ -310,6 +310,21 @@ BAR 2 [6/8] TEMPO [3/8]=[1/4]
 BAR 3 [4/4]
 ```
 
+### End of score
+
+You can define the end of a score by using the `END` keyword.
+This will prevent the metronome the continue forever, and will stop it at the end of the given `BAR`. For example:
+
+```
+BAR 1 [4/4] TEMPO [1/4]=120
+BAR 10 END
+```
+
+The example above will play until the last beat of the bar 10 and automatically stop at this point.
+
+_**IMPORTANT**_
+
+To export your score in the `asco` format or as a `.wav` file, the `END` keyword is *mandatory*.
 
 ### Misc & Special cases
 
@@ -357,6 +372,7 @@ The special characters used by the syntax can be written with the following shor
 - `[` character is written with `Option+Shift+(`
 - `]` character is written with `Option+Shift+)`
 - `|` character is written with `Option+Shift+L`
+
 
 
 
