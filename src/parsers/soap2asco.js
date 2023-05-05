@@ -19,6 +19,7 @@ const soap2asco = {
 
   parse: function(score, comment = false) {
     const interpreter = new SoapScoreInterpreter(score);
+    // console.log(interpreter.score);
 
     let output = ``;
     let currentBar = null;
@@ -67,6 +68,10 @@ const soap2asco = {
         // output += `BPM 60\n`
       }
 
+      if (bar !== currentBar && comment === true) {
+        output += `\n; ----------- measure ${bar} --- time signature ${event.signature.name} -----------\n`
+      }
+
       // check if tempo has changed
       if (event !== currentEvent && event.tempo && event.tempo.bpm !== currentEvent.tempo.bpm) {
         // bpm in antescofo -> related to quarter note
@@ -84,20 +89,23 @@ const soap2asco = {
         dtInBeat = event.duration;
       }
 
+      let ascoNote = 0;
+      if (beat - Math.floor(beat) === 0) {
+        ascoNote = beat + 59;
+      }
+
       if (bar !== currentBar) {
-        if (comment === true) {
-          output += `; ----------- measure ${bar} --- time signature ${event.signature.name}\n`
-        }
-        output += `NOTE ${beat+59} ${dtInBeat} MEASURE_${bar}`;
+        output += `NOTE ${ascoNote} ${dtInBeat} MEASURE_${bar}`;
       } else {
-        output += `NOTE ${beat+59} ${dtInBeat}`;
+        output += `NOTE ${ascoNote} ${dtInBeat}`;
       }
 
       // check for a label
       if (event !== currentEvent && event.label) {
-          output += ` "${event.label}"\n`;
+        output += ` "${event.label}"\n`;
       } else {
-          output += `\n`;
+        // console.log(event);
+        output += `\n`;
       };
 
       if (event !== currentEvent) {
