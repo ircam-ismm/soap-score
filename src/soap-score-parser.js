@@ -97,7 +97,7 @@ export function formatScore(score) {
   // insert pipes before command if not present (simplified syntax)
   lines.forEach(line => {
     for (let i = 0; i < line.length; i++) {
-      if (line[i] === 'TEMPO' || line[i] === 'FERMATA' || line[i] === 'LABEL') {
+      if (line[i] === 'TEMPO' || line[i] === 'FERMATA' || line[i] === 'LABEL' || line[i] === 'END') {
         const prev = line[i - 1];
         // if previous entry is pipe without beat number, default to one
         if (prev === '|') {
@@ -316,6 +316,10 @@ export function getEventList(score) {
             event.bpmCurve = exponent;
           }
           break;
+        case 'END': {
+          // nothing to do, `event.type: 'END'`` is enougth
+          break;
+        }
         default:
           throw new Error(`Invalid command: ${event.type}`);
           break;
@@ -423,6 +427,10 @@ export function parseScore(score) {
     let event = ir[index];
 
     if (event.bar !== currentEvent.bar || event.beat !== currentEvent.beat) {
+      if (currentEvent.end === true) {
+        throw new Error(`Cannot parse event after end`);
+      }
+
       // store current event
       insertEventInList(currentEvent, list, source);
       // deep copy current event and re-initialize
@@ -523,6 +531,9 @@ export function parseScore(score) {
         break;
       case 'LABEL':
         currentEvent.label = event.label;
+        break;
+      case 'END':
+        currentEvent.end = true;
         break;
     }
   }

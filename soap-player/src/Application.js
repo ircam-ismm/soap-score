@@ -73,7 +73,7 @@ export default class Application {
       this.transport.remove(this.soapEngine);
     }
 
-    const soapEngine = new SoapEngine(this.transport, this.scheduler, this.audioContext, newScore, this);
+    const soapEngine = new SoapEngine(this.audioContext, newScore, this);
     this.transport.add(soapEngine);
 
     this.model.score = newScore;
@@ -116,7 +116,7 @@ export default class Application {
   }
 
   setTransportState(state) {
-    const now = this.getTime() + 0.05;
+    const now = this.getTime() + 0.100;
 
     switch (state) {
       case 'play': {

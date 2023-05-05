@@ -597,4 +597,21 @@ describe(`SoapScoreInterpreter.getLocationInfos(bar, beat)`, () => {
       }
     });
   });
+
+  describe('End of score', () => {
+    it(`BAR 1 [4/4] TEMPO [1/4]=60
+        BAR 2 END
+    `, () => {
+      const score = `
+        BAR 1 [4/4] TEMPO [1/4]=60
+        BAR 2 END
+      `;
+      const interpreter = new SoapScoreInterpreter(score);
+
+      {
+        const infos = interpreter.getNextLocationInfos(2, 4);
+        assert.equal(infos, null, 'end of score')
+      }
+    });
+  });
 });

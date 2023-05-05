@@ -1654,6 +1654,165 @@ export const tempoEquivalencyExample1Data = [
 ];
 
 // -----------------------------------------------------
+// # End score
+// -----------------------------------------------------
+
+export const endScoreExample1Score = `\
+BAR 1 [4/4] TEMPO [1/4]=80
+// stop at the end of bar 2
+BAR 2 END \
+`;
+
+export const endScoreExample1Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  },
+  {
+    bar: 2,
+    beat: 1,
+    end: true,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  },
+];
+
+export const endScoreExample2Score = `\
+BAR 1 [4/4] TEMPO [1/4]=80
+// stop at the end of bar 2
+BAR 2 |3 END \
+`;
+
+export const endScoreExample2Data = [
+  {
+    bar: 1,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  },
+  {
+    bar: 2,
+    beat: 1,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null
+  },
+  {
+    bar: 2,
+    beat: 3,
+    end: true,
+    duration: null,
+    signature: {
+      empty: false,
+      name: '4/4',
+      type: 'simple',
+      upper: 4,
+      lower: 4,
+      additive: []
+    },
+    tempo: {
+      basis: {
+        empty: false,
+        name: '1/4',
+        type: 'simple',
+        upper: 1,
+        lower: 4,
+        additive: []
+      },
+      bpm: 80,
+      curve: null,
+    },
+    fermata: null,
+    label: null,
+  },
+];
+
+// -----------------------------------------------------
 // # Augustin exemple compliqué
 // -----------------------------------------------------
 

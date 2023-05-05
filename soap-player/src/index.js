@@ -25,9 +25,11 @@ const getTimeFunction = () => audioContext.currentTime;
 const scheduler = new Scheduler(getTimeFunction);
 
 let defaultScore = `\
-BAR 1 [3+2+2/8] TEMPO [3/8]=60
-BAR 2 [3+2+2/8] TEMPO [3/8]=60 curve 2
-BAR 4 [2+3+2/8] TEMPO [3/8]=120
+// BAR 1 [3+2+2/8] TEMPO [3/8]=60
+// BAR 2 [3+2+2/8] TEMPO [3/8]=60 curve 2
+// BAR 4 [2+3+2/8] TEMPO [3/8]=120
+BAR 1 [4/4] TEMPO [1/4]=60
+BAR 2 END
 `;
 
 const searchParams = new URLSearchParams(window.location.search);
@@ -38,6 +40,7 @@ if (searchParams.has('score')) {
 
 (async function main() {
   await resumeAudioContext(audioContext);
+
   const res = await fetch('./SYNTAX.md');
   const syntaxDoc = await res.text();
 
