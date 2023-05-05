@@ -114,7 +114,7 @@ export default class Application {
   }
 
   setTransportState(state) {
-    const now = this.getTime() + 0.05;
+    const now = this.getTime() + 0.100;
 
     switch (state) {
       case 'play': {

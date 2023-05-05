@@ -38,6 +38,7 @@ if (searchParams.has('score')) {
 
 (async function main() {
   await resumeAudioContext(audioContext);
+
   const res = await fetch('./SYNTAX.md');
   const syntaxDoc = await res.text();
 
