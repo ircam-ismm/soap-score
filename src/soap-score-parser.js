@@ -104,13 +104,16 @@ export function formatScore(score) {
           line[i - 1] += '1';
         }
 
+        // console.log(prevBeat);
+
         if (/^\|[0-9]*/.test(prev) === false) {
           let prevBeat = '|1'; // default
           // look for the first beat info before the command
           // e.g. BAR 3 [4/4] |2 TEMPO 60 FERMATA
           for (let j = i - 1; j >= 0; j--) {
-            if (/^\|[0-9]*/.test(line[j])) {
+            if (/^\|[0-9\.]*/.test(line[j])) {
               prevBeat = line[j];
+              break;
             }
           }
 

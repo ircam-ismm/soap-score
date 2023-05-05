@@ -250,6 +250,14 @@ describe(`> soap.parseScore(score)`, () => {
 
       assert.deepEqual(data, expected);
     });
+
+    it(`## Example 3`, () => {
+      const score = fixtures.endScoreExample3Score;
+      const expected = fixtures.endScoreExample3Data;
+      const data = parseScore(score);
+
+      assert.deepEqual(data, expected);
+    });
   });
 
   describe('# Contraints', () => {

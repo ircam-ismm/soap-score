@@ -374,6 +374,12 @@ export default function layout(app) {
             value="share link"
             @input="${e => app.copyToClipboard()}"
           ></sc-button>
+          <sc-button
+            style="position: absolute; bottom: 4px; right: 422px;"
+            width="140"
+            value="export audio"
+            @input="${e => app.exportAudioFile()}"
+          ></sc-button>
         </div>
       </div>
 
