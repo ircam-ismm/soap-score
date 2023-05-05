@@ -19,17 +19,6 @@ const soap2asco = {
 
   parse: function(score) {
     const interpreter = new SoapScoreInterpreter(score);
-    let isEndOfScore = false;
-
-    // check to event.label === 'end-of-score' and throw error if not
-    interpreter.score.forEach( (e) => {
-      if (e.label === "end-of-score") {
-        isEndOfScore = true;
-      }
-    });
-    if (isEndOfScore === false) {
-      throw new Error('no end-of-score, cannot parse score. Please add a "end-of-score" label at the end of your score');
-    }
 
     let output = ``;
     let currentBar = null;
@@ -56,13 +45,16 @@ const soap2asco = {
         infos = interpreter.getNextLocationInfos(currentBar, currentBeat);
       }
 
+      if (infos === null) {
+        return output;
+      }
+
       const { bar, beat, event, position, duration, dt, unit } = infos;
       console.log(bar, beat, unit, duration, dt);
 
-      if (event.label === 'end-of-score') {
-        return output;
-      }
-      // console.log(event);
+      // if (event.label === 'end-of-score') {
+      //   return output;
+      // }
 
       // check if tempo has changed
       if (event !== currentEvent && event.tempo.bpm !== currentEvent.tempo.bpm) {

@@ -84,7 +84,7 @@ NOTE 60 1.5 MEASURE_1
 NOTE 61 1\n`;
 
         const ascoScore = soap2asco.parse(data);
-        //console.log(ascoScore);
+        console.log(ascoScore);
         assert.deepEqual(expected, ascoScore);
 
       });
