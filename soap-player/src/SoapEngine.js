@@ -2,7 +2,7 @@ import SoapScoreInterpreter from '../../src/SoapScoreInterpreter.js';
 import { AudioBufferLoader } from 'waves-loaders';
 
 export default class SoapEngine {
-  constructor(transport, sceduler, audioContext, score, application) {
+  constructor(audioContext, score, application) {
     this.audioContext = audioContext;
     this.interpreter = new SoapScoreInterpreter(score);
     this.application = application;
@@ -16,38 +16,40 @@ export default class SoapEngine {
 
     // load buffers
     this.sound = {
-      files: ['./assets/bell.wav',
-              './assets/kick.wav',
-              './assets/rimshot.wav',
-              './assets/sidestik.wav',
-              './assets/old-numerical.wav',
-              './assets/mechanical-001.wav',
-              './assets/mechanical-002.wav',
-              './assets/mechanical-003.wav',
-              './assets/mechanical-004.wav',
-              './assets/mechanical-005.wav',
-              './assets/mechanical-006.wav',
-              './assets/mechanical-007.wav',
-              './assets/mechanical-008.wav',
-              './assets/mechanical-009.wav',
-              './assets/mechanical-010.wav',
-              './assets/mechanical-011.wav',
-              './assets/mechanical-012.wav',
-              './assets/mechanical-013.wav',
-              './assets/mechanical-014.wav',
-              './assets/mechanical-015.wav',
-              './assets/mechanical-016.wav',
-              './assets/mechanical-017.wav',
-              './assets/mechanical-018.wav',
-              './assets/mechanical-019.wav',
-              './assets/mechanical-020.wav',
-              './assets/mechanical-021.wav',
-              './assets/mechanical-022.wav',
-              './assets/mechanical-023.wav',
-              './assets/mechanical-024.wav',
-              './assets/mechanical-025.wav',
-              './assets/mechanical-026.wav',
-              './assets/drumstick.wav'],
+      files: [
+        './assets/bell.wav',
+        './assets/kick.wav',
+        './assets/rimshot.wav',
+        './assets/sidestik.wav',
+        './assets/old-numerical.wav',
+        './assets/mechanical-001.wav',
+        './assets/mechanical-002.wav',
+        './assets/mechanical-003.wav',
+        './assets/mechanical-004.wav',
+        './assets/mechanical-005.wav',
+        './assets/mechanical-006.wav',
+        './assets/mechanical-007.wav',
+        './assets/mechanical-008.wav',
+        './assets/mechanical-009.wav',
+        './assets/mechanical-010.wav',
+        './assets/mechanical-011.wav',
+        './assets/mechanical-012.wav',
+        './assets/mechanical-013.wav',
+        './assets/mechanical-014.wav',
+        './assets/mechanical-015.wav',
+        './assets/mechanical-016.wav',
+        './assets/mechanical-017.wav',
+        './assets/mechanical-018.wav',
+        './assets/mechanical-019.wav',
+        './assets/mechanical-020.wav',
+        './assets/mechanical-021.wav',
+        './assets/mechanical-022.wav',
+        './assets/mechanical-023.wav',
+        './assets/mechanical-024.wav',
+        './assets/mechanical-025.wav',
+        './assets/mechanical-026.wav',
+        './assets/drumstick.wav',
+      ],
       buffers: {},
     };
     this.loadAudioBuffers();
@@ -220,6 +222,14 @@ export default class SoapEngine {
     // update values for next call, we don't update right now as we want to
     // display the right infos
     this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
+
+    // handle end of score
+    if (this.next === null) {
+      const { transport, scheduler } = this.application;
+      const currentTime = scheduler.currentTime;
+      transport.pause(currentTime + this.current.duration);
+      transport.seek(currentTime + this.current.duration, 0);
+    }
 
     if (this.current.event.fermata) {
       const { duration, dt } = this.current;

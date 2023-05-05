@@ -234,6 +234,24 @@ describe(`> soap.parseScore(score)`, () => {
     });
   });
 
+  describe('# End score', () => {
+    it(`## Example 1`, () => {
+      const score = fixtures.endScoreExample1Score;
+      const expected = fixtures.endScoreExample1Data;
+      const data = parseScore(score);
+
+      assert.deepEqual(data, expected);
+    });
+
+    it(`## Example 2`, () => {
+      const score = fixtures.endScoreExample2Score;
+      const expected = fixtures.endScoreExample2Data;
+      const data = parseScore(score);
+
+      assert.deepEqual(data, expected);
+    });
+  });
+
   describe('# Contraints', () => {
     it(`#@ should throw if given score is not a string`, () => {
       let errored = false;

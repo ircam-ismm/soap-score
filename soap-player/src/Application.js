@@ -73,7 +73,7 @@ export default class Application {
       this.transport.remove(this.soapEngine);
     }
 
-    const soapEngine = new SoapEngine(this.transport, this.scheduler, this.audioContext, newScore, this);
+    const soapEngine = new SoapEngine(this.audioContext, newScore, this);
     this.transport.add(soapEngine);
 
     this.model.score = newScore;

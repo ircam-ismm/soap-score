@@ -200,7 +200,11 @@ export default class SoapScoreInterpreter {
 
     // handle all other case
     const next = this._getNextLocation(event, bar, beat);
-    const inBetweenEvent = this._hasEventBetweenLocations(bar, beat, next.bar, next.beat);
+
+    let inBetweenEvent = false;
+    if (next !== null) {
+      inBetweenEvent = this._hasEventBetweenLocations(bar, beat, next.bar, next.beat);
+    }
 
     // `dt` is the time until next event whatever it is (inbetween event, etc)
     if (event.fermata) {
@@ -250,6 +254,11 @@ export default class SoapScoreInterpreter {
     }
 
     let next = this._getNextLocation(event, bar, beat);
+
+    if (next === null) {
+      return null;
+    }
+
     // check if we have an event between the two locations
     const inBetweenEvent = this._hasEventBetweenLocations(bar, beat, next.bar, next.beat);
 
@@ -444,6 +453,11 @@ export default class SoapScoreInterpreter {
     beat = Math.floor(beat) + 1;
 
     if (beat > event.numBeats) {
+      // end of score, don't go to next bar
+      if (event.end === true) {
+        return null;
+      }
+
       bar += 1;
       beat = 1;
     }

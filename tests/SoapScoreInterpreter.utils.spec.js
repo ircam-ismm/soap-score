@@ -959,6 +959,22 @@ describe('## _getNextLocation(event, bar, beat)', () => {
       assert.deepEqual(nextLocation, { bar: 2, beat: 2 }, 'nextLocation');
     }
   });
+
+  it(`BAR 1 [4/4] TEMPO [1/4]=60
+      BAR 2 END
+  `, () => {
+    const score = `
+      BAR 1 [4/4] TEMPO [1/4]=60
+      BAR 2 END
+    `;
+    const interpreter = new SoapScoreInterpreter(score);
+
+    {
+      // pick second event which defines the end of score
+      const nextLocation = interpreter._getNextLocation(interpreter.score[1], 2, 4);
+      assert.deepEqual(nextLocation, null, 'nextLocation');
+    }
+  });
 });
 
   describe('## _hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {
