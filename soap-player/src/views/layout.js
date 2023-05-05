@@ -19,6 +19,7 @@ import '@ircam/simple-components/sc-clock.js';
 import '@ircam/simple-components/sc-progress-bar.js';
 import '@ircam/simple-components/sc-chenillard.js';
 import '@ircam/simple-components/sc-gh-link.js';
+import '@ircam/simple-components/sc-flash.js';
 
 import { renderTempo, renderTimeSignature } from './staves.js';
 
@@ -62,14 +63,20 @@ export default function layout(app) {
             }
           </div>
           <div class="beats">
-            <sc-bang
+            <sc-flash
               width="${Math.min(120, parseInt(height * headerRatio))}"
+              height="${Math.min(120, parseInt(width * headerRatio))}"
+              flashTime="100"
+              color="brown"
               .active="${live(app.model.displayActiveBeat ? app.soapEngine.beat === 1 : false)}"
-            ></sc-bang>
-            <sc-bang
+            ></sc-flash>
+            <sc-flash
               width="${Math.min(120, parseInt(height * headerRatio))}"
+              height="${Math.min(120, parseInt(width * headerRatio))}"
+              flashTime="100"
+              color="limegreen"
               .active="${live(app.model.displayActiveBeat ? app.soapEngine.beat !== 1 : false)}"
-            ></sc-bang>
+            ></sc-flash>
           </div>
 
           <div class="progress-bar">
@@ -219,6 +226,19 @@ export default function layout(app) {
           </div>
           <div style="margin: 40px 0;">
             <sc-text
+              value="son du métronome"
+              readonly
+            ></sc-text>
+            <select @change=${(e) => app.setMetroSound(e.target.value)}>
+              <option value="sine">sine</option>
+              <option value="drum">drum</option>
+              <option value="old-numerical">old-numerical</option>
+              <option value="mechanical">mechanical</option>
+              <option value="drumstick">drumstick</option>
+            </select>
+          </div>
+          <div style="margin: 40px 0;">
+            <sc-text
               width="320"
               value="labels"
               readonly
@@ -331,7 +351,7 @@ export default function layout(app) {
                 height="40"
                 label="drag'n'drop augustin"
                 @change=${(e) => {
-                  app.parseAugustin(e.detail.value[Object.keys(e.detail.value)[0]])
+                  app.parseAugustin(e.detail.value)
                 }}
               ></sc-dragndrop>
             </div>

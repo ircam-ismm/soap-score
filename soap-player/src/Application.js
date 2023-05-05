@@ -45,6 +45,7 @@ export default class Application {
         basis: '1/4',
       },
       sonificationMode: 'auto',
+      sound: 'sine',
       duration: 0,
     };
 
@@ -103,13 +104,14 @@ export default class Application {
   parseMidi(file) {
     const score = midi2soap.readString(file);
     // console.log(midi2soap.outputLineForDebug(file));
-    console.log(score);
+    // console.log(score);
     this.setScore(score);
   }
 
   parseAugustin(file) {
-    const score = augustin2soap.parse(file);
-    // console.log(score);
+    const name = Object.keys(file)[0];
+    const data = file[name].toString();
+    const score = augustin2soap.readString(data, name);
     this.setScore(score);
   }
 
@@ -218,6 +220,10 @@ export default class Application {
 
   setSonificationMode(mode) {
     this.model.sonificationMode = mode;
+  }
+
+  setMetroSound(sound) {
+    this.model.sound = sound;
   }
 
   jumpToLabel(label) {

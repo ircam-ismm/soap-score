@@ -22,7 +22,8 @@
     "marked": "^4.3.0",
     "regenerator-runtime": "^0.13.11",
     "tonal": "^4.14.0",
-    "vexflow": "4.0.3"
+    "vexflow": "4.0.3",
+    "waves-loaders": "^0.1.6"
   },
   "scripts": {
     "toc": "markdown-toc -i ../docs/SYNTAX.md",
