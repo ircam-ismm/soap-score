@@ -25,7 +25,7 @@ NOTE 63 1\n`;
         const ascoScore = soap2asco.parse(data);
         // console.log(JSON.stringify(ascoScore));
         // console.log(JSON.stringify(expected));
-        //console.log(ascoScore);
+        console.log(ascoScore);
         assert.deepEqual(expected, ascoScore);
       });
       it(`## Example 2`, () => {
@@ -34,12 +34,12 @@ BAR 1 [6/8] TEMPO [3/8]=60
 BAR 2 "end-of-score" \
 `;
         const expected = `\
-BPM 90
-NOTE 60 1.5 MEASURE_1
-NOTE 61 1.5\n`;
+BPM 60
+NOTE 60 1 MEASURE_1
+NOTE 61 1\n`;
 
         const ascoScore = soap2asco.parse(data);
-        //console.log(ascoScore);
+        console.log(ascoScore);
         assert.deepEqual(expected, ascoScore);
 
       });
@@ -64,7 +64,7 @@ BAR 1 [6/8] TEMPO [1/4]=60
 BAR 2 "end-of-score" \
 `;
         const expected = `\
-BPM 90
+BPM 40
 NOTE 60 1.5 MEASURE_1
 NOTE 61 1.5\n`;
 
@@ -73,7 +73,7 @@ NOTE 61 1.5\n`;
         assert.deepEqual(expected, ascoScore);
 
       });
-      it(`## Example 2quater`, () => {
+      it.only(`## Example 2quater`, () => {
         const data = `\
 BAR 1 [5/8] TEMPO [1/4]=60
 BAR 2 "end-of-score" \

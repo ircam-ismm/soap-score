@@ -56,8 +56,8 @@ const soap2asco = {
         infos = interpreter.getNextLocationInfos(currentBar, currentBeat);
       }
 
-      const { bar, beat, event, position, duration, dt } = infos;
-      // console.log(bar, beat, basis);
+      const { bar, beat, event, position, duration, dt, unit } = infos;
+      console.log(bar, beat, unit, duration, dt);
 
       if (event.label === 'end-of-score') {
         return output;
@@ -66,7 +66,7 @@ const soap2asco = {
 
       // check if tempo has changed
       if (event !== currentEvent && event.tempo.bpm !== currentEvent.tempo.bpm) {
-        const normalizedBPM = event.tempo.bpm * (event.tempo.basis.upper / event.tempo.basis.lower) / 0.25;
+        const normalizedBPM = event.tempo.bpm * (event.tempo.basis.upper / event.tempo.basis.lower) / (unit.upper / unit.lower);
         output += `BPM ${normalizedBPM}\n`;
       };
 
