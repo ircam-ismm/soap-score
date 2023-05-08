@@ -62,6 +62,84 @@ export default function layout(app) {
 
     ${renderAdvancedOptions ? html`
       <div class="advanced-options">
+        <h3>MTC</h3>
+
+        <div>
+          <sc-text
+            value="active MTC Receive"
+            readonly
+          ></sc-text>
+          <sc-toggle
+            @change="${(e) => e.detail.value ? app.createMTCReceive() : app.deleteMTCReceive()}"
+            ?active="${(app.mtcReceive === null) ? false : true}"
+            ?disabled=${app.mtcSend}
+          ></sc-toggle>
+          </br>
+          <sc-text
+            value="active MTC Send"
+            readonly
+          ></sc-text>
+          <sc-toggle
+            @change="${(e) => e.detail.value ? app.createMTCSend() : app.deleteMTCSend()}"
+            ?active="${(app.mtcSend === null) ? false : true}"
+            ?disabled=${app.mtcReceive}
+          ></sc-toggle>
+          </br>
+          <sc-text
+            value="input device"
+            readonly
+          ></sc-text>
+          <select
+            @change=${e => app.model.mtcParams.inputInterface = e.target.value}
+            ?disabled=${app.mtcSend || app.mtcReceive}
+          >
+            ${Object.keys(app.model.midiDeviceList.inputs).map(name => {
+              return html`<option value="${app.model.midiDeviceList.inputs[name]}" ?selected="${name === app.model.mtcParams.inputInterface}">${app.model.midiDeviceList.inputs[name]}</option>`;
+            })}
+          </select>
+          </br>
+          <sc-text
+            value="output device"
+            readonly
+          ></sc-text>
+          <select
+            @change=${e => app.model.mtcParams.outputInterface = e.target.value}
+            ?disabled=${app.mtcSend || app.mtcReceive}
+          >
+            ${Object.keys(app.model.midiDeviceList.outputs).map(name => {
+              return html`<option value="${app.model.midiDeviceList.outputs[name]}" ?selected="${name === app.model.mtcParams.outputInterface}">${app.model.midiDeviceList.outputs[name]}</option>`;
+            })}
+          </select>
+          </br>
+          <sc-text
+            value="mtc framerate"
+            readonly
+          ></sc-text>
+          <select
+            @change=${e => app.model.mtcParams.framerate = parseInt(e.target.value)}
+            ?disabled=${app.mtcSend || app.mtcReceive}
+          >
+            ${[24, 25, 30].map(framerate => {
+              return html`
+                <option value="${framerate}" ?selected="${framerate === app.model.mtcParams.framerate}">${framerate}</option>
+              `;
+            })}
+          </select>
+          </br>
+          <sc-text
+            value="max drift error in frame"
+            readonly
+          ></sc-text>
+          <input
+            @input=${e => app.model.mtcParams.maxDriftError = parseInt(Math.max(e.target.value,0))}
+            value="${app.model.mtcParams.maxDriftError}"
+            type="number"
+            min="0"
+            ?disabled=${app.mtcSend || app.mtcReceive}
+          ></input>
+        </div>
+
+
         <h3>Import</h3>
 
         <div class="dragndrop">
@@ -279,12 +357,21 @@ export default function layout(app) {
 
           <div class="transport-control">
             <div style="margin-bottom: 20px;">
+              ${!app.mtcReceive ?
+              html`
               <sc-transport
                 buttons="[play, stop]"
                 width="100"
                 state="${app.getTransportState()}"
                 @change=${e => app.setTransportState(e.detail.value)}
-              ></sc-transport>
+              ></sc-transport>`
+              :
+              html`
+              <sc-transport
+                buttons="[play, stop]"
+                width="100"
+                state="${app.getTransportState()}"
+              ></sc-transport>`}
             </div>
             <div>
               <sc-text

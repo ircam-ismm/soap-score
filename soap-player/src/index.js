@@ -16,6 +16,8 @@ for (let name in fixtures) {
   }
 }
 
+import { JZZ } from 'jzz';
+
 console.info('> self.crossOriginIsolated', self.crossOriginIsolated);
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -25,7 +27,7 @@ const getTimeFunction = () => audioContext.currentTime;
 const scheduler = new Scheduler(getTimeFunction);
 
 let defaultScore = `\
-BAR 1 [4/4] TEMPO [1/4]=120
+BAR 1 [4/4] TEMPO [1/4]=120 \
 `;
 
 const searchParams = new URLSearchParams(window.location.search);
@@ -41,6 +43,14 @@ if (searchParams.has('score')) {
   const syntaxDoc = await res.text();
 
   const application = new Application(audioContext, getTimeFunction, scheduler, defaultScore, scoreList, syntaxDoc);
+
+  JZZ.requestMIDIAccess().then((webmidi) => {
+    application.midiAccessIsSuccess(webmidi);
+  }, () => {
+    application.midiAccessIsFailed();
+  });
+  JZZ.close();
+
 }());
 
 
