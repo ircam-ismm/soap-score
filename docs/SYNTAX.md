@@ -56,7 +56,7 @@ It's also possible to define a bar with compound beats, such as a  `[6/8]` signa
 ![./images/image9.png](./images/image9.png)
 
 ```
-BAR 1 [6/8] TEMPO [3/4]=60
+BAR 1 [6/8] TEMPO [3/8]=60
 ```
 
 ### Changing signatures and tempi
@@ -82,7 +82,7 @@ BAR 3 TEMPO [1/4]=50
 
 ### Bars with absolute duration
 
-You can declare bar without absolute duration too, in such cases the bar are considered to contain only one beat:
+You can declare bars with absolute duration too, in such cases the bar are considered to contain only one beat:
 
 ![./images/image14.png](./images/image14.png)
 
