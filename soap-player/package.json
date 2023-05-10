@@ -18,6 +18,7 @@
     "@ircam/simple-components": "^2.2.2",
     "audiobuffer-to-wav": "^1.0.0",
     "core-js": "^3.26.1",
+    "jzz": "^1.6.1",
     "lit": "^2.4.1",
     "markdown-toc": "^1.2.0",
     "marked": "^4.3.0",

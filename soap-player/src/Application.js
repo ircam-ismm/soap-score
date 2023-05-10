@@ -1,5 +1,5 @@
 import { render } from 'lit';
-import { Transport } from '@ircam/sc-scheduling';
+import { Transport, MTCSend, MTCReceive } from '@ircam/sc-scheduling';
 import toWav from 'audiobuffer-to-wav';
 
 import SoapEngine from './SoapEngine.js';
@@ -50,7 +50,23 @@ export default class Application {
       sonificationMode: 'auto',
       sound: 'sine',
       duration: 0,
+      mtcParams: {
+        framerate: 25,
+        ticksPerFrame: 4,
+        maxDriftError: 8,
+        lookAhead: 30,
+        inputInterface: '',
+        outputInterface: '',
+      },
+      midiDeviceList: {
+        inputs: [],
+        outputs: [],
+      },
     };
+
+    // for MTC
+    this.mtcSend = null; // Class
+    this.mtcReceive = null; // Class
 
     this.getTransportPosition = this.getTransportPosition.bind(this);
     this.getPositionInAbsoluteEvent = this.getPositionInAbsoluteEvent.bind(this);
@@ -102,6 +118,67 @@ export default class Application {
     }
 
     this.render();
+  }
+
+  createMTCSend() {
+    this.setTransportState('stop');
+    this.mtcSend = new MTCSend(this.getTime, this.transport, this.model.mtcParams);
+    this.transport.add(this.mtcSend);
+    this.render();
+  }
+
+  deleteMTCSend() {
+    this.transport.remove(this.mtcSend);
+    this.mtcSend.closeEngine();
+    this.mtcSend = null;
+    this.setTransportState('stop');
+  }
+
+  createMTCReceive() {
+    this.setTransportState('stop');
+
+    this.mtcReceive = new MTCReceive(this.getTime, this.transport, this.model.mtcParams, {
+      onStart: (time) => {
+        this.transport.cancel(time);
+        this.transport.play(time);
+      },
+      onSeek: (time, position) => {
+        // seek is asap
+        this.transport.cancel(time);
+        this.transport.pause(time);
+        this.transport.seek(time, position);
+      },
+      onPause: (time) => {
+        this.transport.pause(time);
+      }
+    });
+    this.transport.add(this.mtcReceive);
+    this.render();
+  }
+
+  deleteMTCReceive() {
+    this.transport.remove(this.mtcReceive);
+    this.mtcReceive.closeEngine();
+    this.mtcReceive = null;
+    this.setTransportState('stop');
+  }
+
+  midiAccessIsSuccess(webmidi) {
+    webmidi.outputs.forEach(port => {
+      this.model.midiDeviceList.outputs.push(port.name);
+    });
+    webmidi.inputs.forEach(port => {
+      this.model.midiDeviceList.inputs.push(port.name);
+    });
+
+    this.model.mtcParams.inputInterface = this.model.midiDeviceList.inputs[0];
+    this.model.mtcParams.outputInterface = this.model.midiDeviceList.outputs[0];
+
+    this.render();
+  }
+
+  midiAccessIsFailed() {
+    throw new Error("midi access failed");
   }
 
   parseMidi(file) {
