@@ -1,5 +1,9 @@
 import { nothing } from 'lit';
-import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
+import { Renderer, Stave, StaveNote, Voice, Formatter, StaveModifier, TextNote } from 'vexflow';
+
+function isPowerOfTwo(n) {
+  return (Math.log(n)/Math.log(2)) % 1 === 0;
+}
 
 export function renderTempo(soapEngine) {
   if (!soapEngine.current) {
@@ -29,6 +33,11 @@ export function renderTempo(soapEngine) {
   const context = renderer.getContext();
 
   const stave = new Stave(-10, 10, 0);
+
+  if (isPowerOfTwo(duration) === false) {
+    stave.setText(basis.lower, StaveModifier.Position.ABOVE, { shift_x:9, shift_y:0, justification: TextNote.Justification.LEFT});
+    duration = 4;
+  }
 
   stave.setTempo({ duration, dots, bpm }, 0);
   stave.setContext(context).draw();
