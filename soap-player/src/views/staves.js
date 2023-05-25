@@ -29,14 +29,14 @@ export function renderTempo(soapEngine) {
   const div = document.createElement('div');
 
   const renderer = new Renderer(div, Renderer.Backends.SVG);
-  renderer.resize(80, 40);
+  renderer.resize(80, 60);
   const context = renderer.getContext();
 
   const stave = new Stave(-10, 10, 0);
 
   if (isPowerOfTwo(duration) === false) {
-    stave.setText(basis.lower, StaveModifier.Position.ABOVE, { shift_x:9, shift_y:0, justification: TextNote.Justification.LEFT});
-    duration = 4;
+    stave.setText(`/${basis.lower}`, StaveModifier.Position.BELOW, { shift_x:20, shift_y:-76, justification: TextNote.Justification.LEFT});
+    duration = 1;
   }
 
   stave.setTempo({ duration, dots, bpm }, 0);

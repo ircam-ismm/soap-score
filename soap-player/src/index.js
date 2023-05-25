@@ -27,7 +27,7 @@ const getTimeFunction = () => audioContext.currentTime;
 const scheduler = new Scheduler(getTimeFunction);
 
 let defaultScore = `\
-BAR 1 [4/4] TEMPO [1/4]=120 \
+BAR 1 [4/4] TEMPO [1/7]=120 \
 `;
 
 const searchParams = new URLSearchParams(window.location.search);
