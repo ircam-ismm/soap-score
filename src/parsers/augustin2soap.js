@@ -62,7 +62,11 @@ function _getEventAtLocation(bar, beat, events) {
   let event = null;
 
   for (let i = 0; i < events.length; i++) {
-    event = events[i];
+    if (events[i].signature || events[i].tempo) {
+      event = events[i];
+    } else {
+      // console.log("event is ignored because no tempo or no signature");
+    }
 
     if (events[i + 1]) {
       let next = events[i + 1];
@@ -81,6 +85,7 @@ function getBarBeatFromDuration(bar, beat, duration, events) {
 
   const { signature: beginSignature, tempo } = _getEventAtLocation(bar, beat, events);
   // on calcule la durée dans l'unitée de départ
+  // console.log(beginSignature);
   const numBasisInBar = (beginSignature.upper / beginSignature.lower) / (tempo.basis.upper / tempo.basis.lower);
   const normRelBeat = duration / numBasisInBar;
 
@@ -122,8 +127,19 @@ function pushLineInEventList(events, lineEventList) {
 
     let { bar:endBar, beat:endBeat, signature:endSignature } = getBarBeatFromDuration(startBar, startBeat, duration, events);
 
-    endBeat = Math.round(endBeat*10)/10;
-    startBeat = Math.round(startBeat*10)/10;
+    events.forEach((e) => {
+      if (e.bar === endBar && e.beat === endBeat && e.tempo) {
+        const newEndPos = getBarBeatFromDuration(endBar, endBeat, -0.01, events);
+        endBar = newEndPos.bar;
+        endBeat = newEndPos.beat;
+        endSignature = newEndPos.signature;
+      }
+    });
+
+    endBeat = Math.round(endBeat*100)/100;
+    startBeat = Math.round(startBeat*100)/100;
+
+    // console.log(endBar, endBeat, endSignature);
 
     // adding start curve event
     events.push({
@@ -403,12 +419,15 @@ const augustin2soap = {
       }
     });
     // normalize score before tempo curve
+
     // console.log(events);
-    events = parseScore(writeScore(events));
     events = pushLineInEventList(events, lineEventList);
+    // console.log(events);
     // sort events
     events = sortEvents(events);
     // normalize score after tempo curve
+    // console.log(events);
+
     events = parseScore(writeScore(events));
     const output = writeScore(events);
     // console.log(output);
