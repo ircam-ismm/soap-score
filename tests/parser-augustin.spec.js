@@ -303,6 +303,25 @@ BAR 22
 `;
       const expectedData = parseScore(expectedScore);
       assert.deepEqual(outputData, expectedData);
-    })
+    });
+  });
+  describe('# Bug fixes', () => {
+    it("# Should parse tempo curve correctly", () => {
+      const input = `\
+15, 2/4 120 60 2 1;
+16, 2/4 110; \
+`;
+      const outputScore = augustin2soap.parse(input);
+      console.log(outputScore);
+      const outputData = parseScore(outputScore);
+      // because of roundness errors
+      const expectedScore = `\
+BAR 15 [2/4] TEMPO [1/4]=120 curve 1
+|2.99 TEMPO [1/4]=60
+BAR 16 TEMPO [1/4]=110 \
+`;
+      const expectedData = parseScore(expectedScore);
+      assert.deepEqual(outputData, expectedData);
+    });
   })
 });

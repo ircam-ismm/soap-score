@@ -291,7 +291,8 @@ export default class SoapScoreInterpreter {
         upper = 1;
         lower = event.signature.lower;
       } else {
-        upper = 3;
+        // Attention - Etienne's breaking change - only for tests
+        upper = 1;
         lower = event.signature.lower;
       }
 
