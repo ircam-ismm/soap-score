@@ -10,21 +10,22 @@ export const basicExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 60,
       curve: null,
@@ -42,21 +43,22 @@ export const basicExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '6/8',
-      type: 'compound',
+      value: '[6/8]',
       upper: 6,
       lower: 8,
-      additive: []
+      defaultUnits: '[3/8][3/8]',
+    },
+    units: {
+      value: '[3/8][3/8]',
+      upper: [3, 3],
+      lower: 8,
+      numBeats: 2,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '3/8',
-        type: 'compound',
+        value: '[3/8]',
         upper: 3,
         lower: 8,
-        additive: []
       },
       bpm: 60,
       curve: null,
@@ -78,21 +80,22 @@ export const basicExample3Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -105,21 +108,22 @@ export const basicExample3Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '6/4',
-      type: 'simple',
+      value: '[6/4]',
       upper: 6,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1, 1, 1],
+      lower: 4,
+      numBeats: 6,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -132,21 +136,22 @@ export const basicExample3Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -167,21 +172,22 @@ export const basicExample4Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -194,21 +200,22 @@ export const basicExample4Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 50,
       curve: null,
@@ -225,21 +232,22 @@ export const basicExample5Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '3/16',
-      type: 'irregular',
+      value: '[3/16]',
       upper: 3,
       lower: 16,
-      additive: []
+      defaultUnits: '[3/16]',
+    },
+    units: {
+      value: '[3/16]',
+      upper: [3],
+      lower: 16,
+      numBeats: 1,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/16',
-        type: 'irregular',
+        value: '[1/16]',
         upper: 1,
         lower: 16,
-        additive: []
       },
       bpm: 60,
       curve: null,
@@ -264,6 +272,7 @@ export const absExemple1Data = [
     beat: 1,
     duration: 10,
     signature: null,
+    units: null,
     tempo: null,
     fermata: null,
     label: null
@@ -273,6 +282,7 @@ export const absExemple1Data = [
     beat: 1,
     duration: 7.5,
     signature: null,
+    units: null,
     tempo: null,
     fermata: null,
     label: null
@@ -292,21 +302,22 @@ export const absExemple2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -317,24 +328,25 @@ export const absExemple2Data = [
   {
     bar: 2,
     beat: 1,
-    // we keep signature and temp, it is just ignored as duration is set
     duration: 10,
+    // we keep signature, units and tempo, they just ignored if duration is set
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -347,21 +359,22 @@ export const absExemple2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '3/4',
-      type: 'simple',
+      value: '[3/4]',
       upper: 3,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4]',
+      upper: [1, 1, 1],
+      lower: 4,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -385,21 +398,22 @@ export const absExemple3Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -413,21 +427,22 @@ export const absExemple3Data = [
     // we keep signature and temp, it is just ignored as duration is set
     duration: 10,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -441,21 +456,21 @@ export const absExemple3Data = [
     // we keep signature and temp, it is just ignored as duration is set
     duration: 10,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
+      lower: 4,defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
       lower: 4,
-      additive: []
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -468,21 +483,22 @@ export const absExemple3Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '3/4',
-      type: 'simple',
+      value: '[3/4]',
       upper: 3,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4]',
+      upper: [1, 1, 1],
+      lower: 4,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -505,21 +521,22 @@ export const labelExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -532,21 +549,22 @@ export const labelExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -567,21 +585,22 @@ export const labelExample1bisData = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -594,21 +613,22 @@ export const labelExample1bisData = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -632,21 +652,22 @@ export const labelExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -659,21 +680,22 @@ export const labelExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '3/4',
-      type: 'simple',
+      value: '[3/4]',
       upper: 3,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4]',
+      upper: [1, 1, 1],
+      lower: 4,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -686,21 +708,22 @@ export const labelExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '3/4',
-      type: 'simple',
+      value: '[3/4]',
       upper: 3,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4]',
+      upper: [1, 1, 1],
+      lower: 4,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -726,21 +749,22 @@ export const subExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -753,21 +777,22 @@ export const subExample1Data = [
     beat: 3,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -788,21 +813,22 @@ export const subExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -815,21 +841,22 @@ export const subExample2Data = [
     beat: 4.5,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -859,21 +886,22 @@ export const subTips1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -903,21 +931,22 @@ export const subTips2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -943,21 +972,22 @@ export const fermataExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -970,21 +1000,22 @@ export const fermataExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -997,33 +1028,31 @@ export const fermataExample1Data = [
     beat: 3,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
     },
     fermata: {
       basis: {
-        empty: false,
-        name: '1/2',
-        type: 'simple',
+        value: '[1/2]',
         upper: 1,
         lower: 2,
-        additive: []
       },
       absDuration: 10,
       relDuration: null,
@@ -1036,21 +1065,22 @@ export const fermataExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -1072,21 +1102,22 @@ export const fermataExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -1099,33 +1130,31 @@ export const fermataExample2Data = [
     beat: 3,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
     },
     fermata: {
       basis: {
-        empty: false,
-        name: '2/4',
-        type: 'simple',
+        value: '[2/4]',
         upper: 2,
         lower: 4,
-        additive: []
       },
       absDuration: null,
       relDuration: null,
@@ -1138,21 +1167,22 @@ export const fermataExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -1174,21 +1204,22 @@ export const fermataExample3Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -1201,33 +1232,31 @@ export const fermataExample3Data = [
     beat: 2,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
     },
     fermata: {
       basis: {
-        empty: false,
-        name: '3/8',
-        type: 'compound',
+        value: '[3/8]',
         upper: 3,
         lower: 8,
-        additive: []
       },
       absDuration: null,
       relDuration: 2,
@@ -1240,21 +1269,22 @@ export const fermataExample3Data = [
     beat: 3.5,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -1280,21 +1310,22 @@ export const composedExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '3+2+2/8',
-      type: 'irregular',
+      value: '[3+2+2/8]',
       upper: 7,
       lower: 8,
-      additive: [3, 2, 2],
+      defaultUnits: '[3/8][2/8][2/8]',
+    },
+    units: {
+      value: '[3/8][2/8][2/8]',
+      upper: [3, 2, 2],
+      lower: 8,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '3/8',
-        type: 'compound',
+        value: '[3/8]',
         upper: 3,
         lower: 8,
-        additive: [],
       },
       bpm: 60,
       curve: null,
@@ -1307,21 +1338,22 @@ export const composedExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '2+3+2/8',
-      type: 'irregular',
+      value: '[2+3+2/8]',
       upper: 7,
       lower: 8,
-      additive: [2, 3, 2],
+      defaultUnits: '[2/8][3/8][2/8]',
+    },
+    units: {
+      value: '[2/8][3/8][2/8]',
+      upper: [2, 3, 2],
+      lower: 8,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '3/8',
-        type: 'compound',
+        value: '[3/8]',
         upper: 3,
         lower: 8,
-        additive: [],
       },
       bpm: 60,
       curve: null,
@@ -1334,21 +1366,22 @@ export const composedExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '2+2+3/8',
-      type: 'irregular',
+      value: '[2+2+3/8]',
       upper: 7,
       lower: 8,
-      additive: [2, 2, 3],
+      defaultUnits: '[2/8][2/8][3/8]',
+    },
+    units: {
+      value: '[2/8][2/8][3/8]',
+      upper: [2, 2, 3],
+      lower: 8,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '3/8',
-        type: 'compound',
+        value: '[3/8]',
         upper: 3,
         lower: 8,
-        additive: [],
       },
       bpm: 60,
       curve: null,
@@ -1373,21 +1406,22 @@ export const tempoCurveExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1400,21 +1434,22 @@ export const tempoCurveExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: {
@@ -1431,21 +1466,22 @@ export const tempoCurveExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -1470,21 +1506,22 @@ export const tempoCurveExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 60,
       curve: {
@@ -1501,21 +1538,22 @@ export const tempoCurveExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '3/4',
-      type: 'simple',
+      value: '[3/4]',
       upper: 3,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4]',
+      upper: [1, 1, 1],
+      lower: 4,
+      numBeats: 3,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 60,
       curve: {
@@ -1532,21 +1570,22 @@ export const tempoCurveExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '6/8',
-      type: 'compound',
+      value: '[6/8]',
       upper: 6,
       lower: 8,
-      additive: []
+      defaultUnits: '[3/8][3/8]',
+    },
+    units: {
+      value: '[3/8][3/8]',
+      upper: [3, 3],
+      lower: 8,
+      numBeats: 2,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '3/8',
-        type: 'compound',
+        value: '[3/8]',
         upper: 3,
         lower: 8,
-        additive: []
       },
       bpm: 60,
       curve: {
@@ -1563,21 +1602,22 @@ export const tempoCurveExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '2/4',
-      type: 'simple',
+      value: '[2/4]',
       upper: 2,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4]',
+      upper: [1, 1],
+      lower: 4,
+      numBeats: 2,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 120,
       curve: null,
@@ -1591,32 +1631,33 @@ export const tempoCurveExample2Data = [
 // # Equivalences de tempo
 // -----------------------------------------------------
 
-export const tempoEquivalencyExample1Score = `\
+export const tempoEquivalenceExample1Score = `\
 BAR 1 [4/4] TEMPO [1/4]=80
 BAR 2 [6/8] TEMPO [3/8]=[1/4] \
 `;
 
-export const tempoEquivalencyExample1Data = [
+export const tempoEquivalenceExample1Data = [
   {
     bar: 1,
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1629,21 +1670,22 @@ export const tempoEquivalencyExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '6/8',
-      type: 'compound',
+      value: '[6/8]',
       upper: 6,
       lower: 8,
-      additive: []
+      defaultUnits: '[3/8][3/8]',
+    },
+    units: {
+      value: '[3/8][3/8]',
+      upper: [3, 3],
+      lower: 8,
+      numBeats: 2,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '3/8',
-        type: 'compound',
+        value: '[3/8]',
         upper: 3,
         lower: 8,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1669,21 +1711,22 @@ export const endScoreExample1Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1697,21 +1740,22 @@ export const endScoreExample1Data = [
     end: true,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1733,21 +1777,22 @@ export const endScoreExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1760,21 +1805,22 @@ export const endScoreExample2Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1788,21 +1834,22 @@ export const endScoreExample2Data = [
     end: true,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 80,
       curve: null,
@@ -1822,21 +1869,22 @@ export const endScoreExample3Data = [
     beat: 1,
     duration: null,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 60,
       curve: null,
@@ -1850,21 +1898,22 @@ export const endScoreExample3Data = [
     duration: null,
     end: true,
     signature: {
-      empty: false,
-      name: '4/4',
-      type: 'simple',
+      value: '[4/4]',
       upper: 4,
       lower: 4,
-      additive: []
+      defaultUnits: '[1/4][1/4][1/4][1/4]',
+    },
+    units: {
+      value: '[1/4][1/4][1/4][1/4]',
+      upper: [1, 1, 1, 1],
+      lower: 4,
+      numBeats: 4,
     },
     tempo: {
       basis: {
-        empty: false,
-        name: '1/4',
-        type: 'simple',
+        value: '[1/4]',
         upper: 1,
         lower: 4,
-        additive: []
       },
       bpm: 60,
       curve: null,

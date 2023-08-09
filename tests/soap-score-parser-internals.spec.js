@@ -141,12 +141,16 @@ BAR [4/4]
           beat: 1,
           duration: null,
           signature: {
-            empty: false,
-            name: '4/4',
-            type: 'simple',
+            value: '[4/4]',
             upper: 4,
             lower: 4,
-            additive: []
+            defaultUnits: '[1/4][1/4][1/4][1/4]',
+          },
+          units: {
+            value: '[1/4][1/4][1/4][1/4]',
+            upper: [1, 1, 1, 1],
+            lower: 4,
+            numBeats: 4,
           },
           source: 'BAR 1 [4/4]'
         }];
@@ -162,12 +166,16 @@ BAR [4/4]
           beat: 1,
           duration: null,
           signature: {
-            empty: false,
-            name: '3/4',
-            type: 'simple',
+            value: '[3/4]',
             upper: 3,
             lower: 4,
-            additive: []
+            defaultUnits: '[1/4][1/4][1/4]',
+          },
+          units: {
+            value: '[1/4][1/4][1/4]',
+            upper: [1, 1, 1],
+            lower: 4,
+            numBeats: 3,
           },
           source: 'BAR 2 [3/4]'
         }];
@@ -175,7 +183,7 @@ BAR [4/4]
       }
 
       {
-        const score = `BAR 19 [2s500ms]`;
+        const score = `BAR 19 2s500ms`;
         const ir = getEventList(score);
         const expected = [{
           type: 'BAR',
@@ -183,7 +191,8 @@ BAR [4/4]
           beat: 1,
           duration: 2.5,
           signature: null,
-          source: 'BAR 19 [2s500ms]'
+          units: null,
+          source: 'BAR 19 2s500ms',
         }];
         assert.deepEqual(ir, expected);
       }
@@ -199,12 +208,16 @@ BAR [4/4]
           beat: 1,
           duration: null,
           signature: {
-            empty: false,
-            name: '2+2+3/8',
-            type: 'irregular',
+            value: '[2+2+3/8]',
             upper: 7,
             lower: 8,
-            additive: [2, 2, 3],
+            defaultUnits: '[2/8][2/8][3/8]',
+          },
+          units: {
+            value: '[2/8][2/8][3/8]',
+            upper: [2, 2, 3],
+            lower: 8,
+            numBeats: 3,
           },
           source: 'BAR 12 [2+2+3/8] |1 LABEL "cou cou" |2 TEMPO [1/8]=60 |3 FERMATA [1/4]=2s',
         },
@@ -221,14 +234,11 @@ BAR [4/4]
           beat: 2,
           bpm: 60,
           basis: {
-            empty: false,
-            name: '1/8',
-            type: 'irregular',
+            value: '[1/8]',
             upper: 1,
             lower: 8,
-            additive: [],
           },
-          unitEquivalence: false,
+          basisEquivalence: false,
           source: 'BAR 12 [2+2+3/8] |1 LABEL "cou cou" |2 TEMPO [1/8]=60 |3 FERMATA [1/4]=2s',
         },
         {
@@ -237,12 +247,9 @@ BAR [4/4]
           beat: 3,
           absDuration: 2,
           basis: {
-            empty: false,
-            name: '1/4',
-            type: 'simple',
+            value: '[1/4]',
             upper: 1,
             lower: 4,
-            additive: [],
           },
           source: 'BAR 12 [2+2+3/8] |1 LABEL "cou cou" |2 TEMPO [1/8]=60 |3 FERMATA [1/4]=2s',
         },

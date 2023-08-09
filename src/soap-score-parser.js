@@ -314,7 +314,7 @@ export function getEventList(score) {
 
             event.bpm = lastBPM * tempoRatio;
             event.basis = tempoBasisSignature(newUnitEq);
-            event.basisEquivalency = true;
+            event.basisEquivalence = true;
 
           // normal syntax
           } else if (tempoSyntaxRegexp.test(part[2])) {
@@ -322,7 +322,7 @@ export function getEventList(score) {
 
             event.bpm = parseFloat(bpm);
             event.basis = tempoBasisSignature(basis);
-            event.basisEquivalency = false;
+            event.basisEquivalence = false;
           } else {
             throw new Error(`Invalid syntax for TEMPO signature in line: ${line}`)
           }
@@ -511,7 +511,7 @@ export function parseScore(score) {
           for (let j = index + 1; j < ir.length; j++) {
             // tempo definition with unit equivalence, e.g. [3/8]=[1/4], are not
             // considered as a curve end
-            if (ir[j].type === 'TEMPO' && ir[j].basisEquivalency === false) {
+            if (ir[j].type === 'TEMPO' && ir[j].basisEquivalence === false) {
               nextTempoEvent = ir[j];
               break;
             }
@@ -530,7 +530,7 @@ export function parseScore(score) {
 
           currentEvent.tempo.curve = { start, end, exponent };
         // reset curve if needed, unit equivalencies are allowed inside curves
-        } else if (event.basisEquivalency === false) {
+        } else if (event.basisEquivalence === false) {
           currentEvent.tempo.curve = null;
         }
         break;

@@ -225,8 +225,8 @@ describe(`> soap.parseScore(score)`, () => {
 
   describe(`# Equivalences de tempo`, () => {
     it(`## Example 1`, () => {
-      const score = fixtures.tempoEquivalencyExample1Score;
-      const expected = fixtures.tempoEquivalencyExample1Data;
+      const score = fixtures.tempoEquivalenceExample1Score;
+      const expected = fixtures.tempoEquivalenceExample1Data;
       const data = parseScore(score);
 
       //console.log(score);
