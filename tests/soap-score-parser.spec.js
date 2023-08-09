@@ -261,7 +261,7 @@ describe(`> soap.parseScore(score)`, () => {
   });
 
   describe('# Contraints', () => {
-    it(`#@ should throw if given score is not a string`, () => {
+    it(`## should throw if given score is not a string`, () => {
       let errored = false;
 
       try {

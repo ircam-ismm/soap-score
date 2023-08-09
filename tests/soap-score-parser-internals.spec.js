@@ -1,65 +1,8 @@
 import { assert } from 'chai';
 
-import {
-  getEventList,
-  formatScore,
-  // regexps
-  signatureRegexp,
-  absDurationRegexp,
-  bracketDefaultRegExp,
-  tempoEquivalenceRegexp,
-  tempoSyntaxRegexp,
-  fermataSyntaxRegexp,
-} from '../src/soap-score-parser.js';
+import { getEventList, formatScore } from '../src/soap-score-parser.js';
 
 describe('> soap parseScore internals', () => {
-  describe('[internal] test regexps', () => {
-    it('should test signature syntax properly', () => {
-      assert.equal(signatureRegexp.test('[3/4]'), true);
-      assert.equal(signatureRegexp.test('[2+3/4]'), true);
-      assert.equal(signatureRegexp.test('[2+2+3/4]'), true);
-    });
-
-    it('should test absolute durations syntax properly', () => {
-      assert.equal(absDurationRegexp.test('3s'), true);
-      assert.equal(absDurationRegexp.test('2m3s'), true);
-      assert.equal(absDurationRegexp.test('2h3m4s500ms'), true);
-      assert.equal(absDurationRegexp.test('2h3m4s500'), true);
-
-      assert.equal(absDurationRegexp.test('4t'), false);
-      assert.equal(absDurationRegexp.test('2b3m'), false);
-    });
-
-    it('should catch timing syntax properly', () => {
-      // this is a catch that should be used after the valid syntax regexps
-      assert.equal(bracketDefaultRegExp.test('[12/ldk qmzdk]'), true);
-    });
-
-    it('should test tempo normal syntax properly', () => {
-      assert.equal(tempoSyntaxRegexp.test('[1/2]=60'), true);
-      assert.equal(tempoSyntaxRegexp.test('[1/2]=60.2'), true);
-      assert.equal(tempoEquivalenceRegexp.test('[1/2]=>42'), false);
-      assert.equal(tempoEquivalenceRegexp.test('coucou=38'), false);
-    });
-
-    it('should test tempo equivalence syntax properly', () => {
-      assert.equal(tempoEquivalenceRegexp.test('[1/2]=[1/8]'), true);
-      assert.equal(tempoEquivalenceRegexp.test('[1/2]=>[1/8]'), false);
-      assert.equal(tempoEquivalenceRegexp.test('coucou>[1/8]'), false);
-    });
-
-    it('should test fermata syntax properly', () => {
-      assert.equal(fermataSyntaxRegexp.test('[1/2]=10s'), true);
-      assert.equal(fermataSyntaxRegexp.test('[1/2]=10.5s'), true);
-      assert.equal(fermataSyntaxRegexp.test('[1/2]=2*'), true);
-      assert.equal(fermataSyntaxRegexp.test('[1/2]=?'), true);
-      assert.equal(fermataSyntaxRegexp.test('[1/2]=3x'), false);
-      assert.equal(fermataSyntaxRegexp.test('[1/2]=>?'), false);
-      assert.equal(fermataSyntaxRegexp.test('coucou=38'), false);
-      assert.equal(fermataSyntaxRegexp.test(undefined), false);
-    });
-  });
-
   describe('[internal] formatScore(score)', () => {
     it('should clean the given score', () => {
       // the score is invalid but ok for testing

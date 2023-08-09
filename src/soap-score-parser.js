@@ -1,18 +1,23 @@
-// import fs from 'node:fs';
 import { isString } from '@ircam/sc-utils';
-import { TimeSignature } from 'tonal';
-import parseDuration from 'parse-duration';
 import cloneDeep from 'lodash.clonedeep';
 
-const splitWordsRegexp = / +(?=(?:(?:[^"]*"){2})*[^"]*$)/g;
-// @note - must accept composed signature 2+3+2/8
-export const signatureRegexp = /^\[([0-9\+]+)\/([0-9]+)\]$/;
-export const absDurationRegexp = /^([0-9hms\.]+)$/;
-export const bracketDefaultRegExp = /^\[.*\]$/;
-export const tempoEquivalenceRegexp = /^\[([0-9]+\/[0-9]+)\]\=\[([0-9]+\/[0-9]+)\]/;
-export const tempoSyntaxRegexp = /^\[([0-9]+\/[0-9]+)\]\=([0-9\.]+)$/;
-export const fermataSyntaxRegexp = /^\[([0-9]+\/[0-9]+)\]\=([0-9hms\?\*\.]+)$/;
+import {
+  splitWordsRegexp,
+  barSignatureRegexp,
+  absDurationRegexp,
+  unitsSignatureRegexp,
+  tempoBasisSignatureRegexp,
+  tempoEquivalenceRegexp,
+  tempoSyntaxRegexp,
+  fermataSyntaxRegexp,
+} from '../src/utils/regexp.js';
 
+import {
+  barSignature,
+  barDuration,
+  unitsSignature,
+  tempoBasisSignature,
+} from '../src/utils/time-signatures.js'
 
 /**
  * Format user-friendly syntax to verbose syntax
@@ -137,10 +142,11 @@ export function formatScore(score) {
  *     bar: Integer=1,
  *     beat: Float=1,
  *
- *     signature: null || TimeSignature {
+ *     signature: null || BarSignature {
  *       upper: Number=4
  *       lower: Number=4
  *     },
+ *     units: null || UnitsSignature {}
  *     duration: null,
  *   }
  *   {
@@ -148,7 +154,7 @@ export function formatScore(score) {
  *     bar: Integer=1,
  *     beat: Float=1,
  *
- *     basis: null || TimeSignature {
+ *     basis: null || TempoBasisSignature {
  *       upper: Number=1
  *       lower: Number=4
  *     },
@@ -173,6 +179,7 @@ export function formatScore(score) {
 export function getEventList(score) {
   const formattedScore = formatScore(score);
 
+  // each bar is defined on 1 line now
   const lines = formattedScore.split('\n');
   const ir = [];
 
@@ -182,6 +189,9 @@ export function getEventList(score) {
       .map(parts => parts.trim())
       .map(parts => parts.split(splitWordsRegexp).map(word => word.trim()));
 
+    // first element is the bar definition
+    // e.g.: BAR 1 [4/4]
+    // @todo - handle units, e.g. BAR 1 [6/8] UNITS [1/6]
     const bar = parts.shift();
 
     // parse bar
@@ -190,38 +200,51 @@ export function getEventList(score) {
       bar: null,
       beat: 1,
       signature: null,
+      units: null,
       duration: null,
       // for usage in error messages
       source: line,
     };
 
-    // first index is bar number
-    const barNumber = bar[1];
-    if (barNumber === undefined) {
-      throw new Error(`Invalid syntax for BAR in line, no bar number given: ${line}`);
-    }
-
-    const currentBar = parseInt(barNumber);
+    // > index 1 must be bar number
+    const currentBar = parseInt(bar[1]);
 
     if (Number.isNaN(currentBar) || currentBar < 1) {
-      throw new Error(`Invalid syntax for BAR in line, number given is not a number or is below 1`);
+      throw new Error(`Invalid syntax for BAR in line "${line}", bar number is not a number or is below 1`);
     }
 
     event.bar = currentBar;
 
-    // second index (if present) is duration or signature
+    // > index 2, if present is duration or signature
     if (bar[2] !== undefined) {
-      if (signatureRegexp.test(bar[2])) {
-        const sig = bar[2].slice(1, -1);
-        event.signature = TimeSignature.get(sig);
+      if (barSignatureRegexp.test(bar[2])) {
+        event.signature = barSignature(bar[2]);
+      } else if (absDurationRegexp.test(bar[2])) {
+        event.duration = barDuration(bar[2]);
       } else {
-        event.duration = parseDuration(bar[2], 's');
+        throw new Error(`Invalid syntax for BAR in line "${line}", invalid signature or duration`);
+      }
+    } else if (index === 0) {
+      throw new Error(`Invalid syntax for BAR in line "${line}", first bar must define a signature or a duration`);
+    }
+
+    // @todo - handle UNITS syntax here to override defaults
+    if (event.signature !== null) {
+      const defaultUnits = event.signature.defaultUnits;
+      event.units = unitsSignature(defaultUnits);
+
+      // sanity check units against signature
+      const barValue = event.signature.upper / event.signature.lower;
+      const unitsValue = event.units.upper.reduce((acc, value) => acc + value, 0) / event.units.lower;
+
+      if (Math.abs(barValue - unitsValue) > 1e-6) {
+        throw new Error(`Invalid units definition, bar and units are not consistent`);
       }
     }
 
     ir.push(event);
 
-    // parse other events
+    // parse other events for this bar
     parts.forEach(part => {
       const event = {
         type: part[1],
@@ -243,22 +266,20 @@ export function getEventList(score) {
 
           if (fermataSyntaxRegexp.test(value)) {
             const parts = value.split('=');
-            event.basis = TimeSignature.get(parts[0].slice(1, -1));
+            event.basis = tempoBasisSignature(parts[0]);
 
             if (parts[1] === '?') {
               event.suspended = true;
             } else if (parts[1].endsWith('*')) {
-              event.relDuration = parseFloat(parts[1].slice(0, -1));
+              event.relDuration = parseFloat(parts[1].replace('*', ''));
             } else {
-              event.absDuration = parseDuration(parts[1], 's');
+              event.absDuration = barDuration(parts[1]);
             }
           } else {
             throw new Error(`Invalid syntax for FERMATA in line: ${line}`);
           }
           break;
         case 'TEMPO':
-          // @todo parse tempo curve
-
           // tempo equivalence syntax
           if (tempoEquivalenceRegexp.test(part[2])) {
             // find last tempo and last tempo signature
@@ -273,34 +294,35 @@ export function getEventList(score) {
                 lastBPM = event.bpm;
 
                 if (event.signature) {
-                  lastTempoSignature = TimeSignature.get(event.signature.name);
+                  lastTempoSignature = tempoBasisSignature(event.basis.value);
                 }
               }
             }
 
             // @todo - review when tempo is more solid
             if (lastTempoSignature === null) {
-              lastTempoSignature = TimeSignature.get('1/4');
+              lastTempoSignature = tempoBasisSignature('[1/4]');
             }
 
             const newUnitEq = part[2].replace(/\=\[[0-9]+\/[0-9]+\]/, '');
             const lastUnitEq = part[2].replace(/\[[0-9]+\/[0-9]+\]\=/, '');
 
-            const lastUnitEqSignature = TimeSignature.get(lastUnitEq.slice(1, -1));
+            const lastUnitEqSignature = tempoBasisSignature(lastUnitEq);
             // ratio betwen the last defined signature and signature before convertion
             const tempoRatio = (lastTempoSignature.upper / lastTempoSignature.lower) /
               (lastUnitEqSignature.upper / lastUnitEqSignature.lower);
 
             event.bpm = lastBPM * tempoRatio;
-            event.basis = TimeSignature.get(newUnitEq.slice(1, -1));
-            event.unitEquivalency = true;
+            event.basis = tempoBasisSignature(newUnitEq);
+            event.basisEquivalency = true;
+
           // normal syntax
           } else if (tempoSyntaxRegexp.test(part[2])) {
             const [basis, bpm] = part[2].split('=');
 
             event.bpm = parseFloat(bpm);
-            event.basis = TimeSignature.get(basis.slice(1, -1));
-            event.unitEquivalency = false;
+            event.basis = tempoBasisSignature(basis);
+            event.basisEquivalency = false;
           } else {
             throw new Error(`Invalid syntax for TEMPO signature in line: ${line}`)
           }
@@ -352,17 +374,19 @@ function insertEventInList(event, list, source) {
 }
 
 /**
- * Return a list of events
+ * Return a list of states according to events
  * ```
  * const events = [
  *   {
  *     bar: Integer,
  *     beat: Float,
- *     signature: TimeSignature { upper: Integer, lower: Number },
+ *     signature: BarSignature { upper: Integer, lower: Number },
+ *     // units is only defined if signature is defined
+ *     units: UnitsSignature { upper: Array<Integer>, lower: Number }
  *     // is a duration is set, it takes precedance over tempo
  *     duration: null || Number
  *     tempo: null || {
- *       basis: timeSignature { upper: Integer, lower: Number },
+ *       basis: TempoBasisSignature { upper: Integer, lower: Number },
  *       bpm: Float,
  *       curve: null || {
  *         start: { bar, beat },
@@ -394,8 +418,9 @@ export function parseScore(score) {
     // init with first event infos
     bar: ir[0].bar,
     beat: ir[0].beat,
-    duration: null,
     signature: null,
+    units: null,
+    duration: null,
     tempo: null,
     fermata: null,
     label: null,
@@ -455,6 +480,7 @@ export function parseScore(score) {
         if (event.signature) {
           currentEvent.duration = null;
           currentEvent.signature = event.signature;
+          currentEvent.units = event.units;
         }
 
         if (event.duration) {
@@ -485,7 +511,7 @@ export function parseScore(score) {
           for (let j = index + 1; j < ir.length; j++) {
             // tempo definition with unit equivalence, e.g. [3/8]=[1/4], are not
             // considered as a curve end
-            if (ir[j].type === 'TEMPO' && ir[j].unitEquivalency === false) {
+            if (ir[j].type === 'TEMPO' && ir[j].basisEquivalency === false) {
               nextTempoEvent = ir[j];
               break;
             }
@@ -504,7 +530,7 @@ export function parseScore(score) {
 
           currentEvent.tempo.curve = { start, end, exponent };
         // reset curve if needed, unit equivalencies are allowed inside curves
-        } else if (event.unitEquivalency === false) {
+        } else if (event.basisEquivalency === false) {
           currentEvent.tempo.curve = null;
         }
         break;

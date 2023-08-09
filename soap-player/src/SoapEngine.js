@@ -58,6 +58,7 @@ export default class SoapEngine {
   async loadAudioBuffers() {
     const loader = new AudioBufferLoader();
     const buffers = await loader.load(this.sound.files);
+
     this.sound.files.forEach((path, index) => {
       const filename = path.split('/')[2];
       this.sound.buffers[filename] = buffers[index];
