@@ -21,7 +21,7 @@ export function writeScore(eventList) {
     }
 
     if (event.signature && !isEqual(event.signature, previous.signature)) {
-      currentLine += `[${event.signature.name}] `;
+      currentLine += `${event.signature.value} `;
       previous.signature = event.signature;
     }
 
@@ -34,7 +34,7 @@ export function writeScore(eventList) {
         event.tempo.bpm = event.tempo.curve.start.bpm;
       }
 
-      currentLine += `TEMPO [${event.tempo.basis.name}]=${event.tempo.bpm} `;
+      currentLine += `TEMPO ${event.tempo.basis.value}=${event.tempo.bpm} `;
       previous.tempo = event.tempo;
 
       if (event.tempo.curve) {
@@ -48,7 +48,7 @@ export function writeScore(eventList) {
     }
 
     if (event.fermata) {
-      currentLine += `FERMATA [${event.fermata.basis.name}]=`
+      currentLine += `FERMATA ${event.fermata.basis.value}=`
       if (event.fermata.absDuration) {
         currentLine += `${event.fermata.absDuration}s `;
       } else if (event.fermata.relDuration) {
@@ -60,5 +60,6 @@ export function writeScore(eventList) {
   });
 
   output += currentLine + '\n';
+
   return output;
 }

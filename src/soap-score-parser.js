@@ -179,10 +179,11 @@ export function formatScore(score) {
 export function getEventList(score) {
   const formattedScore = formatScore(score);
 
-  // each bar is defined on 1 line now
   const lines = formattedScore.split('\n');
   const ir = [];
 
+
+  // a line represent all informations from a BAR
   lines.forEach((line, index) => {
     const parts = line
       .split('|')
