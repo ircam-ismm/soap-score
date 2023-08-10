@@ -6,7 +6,10 @@
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
+  "author": [
+    "Benjamin Matuszewski",
+    "Etienne Démoulin"
+  ],
   "license": "BSD-3-Clause",
   "devDependencies": {
     "chai": "^4.3.7",
