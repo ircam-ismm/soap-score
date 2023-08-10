@@ -971,50 +971,65 @@ describe('## _getNextLocation(event, bar, beat)', () => {
       BAR 2 END
     `;
     const interpreter = new SoapScoreInterpreter(score);
+    // pick second event which defines the end of score
+    const nextLocation = interpreter._getNextLocation(interpreter.score[1], 2, 4);
+    assert.deepEqual(nextLocation, null, 'nextLocation');
+  });
 
-    {
-      // pick second event which defines the end of score
-      const nextLocation = interpreter._getNextLocation(interpreter.score[1], 2, 4);
-      assert.deepEqual(nextLocation, null, 'nextLocation');
-    }
+  it(`BAR 1 2s`, () => {
+    const score = `
+      BAR 1 2s
+    `;
+    const interpreter = new SoapScoreInterpreter(score);
+    const nextLocation = interpreter._getNextLocation(interpreter.score[0], 1, 1);
+    assert.deepEqual(nextLocation, { bar: 2, beat: 1 }, 'nextLocation');
+  });
+
+  it(`BAR 1 2s END`, () => {
+    const score = `
+      BAR 1 2s END
+    `;
+    const interpreter = new SoapScoreInterpreter(score);
+    const nextLocation = interpreter._getNextLocation(interpreter.score[0], 1, 1);
+    assert.deepEqual(nextLocation, null, 'nextLocation');
   });
 });
 
-  describe('## _hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {
-    it(`BAR 1 [4/4] TEMPO [1/4]=60 |1.5 "label"`, () => {
-      const score = `
-        BAR 1 [4/4] TEMPO [1/4]=60 |1.5 "label"
-      `;
-      const interpreter = new SoapScoreInterpreter(score);
+describe('## _hasEventBetweenLocations(preBar, preBeat, postBar, postBeat)', () => {
+  it(`BAR 1 [4/4] TEMPO [1/4]=60 |1.5 "label"`, () => {
+    const score = `
+      BAR 1 [4/4] TEMPO [1/4]=60 |1.5 "label"
+    `;
+    const interpreter = new SoapScoreInterpreter(score);
 
-      {
-        let event = interpreter._hasEventBetweenLocations(1, 1, 1, 2);
-        assert.equal(event.bar, 1);
-        assert.equal(event.beat, 1.5);
-        assert.equal(event.label, 'label');
-      }
-      {
-        let event = interpreter._hasEventBetweenLocations(1, 1.5, 1, 2);
-        assert.equal(event, null);
-      }
-      {
-        let event = interpreter._hasEventBetweenLocations(1, 1, 1, 1.5);
-        assert.equal(event, null);
-      }
-    });
-
-    it(`BAR 1 [4/4] TEMPO [1/4]=60 |4.5 "accent"`, () => {
-      const score = `
-        BAR 1 [4/4] TEMPO [1/4]=60 |4.5 "accent"
-      `;
-      const interpreter = new SoapScoreInterpreter(score);
-
-      {
-        let event = interpreter._hasEventBetweenLocations(1, 4, 2, 1);
-        assert.equal(event.bar, 1);
-        assert.equal(event.beat, 4.5);
-        assert.equal(event.label, 'accent');
-      }
-    });
+    {
+      let event = interpreter._hasEventBetweenLocations(1, 1, 1, 2);
+      assert.equal(event.bar, 1);
+      assert.equal(event.beat, 1.5);
+      assert.equal(event.label, 'label');
+    }
+    {
+      let event = interpreter._hasEventBetweenLocations(1, 1.5, 1, 2);
+      assert.equal(event, null);
+    }
+    {
+      let event = interpreter._hasEventBetweenLocations(1, 1, 1, 1.5);
+      assert.equal(event, null);
+    }
   });
+
+  it(`BAR 1 [4/4] TEMPO [1/4]=60 |4.5 "accent"`, () => {
+    const score = `
+      BAR 1 [4/4] TEMPO [1/4]=60 |4.5 "accent"
+    `;
+    const interpreter = new SoapScoreInterpreter(score);
+
+    {
+      let event = interpreter._hasEventBetweenLocations(1, 4, 2, 1);
+      assert.equal(event.bar, 1);
+      assert.equal(event.beat, 4.5);
+      assert.equal(event.label, 'accent');
+    }
+  });
+});
 

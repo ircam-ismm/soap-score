@@ -6,6 +6,12 @@ SO(a)P score is a mini-langage to describe structure of a score along with a jav
 
 [https://ircam-ismm.github.io/soap-score/](https://ircam-ismm.github.io/soap-score/)
 
+// implement
+getClosetLocation(bar, beat) {
+
+}
+use it to sanitize public API inputs
+
 ## Score syntax
 
 ```

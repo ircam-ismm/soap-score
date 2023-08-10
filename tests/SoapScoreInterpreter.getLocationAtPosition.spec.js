@@ -347,6 +347,7 @@ describe('SoapScoreInterpreter#getLocationAtPosition(position)', () => {
     });
 
     it('BAR 1 [4/16] TEMPO [1/4]=60', () => {
+      // this is a 2 beats bar: [2/16][2/16] (compound rules are applied as for x/8)
       const score = `
         BAR 1 [4/16] TEMPO [1/4]=60
       `;
@@ -358,7 +359,7 @@ describe('SoapScoreInterpreter#getLocationAtPosition(position)', () => {
         assert.deepEqual(location, { bar: 1, beat: 1 });
       }
       {
-        const location = interpreter.getLocationAtPosition(0.75);
+        const location = interpreter.getLocationAtPosition(0.5);
         assert.deepEqual(location, { bar: 1, beat: 2 });
       }
       {

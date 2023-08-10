@@ -351,6 +351,7 @@ describe('SoapScoreInterpreter#getPositionAtLocation(bar, beat)', () => {
     });
 
     it('BAR 1 [4/16] TEMPO [1/4]=60', () => {
+      // this is a 2 beats bar: [2/16][2/16] (irregular rule applied as for x/8)
       const score = `
         BAR 1 [4/16] TEMPO [1/4]=60
       `;
@@ -363,7 +364,7 @@ describe('SoapScoreInterpreter#getPositionAtLocation(bar, beat)', () => {
       }
       {
         const position = interpreter.getPositionAtLocation(1, 2);
-        assert.equal(position, 0.75);
+        assert.equal(position, 0.5);
       }
       {
         const position = interpreter.getPositionAtLocation(2, 1);
