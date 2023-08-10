@@ -20,6 +20,9 @@ jobs:
         uses: actions/setup-node@v3.6.0
 
       - name: Install lib dependencies
+        run: npm install
+
+      - name: Install app dependencies
         working-directory: ./apps/soap-metronome
         run: npm install
 
