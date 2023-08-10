@@ -337,16 +337,20 @@ function simpleParsing(line) {
 // ----------------------------------------------------------
 
 const augustin2soap = {
-  fromFile(input, output) {
-    if (!fs.existsSync(input)) {
-      throw new Error(`coucou`);
-    }
+  /**
+   * we want to use the parser client side, so let comment that for now
+   * @todo - use package.json exports to create a monkey patched version for node
+   */
+  // fromFile(input, output) {
+  //   if (!fs.existsSync(input)) {
+  //     throw new Error(`coucou`);
+  //   }
 
-    const score = fs.readFileSync(input).toString();
-    const soapScore = this.parse(score);
+  //   const score = fs.readFileSync(input).toString();
+  //   const soapScore = this.parse(score);
 
-    fs.writeFileSync(output, soapScore);
-  },
+  //   fs.writeFileSync(output, soapScore);
+  // },
 
   readString(data, name) {
     let soapScore = this.parse(data);

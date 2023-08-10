@@ -12,7 +12,7 @@ import {
 import decomposeCompoundBeats from '../src/utils/decompose-compound-beats.js';
 import {
   barSignature,
-  getDuration,
+  parseDuration,
   unitsSignature,
   tempoBasisSignature,
 } from '../src/utils/time-signatures.js';
@@ -257,28 +257,29 @@ describe('barSignature(signature)', () => {
   });
 });
 
-describe('getDuration(value)', () => {
+// should be renamed
+describe('parseDuration(value)', () => {
   it('12s', () => {
     const expected = 12;
-    const result = getDuration('12s');
+    const result = parseDuration('12s');
     assert.equal(expected, result);
   });
 
   it('12ms', () => {
     const expected = 12 * 1e-3;
-    const result = getDuration('12ms');
+    const result = parseDuration('12ms');
     assert.equal(expected, result);
   });
 
   it('12m', () => {
     const expected = 12 * 60;
-    const result = getDuration('12m');
+    const result = parseDuration('12m');
     assert.equal(expected, result);
   });
 
   it('12m5s', () => {
     const expected = 12 * 60 + 5;
-    const result = getDuration('12m5s');
+    const result = parseDuration('12m5s');
     assert.equal(expected, result);
   });
 });

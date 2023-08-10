@@ -1,21 +1,20 @@
-// import fs from 'node:fs';
-// import path from 'node:path';
-
-import TimeSignature from '@tonaljs/time-signature';
-
 import SoapScoreInterpreter from '../SoapScoreInterpreter.js';
 
 const soap2asco = {
-  fromFile: function(input, output) {
-    if (!fs.existsSync(input)) {
-      throw new Error(`coucou`);
-    }
+  /**
+   * we want to use the parser client side, so let comment that for now
+   * @todo - use package.json exports to create a monkey patched version for node
+   */
+  // fromFile: function(input, output) {
+  //   if (!fs.existsSync(input)) {
+  //     throw new Error(`Invlid input file ${input}, does not exists`);
+  //   }
 
-    const score = fs.readFileSync(input).toString();
-    const soapScore = this.parse(score);
+  //   const score = fs.readFileSync(input).toString();
+  //   const soapScore = this.parse(score);
 
-    fs.writeFileSync(output, soapScore);
-  },
+  //   fs.writeFileSync(output, soapScore);
+  // },
 
   parse: function(score, comment = false) {
     const interpreter = new SoapScoreInterpreter(score);
@@ -27,6 +26,7 @@ const soap2asco = {
         isEndOfScore = true;
       }
     });
+
     if (isEndOfScore === false) {
       throw new Error('Error: Cannot export file, no END tag found');
     }
@@ -61,25 +61,23 @@ const soap2asco = {
       }
 
       const { bar, beat, event, position, duration, dt, unit } = infos;
-      // console.log(bar, beat, unit, duration, dt);
 
-      // if (event.label === 'end-of-score') {
-      //   return output;
-      // }
       if (event.duration) {
         // absolute measure
         event.tempo = {
           bpm:60,
           basis:{
-            upper:1,
-            lower:4,
+            upper: 1,
+            lower: 4,
           },
         };
         // output += `BPM 60\n`
       }
 
       if (bar !== currentBar && comment === true) {
-        output += `\n; ----------- measure ${bar} --- time signature ${event.signature.name} -----------\n`
+        output += `
+; ----------- measure ${bar} --- time signature ${event.signature.name} -----------
+`;
       }
 
       // check if tempo has changed
@@ -90,16 +88,25 @@ const soap2asco = {
       };
 
       let dtInBeat;
+
       if (event.duration === null) {
-        const { bpm, upper, lower } = unit;
-        const beatDuration = 60 / bpm;
-        dtInBeat = (unit.upper / unit.lower) * 4;
-        dtInBeat = dtInBeat * (dt / beatDuration);
+        // in antescofo a unit is quarter note, so we just need to normalize
+        // our unit according to a quarter node
+        const { upper, lower } = unit;
+        const unitNormToQuarterNote = (upper / lower) / (1 / 4);
+        // but this may be an in-between full beat event, we need to take that into account
+        const tempoBasisDuration = 60 / event.tempo.bpm;
+        // number of tempo basis unit
+        const ratio = (upper / lower) / (event.tempo.basis.upper / event.tempo.basis.lower);
+        const beatDuration = ratio * tempoBasisDuration;
+
+        dtInBeat = unitNormToQuarterNote * (dt / beatDuration);
       } else {
         dtInBeat = event.duration;
       }
 
       let ascoNote = 0;
+
       if (beat - Math.floor(beat) === 0) {
         ascoNote = beat + 59;
       }
@@ -114,7 +121,6 @@ const soap2asco = {
       if (event !== currentEvent && event.label) {
         output += ` "${event.label}"\n`;
       } else {
-        // console.log(event);
         output += `\n`;
       };
 
@@ -122,13 +128,9 @@ const soap2asco = {
         currentEvent = event;
       };
 
-      // console.log(bar, beat, position);
-
       currentBar = bar;
       currentBeat = beat;
-
     }
-
   },
 };
 

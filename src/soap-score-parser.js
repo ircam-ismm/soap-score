@@ -14,7 +14,7 @@ import {
 
 import {
   barSignature,
-  barDuration,
+  parseDuration,
   unitsSignature,
   tempoBasisSignature,
 } from '../src/utils/time-signatures.js'
@@ -221,7 +221,7 @@ export function getEventList(score) {
       if (barSignatureRegexp.test(bar[2])) {
         event.signature = barSignature(bar[2]);
       } else if (absDurationRegexp.test(bar[2])) {
-        event.duration = barDuration(bar[2]);
+        event.duration = parseDuration(bar[2]);
       } else {
         throw new Error(`Invalid syntax for BAR in line "${line}", invalid signature or duration`);
       }
@@ -274,7 +274,7 @@ export function getEventList(score) {
             } else if (parts[1].endsWith('*')) {
               event.relDuration = parseFloat(parts[1].replace('*', ''));
             } else {
-              event.absDuration = barDuration(parts[1]);
+              event.absDuration = parseDuration(parts[1]);
             }
           } else {
             throw new Error(`Invalid syntax for FERMATA in line: ${line}`);

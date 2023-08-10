@@ -40,24 +40,28 @@ function computeMetricLocation(events) {
 }
 
 const midi2soap = {
-  write(output, soapScore) {
-    fs.writeFileSync(output, soapScore);
-  },
+  /**
+   * we want to use the parser client side, so let comment that for now
+   * @todo - use package.json exports to create a monkey patched version for node
+   */
+  // write(output, soapScore) {
+  //   fs.writeFileSync(output, soapScore);
+  // },
 
-  readFile(input) {
-    if (!fs.existsSync(input)) {
-      throw new Error(`file do not exist`);
-    }
+  // readFile(input) {
+  //   if (!fs.existsSync(input)) {
+  //     throw new Error(`file do not exist`);
+  //   }
 
-    // Parse the obtainer base64 string ...
-    const file = fs.readFileSync(input, 'base64');
-    const midi = midiParser.parse(file);
-    const data = midi.track[0].event;
-    const timeDiv = midi.timeDivision;
-    const soapScore = this.parse(data, timeDiv);
+  //   // Parse the obtainer base64 string ...
+  //   const file = fs.readFileSync(input, 'base64');
+  //   const midi = midiParser.parse(file);
+  //   const data = midi.track[0].event;
+  //   const timeDiv = midi.timeDivision;
+  //   const soapScore = this.parse(data, timeDiv);
 
-    return soapScore;
-  },
+  //   return soapScore;
+  // },
 
   readString(input) {
     const midi = midiParser.parse(input);

@@ -1,4 +1,4 @@
-import parseDuration from 'parse-duration';
+import { default as _parseDuration } from 'parse-duration';
 
 import {
   barSignatureRegexp,
@@ -59,12 +59,12 @@ export function barSignature(str) {
  * cf. https://www.npmjs.com/package/parse-duration
  */
 // @todo - rename is also used for fermatas
-export function barDuration(str) {
+export function parseDuration(str) {
   if (!absDurationRegexp.test(str)) {
     throw new Error(`Invalid duration syntax: ${str}`);
   }
 
-  return parseDuration(str, 's');
+  return _parseDuration(str, 's');
 }
 
 // UnitsSignature: {
