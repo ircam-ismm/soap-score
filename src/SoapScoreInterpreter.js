@@ -1,5 +1,4 @@
 import { parseScore } from './soap-score-parser.js';
-import TimeSignature from '@tonaljs/time-signature';
 
 export default class SoapScoreInterpreter {
   constructor(score) {

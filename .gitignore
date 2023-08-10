@@ -1,5 +1,6 @@
-node_modules/
 .DS_Store
 package-lock.json
 *.RPP-bak
-Grisey - Tempus ex Machina.pdf
+
+node_modules/
+_resources/Grisey - Tempus ex Machina.pdf
