@@ -1,5 +1,9 @@
 import midiParser from 'midi-parser-js';
-import TimeSignature from '@tonaljs/time-signature';
+
+import {
+  barSignature,
+  tempoBasisSignature,
+} from '../utils/time-signatures.js';
 
 import { writeScore } from '../soap-score-writer.js';
 
@@ -36,9 +40,10 @@ function computeMetricLocation(events) {
 }
 
 const midi2soap = {
-  write: function(output, soapScore) {
+  write(output, soapScore) {
     fs.writeFileSync(output, soapScore);
   },
+
   readFile(input) {
     if (!fs.existsSync(input)) {
       throw new Error(`file do not exist`);
@@ -53,28 +58,30 @@ const midi2soap = {
 
     return soapScore;
   },
+
   readString(input) {
     const midi = midiParser.parse(input);
     const data = midi.track[0].event;
     const timeDiv = midi.timeDivision;
     const soapScore = this.parse(data, timeDiv);
+
     return soapScore;
   },
+
   createSoapFile(input, output) {
     write(output, read(input))
   },
+
   outputLineForDebug(input) {
     const midi = midiParser.parse(input);
-    // console.log(midi);
     const data = midi.track[0].event;
     const output = [];
-    data.forEach(line => {
-      output.push(line);
-    })
+    data.forEach(line => output.push(line));
+
     return output;
   },
-  parse: function(data, timeDiv = 960) {
 
+  parse(data, timeDiv = 960) {
     let events = [];
     let deltaTime = null;
     let previousDeltaTime = 0;
@@ -85,14 +92,11 @@ const midi2soap = {
     let previousAbsTime = 0;
 
     data.forEach((line,index) => {
-      // for debug
-      // console.log(line);
       deltaTime = line.deltaTime / timeDiv;
-
       absTime += deltaTime;
 
       // on publie à chaque changement de temps ou si c'est le dernier evenement de la liste
-      if ( absTime !== previousAbsTime || line.metaType === 47) {
+      if (absTime !== previousAbsTime || line.metaType === 47) {
         // push event
         events.push({
           bar: null,
@@ -101,7 +105,7 @@ const midi2soap = {
           signature: signature,
           duration: null,
           tempo: {
-            basis: TimeSignature.get(`1/4`),
+            basis: tempoBasisSignature(`[1/4]`),
             bpm: bpm,
             curve: null,
           },
@@ -113,21 +117,20 @@ const midi2soap = {
       // retrieves info from line
       switch (line.metaType) {
         case 81:
-          bpm = Math.round((60000000/line.data)*1000)/1000;
           // compute tempo
+          bpm = Math.round((60000000 / line.data) * 1000) / 1000;
           break;
         case 88:
-          signature = TimeSignature.get(`${line.data[0]}/${Math.pow(2,line.data[1])}`);
           // compute metric
+          signature = barSignature(`[${line.data[0]}/${Math.pow(2, line.data[1])}]`);
           break;
         case 6:
-          label = line.data;
-          // compute label
-          break;
         case 1:
+          // compute label
           label = line.data;
           break;
         default:
+          // ignore other cases
           break;
       };
 
@@ -139,9 +142,8 @@ const midi2soap = {
     });
 
     events = computeMetricLocation(events);
-    // console.log(events);
     const output = writeScore(events);
-    // console.log(output);
+
     return output;
   },
 };

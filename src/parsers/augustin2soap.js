@@ -3,7 +3,6 @@ import chunk from 'lodash.chunk';
 import {
   barSignature,
   tempoBasisSignature,
-  barDuration,
 } from '../utils/time-signatures.js';
 
 import { writeScore } from '../soap-score-writer.js';
