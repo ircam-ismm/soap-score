@@ -1,11 +1,10 @@
-// import fs from 'node:fs';
-// import path from 'node:path';
-
 import chunk from 'lodash.chunk';
 
-import TimeSignature from '@tonaljs/time-signature';
-
-import parseDuration from 'parse-duration';
+import {
+  barSignature,
+  tempoBasisSignature,
+  barDuration,
+} from '../utils/time-signatures.js';
 
 import { writeScore } from '../soap-score-writer.js';
 import { parseScore } from '../soap-score-parser.js';
@@ -123,9 +122,17 @@ function pushLineInEventList(events, lineEventList) {
 
     // need to compute REAL FIRST BEAT.
     // line.beat can be greater than signature.upper
-    let { bar:startBar, beat:startBeat, signature:beginSignature } = getBarBeatFromDuration(line.bar, 1, (line.beat-1), events);
+    let {
+      bar: startBar,
+      beat: startBeat,
+      signature: beginSignature
+    } = getBarBeatFromDuration(line.bar, 1, line.beat - 1, events);
 
-    let { bar:endBar, beat:endBeat, signature:endSignature } = getBarBeatFromDuration(startBar, startBeat, duration, events);
+    let {
+      bar: endBar,
+      beat: endBeat,
+      signature: endSignature
+    } = getBarBeatFromDuration(startBar, startBeat, duration, events);
 
     events.forEach((e) => {
       if (e.bar === endBar && e.beat === endBeat && e.tempo) {
@@ -139,16 +146,14 @@ function pushLineInEventList(events, lineEventList) {
     endBeat = Math.round(endBeat*100)/100;
     startBeat = Math.round(startBeat*100)/100;
 
-    // console.log(endBar, endBeat, endSignature);
-
-    // adding start curve event
+    // add start curve event
     events.push({
       bar: startBar,
       beat: startBeat,
       signature: beginSignature,
       duration: null,
       tempo: {
-        basis: TimeSignature.get(`1/${beginSignature.lower}`),
+        basis: tempoBasisSignature(`[1/${beginSignature.lower}]`),
         bpm: null,
         curve: {
           start: {
@@ -167,14 +172,15 @@ function pushLineInEventList(events, lineEventList) {
       fermata: null,
       label: null,
     });
-    // adding stop curve event
+
+    // add stop curve event
     events.push({
       bar: endBar,
       beat: endBeat,
       signature: endSignature,
       duration: null,
       tempo: {
-        basis: TimeSignature.get(`1/${endSignature.lower}`),
+        basis: tempoBasisSignature(`[1/${endSignature.lower}]`),
         bpm: endTempo,
         curve: null,
       },
@@ -193,11 +199,14 @@ function curveParsing(line) {
   // console.log(line);
   const bar = parseInt(line[0]);
   line.shift();
-  const signature = TimeSignature.get(line[0]);
+
+  const signature = barSignature(`[${line[0]}]`);
   line.shift();
+
   if (line.length === 3) {
     line.push('1');
   }
+
   line = chunk(line,4);
 
   // console.log(line);
@@ -216,7 +225,7 @@ function curveParsing(line) {
         signature: signature,
         duration: null,
         tempo: {
-          basis: TimeSignature.get(`1/${signature.lower}`),
+          basis: tempoBasisSignature(`[1/${signature.lower}]`),
           bpm: beginTempo,
           curve: null,
         },
@@ -246,19 +255,20 @@ function curveParsing(line) {
 };
 
 function simpleParsing(line) {
-  let e = [];
+  const e = [];
   const command = line[1];
   const bar = parseInt(line[0]);
+
   switch (command) {
     case 'fermata':
       e.push({
         bar: bar,
         beat: 1,
-        signature: TimeSignature.get('4/4'),
+        signature: barSignature('[4/4]'),
         duration: null,
         tempo: null,
         fermata: {
-          basis: TimeSignature.get('1/1'),
+          basis: tempoBasisSignature('[1/1]'),
           absDuration: null,
           relDuration: null,
           suspended: true,
@@ -268,6 +278,7 @@ function simpleParsing(line) {
       break;
     case 'timer':
       const timer = parseTime(line[2]);
+
       if (timer !== null) {
         e.push({
           bar: bar,
@@ -284,6 +295,7 @@ function simpleParsing(line) {
       break;
     case 'label':
       const label = line.pop();
+
       e.push({
         bar: bar,
         beat: 1,
@@ -297,15 +309,17 @@ function simpleParsing(line) {
     case 'end':
       break;
     default:
+      const signature = barSignature(`[${line[1]}]`);
       let tempo = null;
-      const signature = TimeSignature.get(line[1]);
       let bpm = null;
       let basis = null;
+
       if (line[2]) {
         tempo = { basis: null, bpm: null, curve: null };
         tempo.bpm = parseFloat(line[2]);
-        tempo.basis = TimeSignature.get(`1/${signature.lower}`);
+        tempo.basis = tempoBasisSignature(`[1/${signature.lower}]`);
       };
+
       e.push({
         bar: bar,
         beat: 1,
