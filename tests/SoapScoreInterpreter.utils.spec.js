@@ -1,289 +1,289 @@
 import { assert } from 'chai';
 import SoapScoreInterpreter from '../src/SoapScoreInterpreter.js';
 
-describe('## _computeBarUnit(event)', () => {
-  describe('simple', () => {
-    it(`BAR 1 [4/4] TEMPO [1/4]=60`, () => {
-      const score = `
-        BAR 1 [4/4] TEMPO [1/4]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 1, 'upper');
-      assert.equal(lower, 4, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-
-    it(`BAR 1 [4/4] TEMPO [1/2]=60`, () => {
-      const score = `
-        BAR 1 [4/4] TEMPO [1/2]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 1, 'upper');
-      assert.equal(lower, 4, 'lower');
-      assert.equal(bpm, 120, 'bpm');
-    });
-
-    it(`BAR 1 [5/4] TEMPO [1/8]=60`, () => {
-      const score = `
-        BAR 1 [5/4] TEMPO [1/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 1, 'upper');
-      assert.equal(lower, 4, 'lower');
-      assert.equal(bpm, 30, 'bpm');
-    });
-
-    it(`BAR 1 [2/2] TEMPO [1/4]=60`, () => {
-      const score = `
-        BAR 1 [2/2] TEMPO [1/4]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 1, 'upper');
-      assert.equal(lower, 2, 'lower');
-      assert.equal(bpm, 30, 'bpm');
-    });
-  });
-
-  describe('compound', () => {
-    it(`BAR 1 [6/8] TEMPO [3/8]=60`, () => {
-      const score = `
-        BAR 1 [6/8] TEMPO [3/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 3, 'upper');
-      assert.equal(lower, 8, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-
-    it(`BAR 1 [6/8] TEMPO [1/8]=180`, () => {
-      const score = `
-        BAR 1 [6/8] TEMPO [1/8]=180
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 3, 'upper');
-      assert.equal(lower, 8, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-
-    it(`BAR 1 [6/8] TEMPO [1/4]=90`, () => {
-      const score = `
-        BAR 1 [6/8] TEMPO [1/4]=90
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 3, 'upper');
-      assert.equal(lower, 8, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-  });
-
-  describe('irregular', () => {
-    it(`BAR 1 [5/8] TEMPO [3/8]=60`, () => {
-      const score = `
-        BAR 1 [5/8] TEMPO [3/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 3, 'upper');
-      assert.equal(lower, 8, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-
-    it(`BAR 1 [5/8] TEMPO [1/8]=180`, () => {
-      const score = `
-        BAR 1 [5/8] TEMPO [1/8]=180
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 3, 'upper');
-      assert.equal(lower, 8, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-  });
-
-  describe('irregular (additive)', () => {
-    it(`BAR 1 [3+2/8] TEMPO [3/8]=60`, () => {
-      const score = `
-        BAR 1 [3+2/8] TEMPO [3/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 3, 'upper');
-      assert.equal(lower, 8, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-
-    it(`BAR 1 [2+3+2/8] TEMPO [1/8]=180`, () => {
-      const score = `
-        BAR 1 [2+3+2/8] TEMPO [1/8]=180
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const { upper, lower, bpm } = interpreter.score[0].unit;
-
-      assert.equal(upper, 3, 'upper');
-      assert.equal(lower, 8, 'lower');
-      assert.equal(bpm, 60, 'bpm');
-    });
-  });
-});
-
-describe('## _computeNumBeats(event)', () => {
-  describe('simple', () => {
-    it(`BAR 1 [4/4] TEMPO [1/4]=60`, () => {
-      const score = `
-        BAR 1 [4/4] TEMPO [1/4]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 4, 'numBeats');
-    });
-
-    it(`BAR 1 [4/4] TEMPO [1/2]=60`, () => {
-      const score = `
-        BAR 1 [4/4] TEMPO [1/2]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 4, 'numBeats');
-    });
-
-    it(`BAR 1 [5/4] TEMPO [1/8]=60`, () => {
-      const score = `
-        BAR 1 [5/4] TEMPO [1/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 5, 'numBeats');
-    });
-
-    it(`BAR 1 [2/2] TEMPO [1/4]=60`, () => {
-      const score = `
-        BAR 1 [2/2] TEMPO [1/4]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 2, 'numBeats');
-    });
-  });
-
-  describe('compound', () => {
-    it(`BAR 1 [6/8] TEMPO [3/8]=60`, () => {
-      const score = `
-        BAR 1 [6/8] TEMPO [3/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 2, 'numBeats');
-    });
-
-    it(`BAR 1 [3/8] TEMPO [1/8]=180`, () => {
-      const score = `
-        BAR 1 [3/8] TEMPO [1/8]=180
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 1, 'numBeats');
-    });
-
-    it(`BAR 1 [9/8] TEMPO [1/4]=90`, () => {
-      const score = `
-        BAR 1 [9/8] TEMPO [1/4]=90
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 3, 'numBeats');
-    });
-  });
-
-  describe('irregular', () => {
-    it(`BAR 1 [5/8] TEMPO [3/8]=60`, () => {
-      const score = `
-        BAR 1 [5/8] TEMPO [3/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 2, 'numBeats');
-    });
-
-    it(`BAR 1 [7/8] TEMPO [1/8]=180`, () => {
-      const score = `
-        BAR 1 [7/8] TEMPO [1/8]=180
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 3, 'numBeats');
-    });
-  });
-
-  describe('irregular (additive)', () => {
-    it(`BAR 1 [3+2/8] TEMPO [3/8]=60`, () => {
-      const score = `
-        BAR 1 [3+2/8] TEMPO [3/8]=60
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 2, 'numBeats');
-    });
-
-    it(`BAR 1 [2+3+2/8] TEMPO [1/8]=180`, () => {
-      const score = `
-        BAR 1 [2+3+2/8] TEMPO [1/8]=180
-      `;
-
-      const interpreter = new SoapScoreInterpreter(score);
-      const numBeats = interpreter.score[0].numBeats;
-
-      assert.equal(numBeats, 3, 'numBeats');
-    });
-  });
-});
+// describe('## _computeBarUnit(event)', () => {
+//   describe('simple', () => {
+//     it(`BAR 1 [4/4] TEMPO [1/4]=60`, () => {
+//       const score = `
+//         BAR 1 [4/4] TEMPO [1/4]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 1, 'upper');
+//       assert.equal(lower, 4, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+
+//     it(`BAR 1 [4/4] TEMPO [1/2]=60`, () => {
+//       const score = `
+//         BAR 1 [4/4] TEMPO [1/2]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 1, 'upper');
+//       assert.equal(lower, 4, 'lower');
+//       assert.equal(bpm, 120, 'bpm');
+//     });
+
+//     it(`BAR 1 [5/4] TEMPO [1/8]=60`, () => {
+//       const score = `
+//         BAR 1 [5/4] TEMPO [1/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 1, 'upper');
+//       assert.equal(lower, 4, 'lower');
+//       assert.equal(bpm, 30, 'bpm');
+//     });
+
+//     it(`BAR 1 [2/2] TEMPO [1/4]=60`, () => {
+//       const score = `
+//         BAR 1 [2/2] TEMPO [1/4]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 1, 'upper');
+//       assert.equal(lower, 2, 'lower');
+//       assert.equal(bpm, 30, 'bpm');
+//     });
+//   });
+
+//   describe('compound', () => {
+//     it(`BAR 1 [6/8] TEMPO [3/8]=60`, () => {
+//       const score = `
+//         BAR 1 [6/8] TEMPO [3/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 3, 'upper');
+//       assert.equal(lower, 8, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+
+//     it(`BAR 1 [6/8] TEMPO [1/8]=180`, () => {
+//       const score = `
+//         BAR 1 [6/8] TEMPO [1/8]=180
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 3, 'upper');
+//       assert.equal(lower, 8, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+
+//     it(`BAR 1 [6/8] TEMPO [1/4]=90`, () => {
+//       const score = `
+//         BAR 1 [6/8] TEMPO [1/4]=90
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 3, 'upper');
+//       assert.equal(lower, 8, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+//   });
+
+//   describe('irregular', () => {
+//     it(`BAR 1 [5/8] TEMPO [3/8]=60`, () => {
+//       const score = `
+//         BAR 1 [5/8] TEMPO [3/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 3, 'upper');
+//       assert.equal(lower, 8, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+
+//     it(`BAR 1 [5/8] TEMPO [1/8]=180`, () => {
+//       const score = `
+//         BAR 1 [5/8] TEMPO [1/8]=180
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 3, 'upper');
+//       assert.equal(lower, 8, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+//   });
+
+//   describe('irregular (additive)', () => {
+//     it(`BAR 1 [3+2/8] TEMPO [3/8]=60`, () => {
+//       const score = `
+//         BAR 1 [3+2/8] TEMPO [3/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 3, 'upper');
+//       assert.equal(lower, 8, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+
+//     it(`BAR 1 [2+3+2/8] TEMPO [1/8]=180`, () => {
+//       const score = `
+//         BAR 1 [2+3+2/8] TEMPO [1/8]=180
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const { upper, lower, bpm } = interpreter.score[0].unit;
+
+//       assert.equal(upper, 3, 'upper');
+//       assert.equal(lower, 8, 'lower');
+//       assert.equal(bpm, 60, 'bpm');
+//     });
+//   });
+// });
+
+// describe('## _computeNumBeats(event)', () => {
+//   describe('simple', () => {
+//     it(`BAR 1 [4/4] TEMPO [1/4]=60`, () => {
+//       const score = `
+//         BAR 1 [4/4] TEMPO [1/4]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 4, 'numBeats');
+//     });
+
+//     it(`BAR 1 [4/4] TEMPO [1/2]=60`, () => {
+//       const score = `
+//         BAR 1 [4/4] TEMPO [1/2]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 4, 'numBeats');
+//     });
+
+//     it(`BAR 1 [5/4] TEMPO [1/8]=60`, () => {
+//       const score = `
+//         BAR 1 [5/4] TEMPO [1/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 5, 'numBeats');
+//     });
+
+//     it(`BAR 1 [2/2] TEMPO [1/4]=60`, () => {
+//       const score = `
+//         BAR 1 [2/2] TEMPO [1/4]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 2, 'numBeats');
+//     });
+//   });
+
+//   describe('compound', () => {
+//     it(`BAR 1 [6/8] TEMPO [3/8]=60`, () => {
+//       const score = `
+//         BAR 1 [6/8] TEMPO [3/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 2, 'numBeats');
+//     });
+
+//     it(`BAR 1 [3/8] TEMPO [1/8]=180`, () => {
+//       const score = `
+//         BAR 1 [3/8] TEMPO [1/8]=180
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 1, 'numBeats');
+//     });
+
+//     it(`BAR 1 [9/8] TEMPO [1/4]=90`, () => {
+//       const score = `
+//         BAR 1 [9/8] TEMPO [1/4]=90
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 3, 'numBeats');
+//     });
+//   });
+
+//   describe('irregular', () => {
+//     it(`BAR 1 [5/8] TEMPO [3/8]=60`, () => {
+//       const score = `
+//         BAR 1 [5/8] TEMPO [3/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 2, 'numBeats');
+//     });
+
+//     it(`BAR 1 [7/8] TEMPO [1/8]=180`, () => {
+//       const score = `
+//         BAR 1 [7/8] TEMPO [1/8]=180
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 3, 'numBeats');
+//     });
+//   });
+
+//   describe('irregular (additive)', () => {
+//     it(`BAR 1 [3+2/8] TEMPO [3/8]=60`, () => {
+//       const score = `
+//         BAR 1 [3+2/8] TEMPO [3/8]=60
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 2, 'numBeats');
+//     });
+
+//     it(`BAR 1 [2+3+2/8] TEMPO [1/8]=180`, () => {
+//       const score = `
+//         BAR 1 [2+3+2/8] TEMPO [1/8]=180
+//       `;
+
+//       const interpreter = new SoapScoreInterpreter(score);
+//       const numBeats = interpreter.score[0].numBeats;
+
+//       assert.equal(numBeats, 3, 'numBeats');
+//     });
+//   });
+// });
 
 describe('## _normalizeBeat(event, beat)', () => {
   describe('simple', () => {
@@ -366,7 +366,7 @@ describe('## _normalizeBeat(event, beat)', () => {
       const score = `
         BAR 1 [7/8] TEMPO [1/8]=180
       `;
-
+      // parsed as 3 + 3 + 2
       const interpreter = new SoapScoreInterpreter(score);
       const event = interpreter.score[0];
 
@@ -384,7 +384,7 @@ describe('## _normalizeBeat(event, beat)', () => {
       }
       {
         const normBeat = interpreter._normalizeBeat(event, 3);
-        assert.equal(normBeat, 6 / 7, 'normBeat');
+        assert.equal(normBeat, 5 / 7, 'normBeat');
       }
     });
   });
@@ -489,18 +489,18 @@ describe('## _getBarDuration(bar, beat)', () => {
   });
 });
 
-describe('## _getNumBarNormalizedWithinEvent(event, startBar, startBeat, endBar, endBeat)', () => {
+describe('## _getNumBarWithinEvent(event, startBar, startBeat, endBar, endBeat)', () => {
   it('BAR 1 [4/4] TEMPO [1/4]=60', () => {
     const score = 'BAR 1 [4/4] TEMPO [1/4]=60';
     const interpreter = new SoapScoreInterpreter(score);
-    const numBarNormalized = interpreter._getNumBarNormalizedWithinEvent(interpreter.score[0], 1, 2, 2, 3);
+    const numBarNormalized = interpreter._getNumBarWithinEvent(interpreter.score[0], 1, 2, 2, 3);
     assert.equal(numBarNormalized, 1.25, 'numBarNormalized');
   });
 
   it('BAR 1 [6/8] TEMPO [1/8]=60', () => {
     const score = 'BAR 1 [6/8] TEMPO [1/8]=60';
     const interpreter = new SoapScoreInterpreter(score);
-    const numBarNormalized = interpreter._getNumBarNormalizedWithinEvent(interpreter.score[0], 2, 2, 3, 1);
+    const numBarNormalized = interpreter._getNumBarWithinEvent(interpreter.score[0], 2, 2, 3, 1);
     assert.equal(numBarNormalized, 0.5, 'numBarNormalized');
   });
 
@@ -509,12 +509,12 @@ describe('## _getNumBarNormalizedWithinEvent(event, startBar, startBeat, endBar,
     const interpreter = new SoapScoreInterpreter(score);
 
     {
-      const numBarNormalized = interpreter._getNumBarNormalizedWithinEvent(interpreter.score[0], 2, 1, 3, 2);
+      const numBarNormalized = interpreter._getNumBarWithinEvent(interpreter.score[0], 2, 1, 3, 2);
       assert.equal(numBarNormalized, 1.6, 'numBarNormalized');
     }
 
     {
-      const numBarNormalized = interpreter._getNumBarNormalizedWithinEvent(interpreter.score[0], 1, 1, 1, 2.5);
+      const numBarNormalized = interpreter._getNumBarWithinEvent(interpreter.score[0], 1, 1, 1, 2.5);
       assert.equal(numBarNormalized, 0.8, 'numBarNormalized');
     }
   });
@@ -522,19 +522,21 @@ describe('## _getNumBarNormalizedWithinEvent(event, startBar, startBeat, endBar,
   it('BAR 1 [5/8] TEMPO [1/4]=60', () => {
     const score = 'BAR 1 [5/8] TEMPO [1/4]=60';
     const interpreter = new SoapScoreInterpreter(score);
-    const numBarNormalized = interpreter._getNumBarNormalizedWithinEvent(interpreter.score[0], 2, 1, 3, 2);
+    const numBarNormalized = interpreter._getNumBarWithinEvent(interpreter.score[0], 2, 1, 3, 2);
     assert.equal(numBarNormalized, 1.6, 'numBarNormalized');
   });
 
   it('BAR 1 [3+2+2/8] TEMPO [1/4]=120', () => {
     const score = 'BAR 1 [3+2+2/8] TEMPO [1/4]=120';
     const interpreter = new SoapScoreInterpreter(score);
-    const numBarNormalized = interpreter._getNumBarNormalizedWithinEvent(interpreter.score[0], 1, 2, 3, 3);
+    const numBarNormalized = interpreter._getNumBarWithinEvent(interpreter.score[0], 1, 2, 3, 3);
     assert.equal(numBarNormalized, 2 + 2 / 7, 'numBarNormalized');
   });
 });
 
-describe(`## _getNumBarNormalizedAccrosEvents(startBar, startBeat, endBar, endBeat)`, () => {
+// note: this method is used to compute bpm in curve and adds a "beat" to the result,
+// cf. note in the implementation
+describe(`## _getNumBarAccrosEvents(startBar, startBeat, endBar, endBeat)`, () => {
   it(`simple + compound`, () => {
     const score = `\
       BAR 1 [4/4] TEMPO [1/4]=60 curve 1
@@ -545,8 +547,8 @@ describe(`## _getNumBarNormalizedAccrosEvents(startBar, startBeat, endBar, endBe
     `;
 
     const interpreter = new SoapScoreInterpreter(score);
-    const numUnits = interpreter._getNumBarNormalizedAccrosEvents(1, 2, 4, 1);
-    assert.equal(numUnits, 2);
+    const numUnits = interpreter._getNumBarAccrosEvents(1, 2, 4, 1);
+    assert.equal(numUnits, 2 + 0.25);
   });
 
   it(`simple + irregular (additive)`, () => {
@@ -559,8 +561,8 @@ describe(`## _getNumBarNormalizedAccrosEvents(startBar, startBeat, endBar, endBe
     `;
 
     const interpreter = new SoapScoreInterpreter(score);
-    const numUnits = interpreter._getNumBarNormalizedAccrosEvents(1, 2, 4, 1);
-    assert.equal(numUnits, 2.75);
+    const numUnits = interpreter._getNumBarAccrosEvents(1, 2, 4, 1);
+    assert.equal(numUnits, 2.75 + 0.25);
   });
 
   it(`simple + irregular (additive)`, () => {
@@ -574,12 +576,12 @@ describe(`## _getNumBarNormalizedAccrosEvents(startBar, startBeat, endBar, endBe
     `;
 
     const interpreter = new SoapScoreInterpreter(score);
-    const numUnits = interpreter._getNumBarNormalizedAccrosEvents(1, 2, 3, 2);
-    assert.equal(numUnits, 2);
+    const numUnits = interpreter._getNumBarAccrosEvents(1, 2, 3, 2);
+    assert.equal(numUnits, 2 + 0.25);
   });
 });
 
-describe(`## _computeBpmInCurve(curve, bar, beat)`, () => {
+describe(`## _getBpmInCurve(curve, bar, beat)`, () => {
   it(`simple`, () => {
     const score = `\
       BAR 1 [4/4] TEMPO [1/4]=60 curve 1
@@ -616,7 +618,8 @@ describe(`## _computeBpmInCurve(curve, bar, beat)`, () => {
     }
   });
 
-  it(`simple 2 (check that tempo unit is taken into account)`, () => {
+  // should be reltive to tempo basis
+  it(`simple 2 - check that result is not relative to tempo basis`, () => {
     const score = `\
       BAR 1 [4/4] TEMPO [1/8]=60 curve 1
       BAR 2 [4/4] TEMPO [1/8]=120
@@ -628,26 +631,26 @@ describe(`## _computeBpmInCurve(curve, bar, beat)`, () => {
     // first beat is already faster
     {
       const bpm = interpreter._getBpmInCurve(curve, 1, 1);
-      assert.equal(bpm, 72 / 2);
+      assert.equal(bpm, 72);
     }
     {
       const bpm = interpreter._getBpmInCurve(curve, 1, 2);
-      assert.equal(bpm, 84 / 2);
+      assert.equal(bpm, 84);
     }
 
     {
       const bpm = interpreter._getBpmInCurve(curve, 1, 3);
-      assert.equal(bpm, 96 / 2);
+      assert.equal(bpm, 96);
     }
 
     {
       const bpm = interpreter._getBpmInCurve(curve, 1, 4);
-      assert.equal(bpm, 108 / 2);
+      assert.equal(bpm, 108);
     }
 
     {
       const bpm = interpreter._getBpmInCurve(curve, 2, 1);
-      assert.equal(bpm, 120 / 2);
+      assert.equal(bpm, 120);
     }
   });
 

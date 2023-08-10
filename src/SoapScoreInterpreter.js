@@ -4,21 +4,13 @@ import TimeSignature from '@tonaljs/time-signature';
 export default class SoapScoreInterpreter {
   constructor(score) {
     this.score = parseScore(score);
-
-    // compute base musical unit from signature and tempo
-    this.score.forEach(event => this._computeBarUnit(event));
-    this.score.forEach(event => this._computeNumBeats(event));
-    this.score.forEach(event => this._harmonizeCurveBPM(event));
-
-    // should never change at this point
-    this._labels = this.score.filter(e => e.label !== null).map(e => e.label);
   }
 
   /**
    * Return the list of all labels
    */
   getLabels() {
-    return this._labels;
+    return this.score.filter(e => e.label !== null).map(e => e.label);
   }
 
   /**
@@ -271,136 +263,26 @@ export default class SoapScoreInterpreter {
   }
 
   /**
-   * Compute logical musical unit and bpm according to defined signature and tempo
-   *
-   * This is done once for all after score parsing
-   *
-   * - simple (e.g [4/4], [2/2], [5/4], [5/2]) -> 1 / numerator
-   * - compound (e.g. [3/8], [6/8]) -> 3 / numerator
-   * - irregular (e.g. [5/8], [7/8] -> 3 / numerator
-   */
-  _computeBarUnit(event) {
-    // if not signature has been given, i.e. absolute duration bars, abort
-    if (event.duration) {
-      event.unit = { upper: 1, lower: 1, bpm: 60 / event.duration };
-    } else {
-      let upper;
-      let lower;
-
-      if (event.signature.type === 'simple') {
-        upper = 1;
-        lower = event.signature.lower;
-      } else {
-        // Attention - Etienne's breaking change - only for tests
-        upper = 1;
-        lower = event.signature.lower;
-      }
-
-      // compute bpm of basis unit according to tempo basis and bpm
-      const ratio  = (event.tempo.basis.upper / event.tempo.basis.lower) / (upper / lower);
-      const bpm = event.tempo.bpm * ratio;
-
-      event.unit = { upper, lower, bpm };
-    }
-  }
-
-  /**
-   * Compute the number of beats, from a musical point of view, in a bar
-   *
-   * This is done once for all after score parsing
-   *
-   * e.g.:
-   * - BAR [6/8] has 2 beats
-   * - BAR [2+3+1/8] has 3 beats
-   */
-  _computeNumBeats(event) {
-    // if not signature has been given, i.e. absolute duration bars, abort
-    if (event.duration) {
-      event.numBeats = 1;
-    } else {
-      let numBeats;
-
-      if (event.signature.type === 'simple' || event.signature.type === 'compound') {
-        numBeats = event.signature.upper / event.unit.upper;
-      } else {
-        if (event.signature.additive.length === 0) {
-          // best effort
-          numBeats = Math.ceil(event.signature.upper / event.unit.upper);
-        } else {
-          numBeats = event.signature.additive.length;
-        }
-      }
-
-      event.numBeats = numBeats;
-    }
-  }
-
-  /**
-   * Replace curve bpm with the ones computed in _computeBarUnit
-   *
-   * This is done once for all after score parsing.
-   */
-  _harmonizeCurveBPM(event) {
-    if (!event.tempo || !event.tempo.curve) {
-      return
-    }
-
-    const { start, end } = event.tempo.curve;
-    const startEvent = this._getEventAtLocation(start.bar, start.beat);
-    const endEvent = this._getEventAtLocation(end.bar, end.beat);
-
-    start.bpm = startEvent.unit.bpm;
-    end.bpm = endEvent.unit.bpm;
-  }
-
-  /**
    * Return the normalized position inside a bar
    */
   _normalizeBeat(event, beat) {
     let normBeat;
+    let numBeats = 0;
 
-    if (event.signature.type === 'irregular') {
-
-      let numBeats = 0;
-
-      for (let i = 1; i < Math.floor(beat); i++) {
-        const localUpper = this._getLocalUpper(event, i);
-        numBeats += localUpper;
-      }
-
-      // handle floating point beats
-      if (Math.floor(beat) !== beat) {
-        const localUpper = this._getLocalUpper(event, beat);
-        numBeats += localUpper * (beat % 1);
-      }
-
-      normBeat = numBeats / event.signature.upper;
-    } else {
-      normBeat = (beat - 1) / event.numBeats;
+    for (let i = 1; i < Math.floor(beat); i++) {
+      const localUpper = event.units.upper[i - 1];
+      numBeats += localUpper;
     }
+
+    // handle floating point beats
+    if (Math.floor(beat) !== beat) {
+      const localUpper = event.units.upper[Math.floor(beat) - 1];
+      numBeats += localUpper * (beat % 1);
+    }
+
+    normBeat = numBeats / event.signature.upper;
 
     return normBeat;
-  }
-
-  /**
-   * For irregular signatures, return the right upper value accroding to the beat
-   */
-  _getLocalUpper(event, beat) {
-    beat = Math.floor(beat);
-    let localUpper;
-
-    if (event.signature.additive.length === 0) {
-      // only last beat can be lower than unit.upper
-      if (beat === event.numBeats) {
-        localUpper = event.signature.upper - event.unit.upper * (beat - 1);
-      } else {
-        localUpper = event.unit.upper;
-      }
-    } else {
-      localUpper = event.signature.additive[beat - 1];
-    }
-
-    return localUpper;
   }
 
   /**
@@ -408,43 +290,40 @@ export default class SoapScoreInterpreter {
    * point value, duration is the time until the next full beat
    */
   _getBeatDuration(event, bar, beat) {
-    const length = 1 - (beat % 1);
+    const beatRemaining = 1 - (beat % 1);
     beat = Math.floor(beat);
 
     if (event.duration) {
       // there is no possible tempo curve in absolute duration events
-      return event.duration * length;
+      return event.duration * beatRemaining;
     }
 
     // compute bpm according to eventual curve
-    let bpm;
+    const bpm = event.tempo.curve
+      ? this._getBpmInCurve(event.tempo.curve, bar, beat)
+      : event.tempo.bpm
 
-    if (event.tempo.curve) {
-      bpm = this._getBpmInCurve(event.tempo.curve, bar, beat);
-    } else {
-      bpm = event.unit.bpm;
-    }
+    const tempoBasisDuration = 60 / bpm;
+    const tempoBasisUpper = event.tempo.basis.upper;
+    const tempoBasisLower = event.tempo.basis.lower;
 
-    if (event.signature.type === 'irregular') {
-      // adapt duration according to local unit
-      const localUpper = this._getLocalUpper(event, beat);
-      const beatRatio = localUpper / event.unit.upper;
-      const unitDuration = 60 / bpm;
+    const unitUpper = event.units.upper[beat - 1];
+    const unitLower = event.units.lower;
 
-      return unitDuration * beatRatio * length;
-    } else {
-      return 60 / bpm * length;
-    }
+    const ratio = (unitUpper / unitLower) / (tempoBasisUpper / tempoBasisLower);
+
+    return tempoBasisDuration * ratio * beatRemaining;
   }
 
   /**
    * Return the duration of a bar, without curves applied
    */
   _getBarDuration(event) {
-    const beatDuration = 60 / event.unit.bpm;
-    const numBeats = event.signature.upper / event.unit.upper;
+    const beatDuration = 60 / event.tempo.bpm;
+    const numBeatsNormToBasis = (event.signature.upper / event.signature.lower)
+      / (event.tempo.basis.upper / event.tempo.basis.lower);
 
-    return beatDuration * numBeats;
+    return numBeatsNormToBasis * beatDuration;
   }
 
   /**
@@ -453,8 +332,8 @@ export default class SoapScoreInterpreter {
   _getNextLocation(event, bar, beat) {
     beat = Math.floor(beat) + 1;
 
-    if (beat > event.numBeats) {
-      // end of score, don't go to next bar
+    if (beat > event.units.numBeats) {
+      // end of score, there is no next bar
       if (event.end === true) {
         return null;
       }
@@ -517,7 +396,7 @@ export default class SoapScoreInterpreter {
   /**
    * Return the normalized number of bars between the (bar|beat) pairs
    */
-  _getNumBarNormalizedWithinEvent(event, startBar, startBeat, endBar, endBeat) {
+  _getNumBarWithinEvent(event, startBar, startBeat, endBar, endBeat) {
     const numBarNormalized = (endBar - (startBar + 1)) // number of full bars
         + 1 - this._normalizeBeat(event, startBeat) // duration from event beat to next bar
         + this._normalizeBeat(event, endBeat); // duration from bar start to beat
@@ -526,17 +405,31 @@ export default class SoapScoreInterpreter {
   }
 
   /**
-   * Return the number of units in the given interval, the returned value is
-   * normalized according to the duration of a bar of the start event.
-   *
-   * Used to compute the current position in the curve
+   * Return the number of bars (+ 1 beat) in the given interval expressed in the
+   * bar unit of the start event.
+   * The +1 beat is here because we want the first beat of the curve to be already
+   * faster. As such, then we offset the returned value (in bars) by one (phantom)
+   * "beat" (of length of the first beat in the interval) so that the curves logically
+   * starts before it's defined start beat.
    */
-  _getNumBarNormalizedAccrosEvents(startBar, startBeat, endBar, endBeat) {
+  _getNumBarAccrosEvents(startBar, startBeat, endBar, endBeat) {
     let numUnits = 0;
 
     const eventAtStart = this._getEventAtLocation(startBar, startBeat);
     const barDuration = this._getBarDuration(eventAtStart);
     const startIndex = this.score.indexOf(eventAtStart);
+
+    // add 1 "phantom" beat
+    const next = this._getNextLocation(eventAtStart, startBar, startBeat);
+    const offsetNormalized = this._getNumBarWithinEvent(
+      eventAtStart,
+      startBar,
+      startBeat,
+      next.bar,
+      next.beat,
+    );
+
+    numUnits += offsetNormalized;
 
     for (let i = startIndex; i < this.score.length; i++) {
       let event = this.score[i];
@@ -570,7 +463,7 @@ export default class SoapScoreInterpreter {
       }
 
       const localBarDuration = this._getBarDuration(event);
-      const numBarNormalized = this._getNumBarNormalizedWithinEvent(
+      const numBarNormalized = this._getNumBarWithinEvent(
         event,
         prevBar,
         prevBeat,
@@ -587,23 +480,24 @@ export default class SoapScoreInterpreter {
   }
 
   /**
-   * Compute the bpm of the given beat within the curve
+   * Compute the bpm of the given beat within the curve,
+   * Note that the returned value does not take into account the basis of the tempo,
+   * it is a mre interpolation between the 2 bpm values. The value of the basis
+   * to calculale the duration of e.g. a beat, must be taken into account later.
+   *
+   * The curve is applied on the given bar / beat as if the curve was starting at beat
+   * before it is defined, this may appear counterintuitive but is musicaly more
+   * pertinant.
    */
   _getBpmInCurve(curve, bar, beat) {
     const { start, end, exponent } = curve;
-
-    const event = this._getEventAtLocation(start.bar, start.beat);
-    const numBeatsPerBar = event.signature.upper / event.unit.upper
     // this is expressed in bar unit
-    const curveLength = this._getNumBarNormalizedAccrosEvents(start.bar, start.beat, end.bar, end.beat);
-    const positionInCurve = this._getNumBarNormalizedAccrosEvents(start.bar, start.beat, bar, beat);
-    // express in beat unit
-    const position = positionInCurve * numBeatsPerBar;
-    const length = curveLength * numBeatsPerBar;
-    // the first event in the curve should already be faster so we add 1 to the normalization
-    const normPosition = (position + 1) / (length + 1);
+    const curveLength = this._getNumBarAccrosEvents(start.bar, start.beat, end.bar, end.beat);
+    const positionInCurve = this._getNumBarAccrosEvents(start.bar, start.beat, bar, beat);
 
-    const bpm = start.bpm + (end.bpm - start.bpm) * Math.pow(normPosition, exponent);
+    const normPositionInCurve = positionInCurve / curveLength;
+    // console.log('normPositionInCurve', normPositionInCurve);
+    const bpm = start.bpm + (end.bpm - start.bpm) * Math.pow(normPositionInCurve, exponent);
 
     return bpm;
   }
@@ -631,7 +525,7 @@ export default class SoapScoreInterpreter {
       const numBasisInBar = event.signature.upper / upper;
       const basisDuration = 60 / bpm;
       const barDuration = numBasisInBar * basisDuration;
-      const numBarNormalized = this._getNumBarNormalizedWithinEvent(
+      const numBarNormalized = this._getNumBarWithinEvent(
         event,
         event.bar,
         event.beat,
