@@ -49,6 +49,8 @@ export default function layout(app) {
 
     ${renderAdvancedOptions ? html`
       <div class="advanced-options">
+        <!-- @TODO - fix me
+
         <h3>MTC</h3>
         <div>
           <div style="padding-bottom: 3px;">
@@ -103,25 +105,27 @@ export default function layout(app) {
               ?disabled=${app.mtcSend || app.mtcReceive}
             ></sc-number>
         </div>
+        -->
 
         <h3>Import</h3>
         <div class="dragndrop">
           <sc-dragndrop
             style="margin-bottom: 4px;"
-            label="drag'n'drop soap"
             format="load"
             @change=${e => app.setScore(e.detail.value[Object.keys(e.detail.value)[0]])}
-          ></sc-dragndrop>
+          >drag'n'drop SO(a)P</sc-dragndrop>
           <sc-dragndrop
             style="margin-bottom: 4px;"
-            label="drag'n'drop midi"
             @change=${e => app.parseMidi(e.detail.value[Object.keys(e.detail.value)[0]])}
-          ></sc-dragndrop>
+          >drag'n'drop MIDI</sc-dragndrop>
           <sc-dragndrop
             style="margin-bottom: 4px;"
-            label="drag'n'drop augustin"
-            @change=${e => app.parseAugustin(e.detail.value[Object.keys(e.detail.value)[0]])}
-          ></sc-dragndrop>
+            @change=${e => {
+              const name = Object.keys(e.detail.value)[0];
+              const data = e.detail.value[name];
+              app.parseAugustin(data, name);
+            }}
+          >drag'n'drop Augustin</sc-dragndrop>
         </div>
 
         <h3>Export</h3>

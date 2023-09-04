@@ -186,15 +186,11 @@ export default class Application {
 
   parseMidi(file) {
     const score = midi2soap.readString(file);
-    // console.log(midi2soap.outputLineForDebug(file));
-    // console.log(score);
     this.setScore(score);
   }
 
-  parseAugustin(file) {
-    const name = Object.keys(file)[0];
-    const data = file[name].toString();
-    const score = augustin2soap.readString(data, name);
+  parseAugustin(file, name) {
+    const score = augustin2soap.readString(file, name);
     this.setScore(score);
   }
 
