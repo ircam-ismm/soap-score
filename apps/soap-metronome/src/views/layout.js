@@ -221,7 +221,7 @@ export default function layout(app) {
           <sc-clock
             .getTimeFunction=${app.getTransportPosition}
             twinkle
-            format="hh:mm:ss"
+            format="hh:mm:ss:ms"
           ></sc-clock>
           <sc-text>
             ${app.soapEngine.bar}|${app.soapEngine.beat}

@@ -243,17 +243,19 @@ export default class SoapEngine {
       transport.play(currentTime + dt + 0.120);
 
       const nextTempo = 60 / this.next.event.tempo.bpm;
-      // sonofy two events before restarting flow
+
+      // @todo - this is broken!!!!!! FIX IT!!!!
+      // sonify two events before restarting flow
       for (let i = 1; i < 3; i++) {
         const upBeatTime = currentTime + dt - nextTempo * i;
+        // console.log('upbeatTime', upBeatTime);
 
         scheduler.defer((currentTime, audioTime, dt) => {
+          // console.log(currentTime, audioTime);
           this._triggerBeat(audioTime + dt, 1200, 0.3);
 
-          setTimeout(() => {
-            this.application.model.displayActiveBeat = true;
-            this.application.render();
-          }, dt * 1000);
+          this.application.model.displayActiveBeat = true;
+          this.application.render();
         }, upBeatTime);
       }
       return Infinity;
