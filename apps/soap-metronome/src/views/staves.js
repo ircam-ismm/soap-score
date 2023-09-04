@@ -55,7 +55,6 @@ export function renderTimeSignature(soapEngine) {
   }
 
   const { signature } = soapEngine.current.event;
-
   const div = document.createElement('div');
 
   const renderer = new Renderer(div, Renderer.Backends.SVG);
@@ -63,7 +62,7 @@ export function renderTimeSignature(soapEngine) {
   const context = renderer.getContext();
   const stave = new Stave(0, -30, 0);
 
-  stave.addTimeSignature(signature.name);
+  stave.addTimeSignature(`${signature.upper}/${signature.lower}`);
   stave.setContext(context).draw();
   context.rect(0, 0, 1, 100, { stroke: 'none', fill: 'white' });
 
