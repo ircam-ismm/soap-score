@@ -3094,7 +3094,7 @@ span.CodeMirror-selectedtext { background: none; }
           <div class="bar-beats">
             <div class="bar">
               ${e.soapEngine.current&&e.soapEngine.current.event.duration?st`<div>Duration: ${e.soapEngine.current.event.duration}s</div>`:st`
-                  ${function(e){if(!e.current)return ct;if(e.current.event.duration)return ct;const{signature:t}=e.current.event,i=document.createElement("div"),n=new ys(i,ys.Backends.SVG);n.resize(100,50);const r=n.getContext(),a=new Us(0,-30,0);return a.addTimeSignature(t.name),a.setContext(r).draw(),r.rect(0,0,1,100,{stroke:"none",fill:"white"}),i}(e.soapEngine)}
+                  ${function(e){if(!e.current)return ct;if(e.current.event.duration)return ct;const{signature:t}=e.current.event,i=document.createElement("div"),n=new ys(i,ys.Backends.SVG);n.resize(100,50);const r=n.getContext(),a=new Us(0,-30,0);return a.addTimeSignature(`${t.upper}/${t.lower}`),a.setContext(r).draw(),r.rect(0,0,1,100,{stroke:"none",fill:"white"}),i}(e.soapEngine)}
                   ${function(e){if(!e.current)return ct;if(e.current.event.duration)return ct;const{basis:t,bpm:i}=e.current.event.tempo;let n=t.lower/t.upper,r=null;Math.floor(n)===n?r=0:(n=t.lower/(t.upper-1),r=1);const a=document.createElement("div"),s=new ys(a,ys.Backends.SVG);s.resize(80,60);const o=s.getContext(),l=new Us(-10,10,0);return!1===function(e){return Math.log(e)/Math.log(2)%1==0}(n)&&(l.setText(`/${t.lower}`,va.Position.BELOW,{shift_x:20,shift_y:-76,justification:Ds.Justification.LEFT}),n=1),l.setTempo({duration:n,dots:r,bpm:i},0),l.setContext(o).draw(),a}(e.soapEngine)}
                 `}
             </div>
