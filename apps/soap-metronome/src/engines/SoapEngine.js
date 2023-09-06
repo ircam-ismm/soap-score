@@ -13,6 +13,7 @@ export default class SoapEngine {
     this.beat = 1;
     this.current = null;
     this.next = null;
+    this.transportState = null;
 
     // load buffers
     this.sound = {
@@ -52,6 +53,7 @@ export default class SoapEngine {
       ],
       buffers: {},
     };
+
     this.loadAudioBuffers();
   }
 
@@ -66,8 +68,10 @@ export default class SoapEngine {
 
   }
 
-  onTransportEvent(event, position, audioTime, dt) {
-    if (event.type === 'play' || event.type === 'seek') {
+  onTransportEvent(state, position, audioTime, dt) {
+    this.transportState = state;
+
+    if (state.type === 'play' || state.type === 'seek') {
       const { bar, beat } = this.interpreter.getLocationAtPosition(position);
       let infos;
 
@@ -83,8 +87,8 @@ export default class SoapEngine {
       this.next = null;
     }
 
-    if (event.type === 'loop') {
-      const { bar, beat } = this.interpreter.getLocationAtPosition(event.loopStart);
+    if (state.type === 'loop') {
+      const { bar, beat } = this.interpreter.getLocationAtPosition(state.loopStart);
       const infos = this.interpreter.getLocationInfos(bar, beat);
 
       this.current = infos;
@@ -93,7 +97,7 @@ export default class SoapEngine {
       this.next = null;
     }
 
-    if (event.speed > 0) {
+    if (state.speed > 0) {
       this.application.model.transportState = 'play';
     } else {
       this.application.model.transportState = 'stop';
@@ -102,14 +106,14 @@ export default class SoapEngine {
     this.application.model.displayActiveBeat = false;
     this.application.render();
 
-    if (event.speed > 0) {
+    if (state.speed > 0) {
       return this.current.position;
     } else {
       return Infinity;
     }
   }
 
-  advanceTime(position, audioTime, dt) {
+  advanceTime(position, audioTime, infos) {
     const { bar, beat } = this.interpreter.getLocationAtPosition(position);
 
     // if { bar beat } is below current location, where are in a loop
@@ -130,6 +134,11 @@ export default class SoapEngine {
       sonificationMode = 'beat';
     }
 
+    const duration = this.current.duration / this.transportState.speed;
+    // we don't need to apply speed on dt because it is a position
+    // const dt = this.current.dt / speed;
+    const dt = this.current.dt;
+
     // do not sonify event in between beats
     if (Math.abs(this.beat - Math.floor(this.beat)) < 1e-3) {
       const freq = this.beat === 1 ? 900 : 600;
@@ -143,7 +152,7 @@ export default class SoapEngine {
         // display the right infos
         this.next = this.interpreter.getNextLocationInfos(this.bar, this.beat);
 
-        return position + this.current.dt;
+        return position + dt;
       }
 
       // Computed unit according to signature, e.g.:
@@ -166,7 +175,7 @@ export default class SoapEngine {
               upper = 2;
             };
 
-            const delta = this.current.duration / upper;
+            const delta = duration / upper;
 
             for (let i = 1; i < upper; i++) {
               const subBeatTime = audioTime + i * delta;
@@ -181,7 +190,7 @@ export default class SoapEngine {
             upper = 2;
           };
 
-          const delta = this.current.duration / upper;
+          const delta = duration / upper;
 
           for (let i = 1; i < upper; i++) {
             const subBeatTime = audioTime + i * delta;
@@ -208,7 +217,6 @@ export default class SoapEngine {
           break;
       }
 
-
       setTimeout(() => {
         this.application.model.displayActiveBeat = true;
         this.application.render();
@@ -228,13 +236,12 @@ export default class SoapEngine {
     if (this.next === null) {
       const { transport, scheduler } = this.application;
       const currentTime = scheduler.currentTime;
-      transport.pause(currentTime + this.current.duration);
-      transport.seek(currentTime + this.current.duration, 0);
+      transport.pause(currentTime + duration);
+      transport.seek(currentTime + duration, 0);
       return Infinity;
     }
 
     if (this.current.event.fermata) {
-      const { duration, dt } = this.current;
       const { transport, scheduler } = this.application;
       const currentTime = scheduler.currentTime;
 
@@ -251,6 +258,7 @@ export default class SoapEngine {
         // console.log('upbeatTime', upBeatTime);
 
         scheduler.defer((currentTime, audioTime, dt) => {
+          dt = dt / speed;
           // console.log(currentTime, audioTime);
           this._triggerBeat(audioTime + dt, 1200, 0.3);
 
@@ -261,7 +269,7 @@ export default class SoapEngine {
       return Infinity;
     }
 
-    return position + this.current.dt;
+    return position + dt;
   }
 
   _triggerBeat(audioTime, freq, gain) {

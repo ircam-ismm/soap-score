@@ -286,7 +286,16 @@ export default function layout(app) {
               ></sc-transport>
             </div>
             <div>
-              <sc-text style="width: 130px;">start at position</sc-text>
+              <sc-text style="width: 150px;">speed</sc-text>
+              <sc-number
+                min="0.1"
+                max="5"
+                value="1"
+                @change=${e => app.setTransportSpeed(e.detail.value)}
+              ></sc-number>
+            </div>
+            <div>
+              <sc-text style="width: 150px;">start at position</sc-text>
               <sc-prev
                 @input=${e => app.seekToLocation(1, 1)}
               ></sc-prev>
@@ -342,14 +351,14 @@ export default function layout(app) {
             <div>
               <sc-text>sonification style</sc-text>
               <sc-select
-                .options=${['auto', 'beat', 'double', 'bar', 'odd', 'even']}
+                options=${JSON.stringify(['auto', 'beat', 'double', 'bar', 'odd', 'even'])}
                 @change=${e => app.setSonificationMode(e.target.value)}
               ></sc-select>
             </div>
             <div>
               <sc-text>sound</sc-text>
               <sc-select
-                .options=${['sine', 'drum', 'old-numerical', 'mechanical', 'drumstick']}
+                options=${JSON.stringify(['sine', 'drum', 'old-numerical', 'mechanical', 'drumstick'])}
                 @change=${(e) => app.setMetroSound(e.target.value)}
               ></sc-select>
             </div>

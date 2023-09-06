@@ -219,6 +219,12 @@ export default class Application {
     return this.transport.getState().currentState.speed === 0 ? 'stop' : 'play';
   }
 
+  setTransportSpeed(value) {
+    const now = this.getTime() + 0.100;
+
+    this.transport.speed(now, value);
+  }
+
   getTransportPosition() {
     return this.transport.getPositionAtTime(this.getTime());
   }
