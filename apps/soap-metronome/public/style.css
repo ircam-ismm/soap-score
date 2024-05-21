@@ -149,6 +149,10 @@ section .feedback .col-1 .progress-bar sc-chenillard {
   height: 40px;
 }
 
+section .feedback .col-2 {
+  flex-direction: column;
+}
+
 section .feedback .col-2 sc-clock {
   width: 100%;
   height: 100px;
@@ -160,7 +164,6 @@ section .feedback .col-2 sc-text {
   height: 70px;
   font-size: 24px;
   text-align: center;
-  white-space: initial;
   line-height: 60px;
 }
 

@@ -25,6 +25,9 @@ let defaultScore = `\
 BAR 1 [4/4] TEMPO [1/4]=120 \
 `;
 
+// debug
+// defaultScore = `BAR 1 2s`;
+
 const searchParams = new URLSearchParams(window.location.search);
 
 if (searchParams.has('score')) {

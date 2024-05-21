@@ -207,14 +207,12 @@ export default function layout(app) {
           ${app.soapEngine.current && app.soapEngine.current.event.duration
             ? html `
               <sc-progress-bar
-                .getProgressFunction=${app.getPositionInAbsoluteEvent}
-                min="0"
-                max="${app.soapEngine.current && app.soapEngine.current.event.duration ? app.soapEngine.current.event.duration : 1}"
-                displayNumber
+                .getProgressFunction=${app.getNormPositionInEvent}
+                duration="${app.soapEngine.current && app.soapEngine.current.event.duration ? app.soapEngine.current.event.duration : 1}"
               ></sc-progress-bar>`
             : html`
               <sc-chenillard
-                .getProgressFunction=${app.getTempoPosition}
+                .getProgressFunction=${app.getNormPositionInEvent}
               ></sc-chenillard>
             `
           }
@@ -227,12 +225,8 @@ export default function layout(app) {
             twinkle
             format="hh:mm:ss:ms"
           ></sc-clock>
-          <sc-text>
-            ${app.soapEngine.bar}|${app.soapEngine.beat}
-          </sc-text>
-          <sc-text>
-            ${app.soapEngine.current && app.soapEngine.current.event ? app.soapEngine.current.event.label : ''}
-          </sc-text>
+          <sc-text>${app.soapEngine.bar}|${app.soapEngine.beat}</sc-text>
+          <sc-text>${app.soapEngine.current && app.soapEngine.current.event ? app.soapEngine.current.event.label : ''}</sc-text>
         </div>
       </div>
 

@@ -72,8 +72,7 @@ export default class Application {
     this.mtcReceive = null; // Class
 
     this.getTransportPosition = this.getTransportPosition.bind(this);
-    this.getPositionInAbsoluteEvent = this.getPositionInAbsoluteEvent.bind(this);
-    this.getTempoPosition = this.getTempoPosition.bind(this);
+    this.getNormPositionInEvent = this.getNormPositionInEvent.bind(this);
 
     // for the chenillard (should be cleaned)
     this._current = { position: null, duration: null };
@@ -226,40 +225,11 @@ export default class Application {
   }
 
   getTransportPosition() {
-    return this.transport.getPositionAtTime(this.getTime());
+    return this.transport.getPositionAtTime(this.transport.currentTime);
   }
 
-  getTempoPosition() {
-    // this is shit sorry
-    if (this.soapEngine.current) {
-      const now = this.transport.getPositionAtTime(this.getTime());
-      const { position, duration, beat } = this.soapEngine.current;
-
-      // console.log(this._current)
-      if (position !== this._current.position && Math.floor(beat) === beat) {
-        this._next = { position, duration };
-      }
-
-      // console.log(this._next)
-      if (this._next && now >= this._next.position) {
-        this._current = this._next;
-        this._next = null;
-        this._direction = !this._direction;
-      }
-
-      const norm = (now - this._current.position) / this._current.duration;
-
-      if (this._direction) {
-        return 1 - norm;
-      } else {
-        return norm;
-      }
-    } else {
-      return 0;
-    }
-  }
-
-  getPositionInAbsoluteEvent() {
+  // return normalized position in event, for the schenillard
+  getNormPositionInEvent() {
     if (!this.soapEngine.current) {
       return 0;
     }
@@ -269,9 +239,13 @@ export default class Application {
     const startPosition = interpreter.getPositionAtLocation(bar, beat);
     const currentPosition = this.getTransportPosition();
 
-    const now = currentPosition - startPosition;
+    let normPosition = (currentPosition - startPosition) / duration;
 
-    return now;
+    if (beat % 2 === 0) {
+      normPosition = 1 - normPosition;
+    }
+
+    return normPosition;
   }
 
   setTransportLoop(value) {
