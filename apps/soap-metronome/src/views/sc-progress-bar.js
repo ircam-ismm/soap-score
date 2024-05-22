@@ -5,9 +5,7 @@ class ScProgressBar extends LitElement {
   static get properties() {
     return {
       getProgressFunction: {},
-      min: { type: Number },
-      max: { type: Number },
-      displayNumber: { type: Boolean },
+      duration: { type: Number },
     }
   }
   static get styles() {
@@ -48,49 +46,34 @@ class ScProgressBar extends LitElement {
     super();
 
     this.getProgressFunction = getTime;
-    this.width = 400;
-    this.height = 30;
-    this.min = 0;
-    this.max = 1;
-    this.displayNumber = false;
+    this.duration = 1;
 
-    this._clamped = 0;
+    this._value = 0;
     this._norm = 0;
   }
 
   render() {
-    const progressWidth = Math.round(this._norm * 1000);
-
     return html`
       <sc-number
         readonly
         min="0"
-        value="${this._clamped}"
+        step="0.1"
+        value="${this._value}"
       ></sc-number>
       <svg viewBox="0 0 1000 1000"  preserveAspectRatio="none">
         <rect class="background" width="1000" height="1000"></rect>
-        <rect class="foreground" width="${progressWidth}" height="1000"></rect>
+        <rect class="foreground" width="${Math.max(0, Math.round(this._norm * 1000))}" height="1000"></rect>
       </svg>
     `;
   }
 
   _render() {
-    const progress = this.getProgressFunction();
+    const progress = this.getProgressFunction(); // normalized
 
-    if (Number.isFinite(progress)) {
-      const clamped = Math.min(Math.max(progress, this.min), this.max);
-
-      let norm = 0;
-
-      if (Number.isFinite(clamped)) {
-        norm = (clamped - this.min) / (this.max - this.min);
-      };
-
-      if (norm !== this._norm) {
-        this._clamped = clamped;
-        this._norm = norm;
-        this.requestUpdate();
-      }
+    if (progress !== this._norm) {
+      this._norm = progress;
+      this._value = progress * this.duration;;
+      this.requestUpdate();
     }
 
     this._rafId = requestAnimationFrame(() => this._render());

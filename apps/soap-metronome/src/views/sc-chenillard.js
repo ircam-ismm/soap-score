@@ -1,5 +1,4 @@
-import { css, html, svg, nothing, LitElement } from 'lit';
-import { getTime } from '@ircam/sc-gettime';
+import { css, html, LitElement } from 'lit';
 
 class ScChenillard extends LitElement {
   static get properties() {
@@ -40,10 +39,11 @@ class ScChenillard extends LitElement {
   constructor() {
     super();
 
-    this.getProgressFunction = getTime;
     this.size = 0.1; // size of the moving part
+    this.getProgressFunction = null;
 
-    this._progress;
+    this._progress = 0;
+    this._render = this._render.bind(this);
   }
 
   render() {
@@ -61,7 +61,7 @@ class ScChenillard extends LitElement {
   }
 
   _render() {
-    const progress = this.getProgressFunction();
+    let progress = Math.max(0, Math.min(1, this.getProgressFunction()));
 
     if (Number.isFinite(progress)) {
       if (progress !== this._progress) {
@@ -70,7 +70,7 @@ class ScChenillard extends LitElement {
       }
     }
 
-    this._rafId = requestAnimationFrame(() => this._render());
+    this._rafId = requestAnimationFrame(this._render);
   }
 
   connectedCallback() {
