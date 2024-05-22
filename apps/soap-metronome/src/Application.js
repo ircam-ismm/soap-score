@@ -2,7 +2,7 @@ import { render } from 'lit';
 import { Transport } from '@ircam/sc-scheduling';
 import toWav from 'audiobuffer-to-wav';
 
-import layout from './views/layout.js';
+import conductorLayout from './views/conductor-layout.js';
 
 import SoapEngine from './engines/SoapEngine.js';
 import MTCSend from './engines/MTCSend.js';
@@ -434,6 +434,6 @@ export default class Application {
   }
 
   render() {
-    render(layout(this), document.body);
+    render(conductorLayout(this), document.body);
   }
 }
