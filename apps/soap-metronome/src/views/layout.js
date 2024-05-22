@@ -49,8 +49,6 @@ export default function layout(app) {
 
     ${renderAdvancedOptions ? html`
       <div class="advanced-options">
-        <!-- @TODO - fix me
-
         <h3>MTC</h3>
         <div>
           <div style="padding-bottom: 3px;">
@@ -73,7 +71,7 @@ export default function layout(app) {
             <sc-text>input device</sc-text>
             <sc-select
               @change=${e => app.model.mtcParams.inputInterface = e.target.value}
-              .options=${Object.keys(app.model.midiDeviceList.inputs)}
+              .options=${app.model.midiDeviceList.inputs}
               value=${app.model.mtcParams.inputInterface}
               ?disabled=${app.mtcSend || app.mtcReceive}
             ></sc-select>
@@ -81,7 +79,7 @@ export default function layout(app) {
           <div style="padding-bottom: 3px;">
             <sc-text>output device</sc-text>
             <sc-select
-              .options=${Object.keys(app.model.midiDeviceList.outputs)}
+              .options=${app.model.midiDeviceList.outputs}
               value=${app.model.mtcParams.outputInterface}
               ?disabled=${app.mtcSend || app.mtcReceive}
               @change=${e => app.model.mtcParams.outputInterface = e.target.value}
@@ -105,8 +103,6 @@ export default function layout(app) {
               ?disabled=${app.mtcSend || app.mtcReceive}
             ></sc-number>
         </div>
-        -->
-
         <h3>Import</h3>
         <div class="dragndrop">
           <sc-dragndrop

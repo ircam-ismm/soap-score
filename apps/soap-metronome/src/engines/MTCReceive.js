@@ -2,6 +2,7 @@ import hrtime from 'browser-hrtime';
 import JZZ from 'jzz';
 import NanoTimer from 'nanotimer';
 import Timecode from 'smpte-timecode';
+import "setimmediate";
 
 /**
  * @warning
@@ -95,7 +96,6 @@ export default class MTCReceive {
 
   receiveTC(msg) {
     if (this.slaveClock.read(msg)) {
-
       this.localTime = this.getTime();
       this.remoteTime = Timecode(this.slaveClock.toString(), this.framerate, false);
 
@@ -138,7 +138,7 @@ export default class MTCReceive {
 
           if (clockDiff > this.frameToSeconds(this.maxDriftError)) {
             console.log(`more than ${this.maxDriftError} frames out of sync...`);
-            this._onDrift();
+            // this._onDrift();
             // pause transport and schedule a new start
             this._onPause(this.localTime);
             this.checkRemoteState = 'pause';

@@ -136,7 +136,11 @@ export default class Application {
     this.setTransportState('stop');
   }
 
-  createMTCReceive() {
+  async createMTCReceive() {
+    if (this.audioContext.state === 'suspended') {
+      await this.audioContext.resume();
+    }
+
     this.setTransportState('stop');
 
     this.mtcReceive = new MTCReceive(this.getTime, this.transport, this.model.mtcParams, {
