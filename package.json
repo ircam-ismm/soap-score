@@ -4,7 +4,8 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha tests/*.spec.js",
+    "test:only": "mocha"
   },
   "author": [
     "Benjamin Matuszewski",

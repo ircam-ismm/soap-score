@@ -66740,10 +66740,30 @@ function parseScore(score) {
   return list;
 }
 
+// ../../src/utils/memoize-last.js
+function memoizeLast(func) {
+  let lastArguments = null;
+  let lastResult = null;
+  return function(...args) {
+    if (lastArguments !== null && args.every((item, index2) => item === lastArguments[index2])) {
+      return lastResult;
+    }
+    lastResult = func(...args);
+    lastArguments = args;
+    return lastResult;
+  };
+}
+
 // ../../src/SoapScoreInterpreter.js
 var SoapScoreInterpreter = class {
   constructor(score) {
     this.score = parseScore(score);
+    this.getLocationAtLabel = memoizeLast(this.getLocationAtLabel.bind(this));
+    this.getPositionAtLabel = memoizeLast(this.getPositionAtLabel.bind(this));
+    this.getPositionAtLocation = memoizeLast(this.getPositionAtLocation.bind(this));
+    this.getLocationAtPosition = memoizeLast(this.getLocationAtPosition.bind(this));
+    this.getLocationInfos = memoizeLast(this.getLocationInfos.bind(this));
+    this.getNextLocationInfos = memoizeLast(this.getNextLocationInfos.bind(this));
   }
   /**
    * Return the list of all labels
@@ -66805,6 +66825,7 @@ var SoapScoreInterpreter = class {
    * Return the (bar|beat) pair that correspond to the given position
    */
   getLocationAtPosition(targetPosition) {
+    console.log("getLocationAtPosition", targetPosition);
     if (targetPosition < 0) {
       throw new Error("Invalid target position, cannot be negative");
     }
@@ -67896,6 +67917,7 @@ var SoapTransportControl = class extends s3 {
   }
   async _onTransportChange(e7) {
     await ensureResumedAudioContext(this.audioContext);
+    console.log(this.audioContext.state);
     const now = this.transport.currentTime;
     const event = this.transport[e7.detail.value](now);
   }

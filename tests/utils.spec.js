@@ -16,8 +16,7 @@ import {
   unitsSignature,
   tempoBasisSignature,
 } from '../src/utils/time-signatures.js';
-
-
+import memoizeLast from '../src/utils/memoize-last.js';
 
 describe('test syntax regexps', () => {
   it('should test bar signature syntax properly', () => {
@@ -338,5 +337,30 @@ describe('tempoBasisSignature(value)', () => {
     };
     const result = tempoBasisSignature('[3/8]');
     assert.deepEqual(expected, result);
+  });
+});
+
+describe('memoizeLast', () => {
+  it(`should work`, () => {
+    let counter = 0;
+
+    function test(a, b) {
+      counter += 1;
+      return (a + b) * 10;
+    }
+
+    const wrapped = memoizeLast(test);
+
+    const result1 = wrapped(1, 2);
+    const result2 = wrapped(1, 2);
+    assert.equal(result1, 30);
+    assert.equal(result2, 30);
+    assert.equal(counter, 1);
+
+    const result3 = wrapped(2, 2);
+    const result4 = wrapped(2, 2);
+    assert.equal(result3, 40);
+    assert.equal(result4, 40);
+    assert.equal(counter, 2);
   });
 });

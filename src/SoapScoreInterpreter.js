@@ -1,8 +1,16 @@
 import { parseScore } from './soap-score-parser.js';
+import memoizeLast from './utils/memoize-last.js';
 
 export default class SoapScoreInterpreter {
   constructor(score) {
     this.score = parseScore(score);
+
+    this.getLocationAtLabel = memoizeLast(this.getLocationAtLabel.bind(this));
+    this.getPositionAtLabel = memoizeLast(this.getPositionAtLabel.bind(this));
+    this.getPositionAtLocation = memoizeLast(this.getPositionAtLocation.bind(this));
+    this.getLocationAtPosition = memoizeLast(this.getLocationAtPosition.bind(this));
+    this.getLocationInfos = memoizeLast(this.getLocationInfos.bind(this));
+    this.getNextLocationInfos = memoizeLast(this.getNextLocationInfos.bind(this));
   }
 
   /**
@@ -82,6 +90,7 @@ export default class SoapScoreInterpreter {
    * Return the (bar|beat) pair that correspond to the given position
    */
   getLocationAtPosition(targetPosition) {
+    console.log('getLocationAtPosition', targetPosition);
     if (targetPosition < 0) {
       throw new Error('Invalid target position, cannot be negative');
     }
