@@ -9,16 +9,19 @@ class SoapFlashBeatRenderer extends LitElement {
 
     this.transport = null;
     this.interpreter = null;
+    this.beat = null;
     this.process = this.process.bind(this);
   }
 
   render() {
+    // use Math.random() as a hack to trigger the flashes even if we have two
+    // consecutive beats with same value, e.g. 2 bars with absolute duration
     return html`
       <sc-flash class="downbeat"
-        .active=${this.beat === 1 ? this.beat : null}
+        .active=${this.beat !== null && this.beat === 1 ? Math.random() : null}
       ></sc-flash>
       <sc-flash class="upbeat"
-        .active=${this.beat !== 1 ? this.beat : null}
+        .active=${this.beat !== null && this.beat !== 1 ? Math.random() : null}
       ></sc-flash>
     `;
   }

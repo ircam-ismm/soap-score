@@ -9,9 +9,15 @@ import '@ircam/sc-components/sc-clock.js';
 import './views/SoapTransportControl.js';
 import './views/SoapFlashBeatRenderer.js';
 import './views/SoapScoreLocationRenderer.js';
+import './views/SoapStaveRenderer.js';
 
 
-const defaultScore = `BAR 1 [4/4] TEMPO [1/4]=90`;
+const defaultScore = `
+  BAR 1 [4/4] TEMPO [1/4]=90
+  BAR 2 2s
+  BAR 3 2s
+  BAR 4 [3+2+2/8] TEMPO [3/8]=60
+`;
 
 class App {
   constructor(audioContext) {
@@ -60,6 +66,12 @@ class App {
           .transport=${this.transport}
           .interpreter=${this.interpreter}
         ></soap-score-location-renderer>
+        <br />
+        <br />
+        <soap-stave-renderer
+          .transport=${this.transport}
+          .interpreter=${this.interpreter}
+        ></soap-stave-renderer>
       </div>
     `, document.body);
   }

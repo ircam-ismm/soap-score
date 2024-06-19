@@ -90,7 +90,6 @@ export default class SoapScoreInterpreter {
    * Return the (bar|beat) pair that correspond to the given position
    */
   getLocationAtPosition(targetPosition) {
-    console.log('getLocationAtPosition', targetPosition);
     if (targetPosition < 0) {
       throw new Error('Invalid target position, cannot be negative');
     }

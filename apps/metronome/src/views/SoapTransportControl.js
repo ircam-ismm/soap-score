@@ -9,10 +9,6 @@ async function ensureResumedAudioContext(audioContext) {
 }
 
 class SoapTransportControl extends LitElement {
-  // static properties = {
-
-  // }
-
   constructor() {
     super();
 
@@ -32,7 +28,7 @@ class SoapTransportControl extends LitElement {
 
   async _onTransportChange(e) {
     await ensureResumedAudioContext(this.audioContext);
-    console.log(this.audioContext.state);
+    // console.log(this.audioContext.state);
 
     const now = this.transport.currentTime;
     const event = this.transport[e.detail.value](now);
