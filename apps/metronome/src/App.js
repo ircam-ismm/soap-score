@@ -7,8 +7,7 @@ import SoapScoreInterpreter from '../../../src/SoapScoreInterpreter.js';
 
 import '@ircam/sc-components/sc-select.js';
 
-import layoutFull from './layouts/full.js';
-import layoutTest from './layouts/test.js';
+const layouts = ['full', 'test']
 
 class App {
   constructor(audioContext, buffers, defaultScore) {
@@ -38,30 +37,15 @@ class App {
   }
 
   // @todo - provide several layouts
-  render() {
-    let inner = html`<h1>Coucou</h1>`;
-
-    switch (this.layout) {
-      case 'full': {
-        inner = layoutFull(this);
-        break;
-      }
-      case 'test': {
-        inner = layoutTest(this);
-        break;
-      }
-      default: {
-        console.log(`layout ${this.layout} not implemented`);
-        break;
-      }
-    }
-
-    console.log(inner);
+  async render() {
+    const mod = await import(`./layouts/${this.layout}.js`);
+    const layout = mod.default;
+    const inner = layout(this);
 
     render(html`
       <header>
         <sc-select
-          .options=${['full', 'test']}
+          .options=${layouts}
           @change=${e => {
             this.layout = e.detail.value;
             this.render();
