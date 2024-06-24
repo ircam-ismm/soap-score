@@ -16,7 +16,6 @@ async function ensureResumedAudioContext(audioContext) {
 class SoapTransportControl extends LitElement {
   static styles = css`
     :host {
-      background-color: yellow;
       display: block;
       width: 100%;
       height: 100%;
@@ -113,7 +112,6 @@ class SoapTransportControl extends LitElement {
           ?value=${this.loop}
           @change=${e => {
             this.loop = e.detail.value
-            console.log('loop', this.loop);
             this.transport.loop(this.loop);
           }}
         ></sc-loop>
@@ -126,7 +124,6 @@ class SoapTransportControl extends LitElement {
           @change=${e => {
             this.loopStartBar = e.detail.value;
             const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
-            console.log('loopStart', position);
             this.transport.loopStart(position);
           }}
         ></sc-number>
@@ -150,7 +147,6 @@ class SoapTransportControl extends LitElement {
           @change=${e => {
             this.loopEndBar = e.detail.value;
             const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
-            console.log('loopEnd', position);
             this.transport.loopEnd(position);
           }}
         ></sc-number>
@@ -198,10 +194,9 @@ class SoapTransportControl extends LitElement {
     }
   }
 
-  // transport callback
   process(position, audioTime, event) {
     if (event instanceof TransportEvent) {
-      console.log(event);
+      // console.log(event);
       if (['start', 'pause', 'stop'].includes(event.type)) {
         this.state = event.type;
         setTimeout(() => this.requestUpdate(), event.tickLookahead * 1000);

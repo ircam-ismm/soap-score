@@ -16031,8 +16031,8 @@ var Scheduler = class {
    * @param {function} getTimeFunction - Function that returns a time in seconds,
    *  defining the timeline in which the scheduler is running.
    * @param {object} options - Options of the scheduler
-   * @param {number} [options.period=0.25] - Period of the scheduler, in seconds
-   * @param {number} [options.period=0.1] - Lookahead of the scheduler, in seconds
+   * @param {number} [options.period=0.02] - Period of the scheduler, in seconds
+   * @param {number} [options.period=0.05] - Lookahead of the scheduler, in seconds
    * @param {number} [options.queueSize=1e3] - Default size of the queue, i.e.
    *  the number of events that can be scheduled in parallel
    * @param {function} [options.currentTimeToProcessorTimeFunction=Identity] - Function
@@ -16042,8 +16042,8 @@ var Scheduler = class {
    *  at same time before the processor is rejected from the scheduler
    */
   constructor(getTimeFunction, {
-    period = 0.025,
-    lookahead = 0.1,
+    period = 0.02,
+    lookahead = 0.05,
     queueSize = 1e3,
     currentTimeToProcessorTimeFunction = identity,
     // [deprecated]
@@ -16257,6 +16257,9 @@ var Scheduler = class {
       throw new DOMException(`Cannot execute 'reset' on Scheduler: Processor has not been added to this scheduler`, "NotSupportedError");
     }
     if (isNumber2(time)) {
+      const processorInfos = this.#processorRecursionsInfos.get(processor);
+      processorInfos.time = time;
+      processorInfos.counter = 1;
       this.#queue.move(processor, time);
     } else {
       this.#remove(processor);
@@ -18460,6 +18463,117 @@ var SoapScoreInterpreter = class {
   }
 };
 
+// node_modules/lit-html/directive.js
+var t3 = { ATTRIBUTE: 1, CHILD: 2, PROPERTY: 3, BOOLEAN_ATTRIBUTE: 4, EVENT: 5, ELEMENT: 6 };
+var e4 = (t5) => (...e7) => ({ _$litDirective$: t5, values: e7 });
+var i4 = class {
+  constructor(t5) {
+  }
+  get _$AU() {
+    return this._$AM._$AU;
+  }
+  _$AT(t5, e7, i5) {
+    this._$Ct = t5, this._$AM = e7, this._$Ci = i5;
+  }
+  _$AS(t5, e7) {
+    return this.update(t5, e7);
+  }
+  update(t5, e7) {
+    return this.render(...e7);
+  }
+};
+
+// node_modules/lit-html/directive-helpers.js
+var { I: t4 } = z;
+var s4 = () => document.createComment("");
+var r5 = (o5, i5, n4) => {
+  const e7 = o5._$AA.parentNode, l3 = void 0 === i5 ? o5._$AB : i5._$AA;
+  if (void 0 === n4) {
+    const i6 = e7.insertBefore(s4(), l3), c5 = e7.insertBefore(s4(), l3);
+    n4 = new t4(i6, c5, o5, o5.options);
+  } else {
+    const t5 = n4._$AB.nextSibling, i6 = n4._$AM, c5 = i6 !== o5;
+    if (c5) {
+      let t6;
+      n4._$AQ?.(o5), n4._$AM = o5, void 0 !== n4._$AP && (t6 = o5._$AU) !== i6._$AU && n4._$AP(t6);
+    }
+    if (t5 !== l3 || c5) {
+      let o6 = n4._$AA;
+      for (; o6 !== t5; ) {
+        const t6 = o6.nextSibling;
+        e7.insertBefore(o6, l3), o6 = t6;
+      }
+    }
+  }
+  return n4;
+};
+var v2 = (o5, t5, i5 = o5) => (o5._$AI(t5, i5), o5);
+var u3 = {};
+var m2 = (o5, t5 = u3) => o5._$AH = t5;
+var p3 = (o5) => o5._$AH;
+var h3 = (o5) => {
+  o5._$AP?.(false, true);
+  let t5 = o5._$AA;
+  const i5 = o5._$AB.nextSibling;
+  for (; t5 !== i5; ) {
+    const o6 = t5.nextSibling;
+    t5.remove(), t5 = o6;
+  }
+};
+
+// node_modules/lit-html/directives/repeat.js
+var u4 = (e7, s5, t5) => {
+  const r6 = /* @__PURE__ */ new Map();
+  for (let l3 = s5; l3 <= t5; l3++) r6.set(e7[l3], l3);
+  return r6;
+};
+var c4 = e4(class extends i4 {
+  constructor(e7) {
+    if (super(e7), e7.type !== t3.CHILD) throw Error("repeat() can only be used in text expressions");
+  }
+  dt(e7, s5, t5) {
+    let r6;
+    void 0 === t5 ? t5 = s5 : void 0 !== s5 && (r6 = s5);
+    const l3 = [], o5 = [];
+    let i5 = 0;
+    for (const s6 of e7) l3[i5] = r6 ? r6(s6, i5) : i5, o5[i5] = t5(s6, i5), i5++;
+    return { values: o5, keys: l3 };
+  }
+  render(e7, s5, t5) {
+    return this.dt(e7, s5, t5).values;
+  }
+  update(s5, [t5, r6, c5]) {
+    const d3 = p3(s5), { values: p4, keys: a3 } = this.dt(t5, r6, c5);
+    if (!Array.isArray(d3)) return this.ut = a3, p4;
+    const h4 = this.ut ??= [], v3 = [];
+    let m3, y3, x2 = 0, j2 = d3.length - 1, k2 = 0, w2 = p4.length - 1;
+    for (; x2 <= j2 && k2 <= w2; ) if (null === d3[x2]) x2++;
+    else if (null === d3[j2]) j2--;
+    else if (h4[x2] === a3[k2]) v3[k2] = v2(d3[x2], p4[k2]), x2++, k2++;
+    else if (h4[j2] === a3[w2]) v3[w2] = v2(d3[j2], p4[w2]), j2--, w2--;
+    else if (h4[x2] === a3[w2]) v3[w2] = v2(d3[x2], p4[w2]), r5(s5, v3[w2 + 1], d3[x2]), x2++, w2--;
+    else if (h4[j2] === a3[k2]) v3[k2] = v2(d3[j2], p4[k2]), r5(s5, d3[x2], d3[j2]), j2--, k2++;
+    else if (void 0 === m3 && (m3 = u4(a3, k2, w2), y3 = u4(h4, x2, j2)), m3.has(h4[x2])) if (m3.has(h4[j2])) {
+      const e7 = y3.get(a3[k2]), t6 = void 0 !== e7 ? d3[e7] : null;
+      if (null === t6) {
+        const e8 = r5(s5, d3[x2]);
+        v2(e8, p4[k2]), v3[k2] = e8;
+      } else v3[k2] = v2(t6, p4[k2]), r5(s5, d3[x2], t6), d3[e7] = null;
+      k2++;
+    } else h3(d3[j2]), j2--;
+    else h3(d3[x2]), x2++;
+    for (; k2 <= w2; ) {
+      const e7 = r5(s5, v3[w2 + 1]);
+      v2(e7, p4[k2]), v3[k2++] = e7;
+    }
+    for (; x2 <= j2; ) {
+      const e7 = d3[x2++];
+      null !== e7 && h3(e7);
+    }
+    return this.ut = a3, m2(s5, v3), w;
+  }
+});
+
 // node_modules/@ircam/sc-components/src/styles.js
 var cssVars = `
 :root {
@@ -18530,6 +18644,139 @@ var ScElement = class extends s3 {
   }
 };
 var ScElement_default = ScElement;
+
+// node_modules/@ircam/sc-components/src/sc-select.js
+var itemId = 0;
+var ScSelect = class extends ScElement_default {
+  static properties = {
+    options: {
+      type: Object
+    },
+    value: {
+      type: String,
+      reflect: true
+    },
+    placeholder: {
+      type: String,
+      reflect: true
+    },
+    disabled: {
+      type: Boolean,
+      reflect: true
+    }
+  };
+  static styles = i`
+    :host {
+      display: inline-block;
+      box-sizing: border-box;
+      vertical-align: top;
+      height: 30px;
+      width: 200px;
+      font-family: var(--sc-font-family);
+      font-size: var(--sc-font-size);
+      color: #fff;
+      border: 1px solid var(--sc-color-primary-5);
+      border-radius: 2px;
+      overflow: auto;
+    }
+
+    :host([hidden]) {
+      display: none
+    }
+
+    :host([disabled]) {
+      border: 1px solid var(--sc-color-primary-4);
+    }
+
+    :host(:focus), :host(:focus-visible) {
+      outline: none;
+      border: 1px solid var(--sc-color-primary-4);
+    }
+
+    select {
+      display: block;
+      font-family: inherit;
+      font-size: inherit;
+      width: 100%;
+      height: 100%;
+      text-indent: 4px;
+      border-radius: 0;
+      border: none;
+    }
+
+    select:focus {
+      outline: none;
+    }
+
+    option {
+      text-indent: 4px;
+    }
+  `;
+  constructor() {
+    super();
+    this.options = [];
+    this.value = null;
+    this.disabled = false;
+    this.placeholder = "";
+  }
+  render() {
+    const isObject = isPlainObject2(this.options);
+    return x`
+      <select
+        ?disabled=${this.disabled}
+        @change=${this._dispatchEvent}
+      >
+        ${this.placeholder ? x`<option value="">${this.placeholder}</option` : T}
+        ${c4(Object.entries(this.options), () => `sc-select-${itemId++}`, ([key, value2]) => {
+      return x`
+            <option
+              value=${key}
+              ?selected=${value2 === this.value}
+            >${isObject ? key : value2}</option>
+          `;
+    })}
+      </select>
+    `;
+  }
+  updated(changedProperties) {
+    if (changedProperties.has("disabled")) {
+      const tabindex = this.disabled ? -1 : this._tabindex;
+      const $select = this.shadowRoot.querySelector("select");
+      $select.setAttribute("tabindex", tabindex);
+      if (this.disabled) {
+        this.blur();
+      }
+    }
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    this._tabindex = this.getAttribute("tabindex") || 0;
+  }
+  _dispatchEvent(e7) {
+    if (this.disabled) {
+      return;
+    }
+    const isObject = isPlainObject2(this.options);
+    if (isObject) {
+      const key = e7.target.value;
+      this.value = this.options[key];
+    } else {
+      const index2 = this.placeholder ? e7.target.selectedIndex - 1 : e7.target.selectedIndex;
+      this.value = this.options[index2];
+    }
+    const changeEvent = new CustomEvent("change", {
+      bubbles: true,
+      composed: true,
+      detail: {
+        value: this.value
+      }
+    });
+    this.dispatchEvent(changeEvent);
+  }
+};
+if (customElements.get("sc-select") === void 0) {
+  customElements.define("sc-select", ScSelect);
+}
 
 // node_modules/@ircam/sc-components/src/sc-clock.js
 function padLeft(value2, char, length) {
@@ -18708,26 +18955,6 @@ var ScClock = class extends ScElement_default {
 if (customElements.get("sc-clock") === void 0) {
   customElements.define("sc-clock", ScClock);
 }
-
-// node_modules/lit-html/directive.js
-var t3 = { ATTRIBUTE: 1, CHILD: 2, PROPERTY: 3, BOOLEAN_ATTRIBUTE: 4, EVENT: 5, ELEMENT: 6 };
-var e4 = (t5) => (...e7) => ({ _$litDirective$: t5, values: e7 });
-var i4 = class {
-  constructor(t5) {
-  }
-  get _$AU() {
-    return this._$AM._$AU;
-  }
-  _$AT(t5, e7, i5) {
-    this._$Ct = t5, this._$AM = e7, this._$Ci = i5;
-  }
-  _$AS(t5, e7) {
-    return this.update(t5, e7);
-  }
-  update(t5, e7) {
-    return this.render(...e7);
-  }
-};
 
 // node_modules/lit-html/directives/class-map.js
 var e5 = e4(class extends i4 {
@@ -20360,7 +20587,6 @@ async function ensureResumedAudioContext(audioContext3) {
 var SoapTransportControl = class extends s3 {
   static styles = i`
     :host {
-      background-color: yellow;
       display: block;
       width: 100%;
       height: 100%;
@@ -20450,7 +20676,6 @@ var SoapTransportControl = class extends s3 {
           ?value=${this.loop}
           @change=${(e7) => {
       this.loop = e7.detail.value;
-      console.log("loop", this.loop);
       this.transport.loop(this.loop);
     }}
         ></sc-loop>
@@ -20463,7 +20688,6 @@ var SoapTransportControl = class extends s3 {
           @change=${(e7) => {
       this.loopStartBar = e7.detail.value;
       const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
-      console.log("loopStart", position);
       this.transport.loopStart(position);
     }}
         ></sc-number>
@@ -20487,7 +20711,6 @@ var SoapTransportControl = class extends s3 {
           @change=${(e7) => {
       this.loopEndBar = e7.detail.value;
       const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
-      console.log("loopEnd", position);
       this.transport.loopEnd(position);
     }}
         ></sc-number>
@@ -20528,10 +20751,8 @@ var SoapTransportControl = class extends s3 {
       this.transport.remove(this.process);
     }
   }
-  // transport callback
   process(position, audioTime, event) {
     if (event instanceof TransportEvent_default) {
-      console.log(event);
       if (["start", "pause", "stop"].includes(event.type)) {
         this.state = event.type;
         setTimeout(() => this.requestUpdate(), event.tickLookahead * 1e3);
@@ -20542,230 +20763,6 @@ var SoapTransportControl = class extends s3 {
 };
 if (customElements.get("soap-transport-control") === void 0) {
   customElements.define("soap-transport-control", SoapTransportControl);
-}
-
-// node_modules/lit-html/directive-helpers.js
-var { I: t4 } = z;
-var s4 = () => document.createComment("");
-var r5 = (o5, i5, n4) => {
-  const e7 = o5._$AA.parentNode, l3 = void 0 === i5 ? o5._$AB : i5._$AA;
-  if (void 0 === n4) {
-    const i6 = e7.insertBefore(s4(), l3), c5 = e7.insertBefore(s4(), l3);
-    n4 = new t4(i6, c5, o5, o5.options);
-  } else {
-    const t5 = n4._$AB.nextSibling, i6 = n4._$AM, c5 = i6 !== o5;
-    if (c5) {
-      let t6;
-      n4._$AQ?.(o5), n4._$AM = o5, void 0 !== n4._$AP && (t6 = o5._$AU) !== i6._$AU && n4._$AP(t6);
-    }
-    if (t5 !== l3 || c5) {
-      let o6 = n4._$AA;
-      for (; o6 !== t5; ) {
-        const t6 = o6.nextSibling;
-        e7.insertBefore(o6, l3), o6 = t6;
-      }
-    }
-  }
-  return n4;
-};
-var v2 = (o5, t5, i5 = o5) => (o5._$AI(t5, i5), o5);
-var u3 = {};
-var m2 = (o5, t5 = u3) => o5._$AH = t5;
-var p3 = (o5) => o5._$AH;
-var h3 = (o5) => {
-  o5._$AP?.(false, true);
-  let t5 = o5._$AA;
-  const i5 = o5._$AB.nextSibling;
-  for (; t5 !== i5; ) {
-    const o6 = t5.nextSibling;
-    t5.remove(), t5 = o6;
-  }
-};
-
-// node_modules/lit-html/directives/repeat.js
-var u4 = (e7, s5, t5) => {
-  const r6 = /* @__PURE__ */ new Map();
-  for (let l3 = s5; l3 <= t5; l3++) r6.set(e7[l3], l3);
-  return r6;
-};
-var c4 = e4(class extends i4 {
-  constructor(e7) {
-    if (super(e7), e7.type !== t3.CHILD) throw Error("repeat() can only be used in text expressions");
-  }
-  dt(e7, s5, t5) {
-    let r6;
-    void 0 === t5 ? t5 = s5 : void 0 !== s5 && (r6 = s5);
-    const l3 = [], o5 = [];
-    let i5 = 0;
-    for (const s6 of e7) l3[i5] = r6 ? r6(s6, i5) : i5, o5[i5] = t5(s6, i5), i5++;
-    return { values: o5, keys: l3 };
-  }
-  render(e7, s5, t5) {
-    return this.dt(e7, s5, t5).values;
-  }
-  update(s5, [t5, r6, c5]) {
-    const d3 = p3(s5), { values: p4, keys: a3 } = this.dt(t5, r6, c5);
-    if (!Array.isArray(d3)) return this.ut = a3, p4;
-    const h4 = this.ut ??= [], v3 = [];
-    let m3, y3, x2 = 0, j2 = d3.length - 1, k2 = 0, w2 = p4.length - 1;
-    for (; x2 <= j2 && k2 <= w2; ) if (null === d3[x2]) x2++;
-    else if (null === d3[j2]) j2--;
-    else if (h4[x2] === a3[k2]) v3[k2] = v2(d3[x2], p4[k2]), x2++, k2++;
-    else if (h4[j2] === a3[w2]) v3[w2] = v2(d3[j2], p4[w2]), j2--, w2--;
-    else if (h4[x2] === a3[w2]) v3[w2] = v2(d3[x2], p4[w2]), r5(s5, v3[w2 + 1], d3[x2]), x2++, w2--;
-    else if (h4[j2] === a3[k2]) v3[k2] = v2(d3[j2], p4[k2]), r5(s5, d3[x2], d3[j2]), j2--, k2++;
-    else if (void 0 === m3 && (m3 = u4(a3, k2, w2), y3 = u4(h4, x2, j2)), m3.has(h4[x2])) if (m3.has(h4[j2])) {
-      const e7 = y3.get(a3[k2]), t6 = void 0 !== e7 ? d3[e7] : null;
-      if (null === t6) {
-        const e8 = r5(s5, d3[x2]);
-        v2(e8, p4[k2]), v3[k2] = e8;
-      } else v3[k2] = v2(t6, p4[k2]), r5(s5, d3[x2], t6), d3[e7] = null;
-      k2++;
-    } else h3(d3[j2]), j2--;
-    else h3(d3[x2]), x2++;
-    for (; k2 <= w2; ) {
-      const e7 = r5(s5, v3[w2 + 1]);
-      v2(e7, p4[k2]), v3[k2++] = e7;
-    }
-    for (; x2 <= j2; ) {
-      const e7 = d3[x2++];
-      null !== e7 && h3(e7);
-    }
-    return this.ut = a3, m2(s5, v3), w;
-  }
-});
-
-// node_modules/@ircam/sc-components/src/sc-select.js
-var itemId = 0;
-var ScSelect = class extends ScElement_default {
-  static properties = {
-    options: {
-      type: Object
-    },
-    value: {
-      type: String,
-      reflect: true
-    },
-    placeholder: {
-      type: String,
-      reflect: true
-    },
-    disabled: {
-      type: Boolean,
-      reflect: true
-    }
-  };
-  static styles = i`
-    :host {
-      display: inline-block;
-      box-sizing: border-box;
-      vertical-align: top;
-      height: 30px;
-      width: 200px;
-      font-family: var(--sc-font-family);
-      font-size: var(--sc-font-size);
-      color: #fff;
-      border: 1px solid var(--sc-color-primary-5);
-      border-radius: 2px;
-      overflow: auto;
-    }
-
-    :host([hidden]) {
-      display: none
-    }
-
-    :host([disabled]) {
-      border: 1px solid var(--sc-color-primary-4);
-    }
-
-    :host(:focus), :host(:focus-visible) {
-      outline: none;
-      border: 1px solid var(--sc-color-primary-4);
-    }
-
-    select {
-      display: block;
-      font-family: inherit;
-      font-size: inherit;
-      width: 100%;
-      height: 100%;
-      text-indent: 4px;
-      border-radius: 0;
-      border: none;
-    }
-
-    select:focus {
-      outline: none;
-    }
-
-    option {
-      text-indent: 4px;
-    }
-  `;
-  constructor() {
-    super();
-    this.options = [];
-    this.value = null;
-    this.disabled = false;
-    this.placeholder = "";
-  }
-  render() {
-    const isObject = isPlainObject2(this.options);
-    return x`
-      <select
-        ?disabled=${this.disabled}
-        @change=${this._dispatchEvent}
-      >
-        ${this.placeholder ? x`<option value="">${this.placeholder}</option` : T}
-        ${c4(Object.entries(this.options), () => `sc-select-${itemId++}`, ([key, value2]) => {
-      return x`
-            <option
-              value=${key}
-              ?selected=${value2 === this.value}
-            >${isObject ? key : value2}</option>
-          `;
-    })}
-      </select>
-    `;
-  }
-  updated(changedProperties) {
-    if (changedProperties.has("disabled")) {
-      const tabindex = this.disabled ? -1 : this._tabindex;
-      const $select = this.shadowRoot.querySelector("select");
-      $select.setAttribute("tabindex", tabindex);
-      if (this.disabled) {
-        this.blur();
-      }
-    }
-  }
-  connectedCallback() {
-    super.connectedCallback();
-    this._tabindex = this.getAttribute("tabindex") || 0;
-  }
-  _dispatchEvent(e7) {
-    if (this.disabled) {
-      return;
-    }
-    const isObject = isPlainObject2(this.options);
-    if (isObject) {
-      const key = e7.target.value;
-      this.value = this.options[key];
-    } else {
-      const index2 = this.placeholder ? e7.target.selectedIndex - 1 : e7.target.selectedIndex;
-      this.value = this.options[index2];
-    }
-    const changeEvent = new CustomEvent("change", {
-      bubbles: true,
-      composed: true,
-      detail: {
-        value: this.value
-      }
-    });
-    this.dispatchEvent(changeEvent);
-  }
-};
-if (customElements.get("sc-select") === void 0) {
-  customElements.define("sc-select", ScSelect);
 }
 
 // src/components/SoapMetronomeRenderer.js
@@ -54319,11 +54316,97 @@ if (customElements.get("soap-score-export") === void 0) {
   customElements.define("soap-score-export", SoapScoreExport);
 }
 
+// src/layouts/full.js
+function layoutFull(app) {
+  return x`
+    <sc-clock
+      .getTimeFunction=${() => app.transport.currentPosition}
+    ></sc-clock>
+    <br />
+    <soap-transport-control
+      .global=${app.global}
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+      .audioContext=${app.audioContext}
+      score=${app.score}
+    ></soap-transport-control>
+
+    <br />
+    <soap-flash-beat-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-flash-beat-renderer>
+    <br />
+    <soap-score-location-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-score-location-renderer>
+    <br />
+    <soap-stave-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-stave-renderer>
+    <br >
+    <soap-score-editor
+      score=${app.score}
+      @change=${(e7) => app.setScore(e7.detail.value)}
+    ></soap-score-editor>
+    <br >
+    <soap-metronome-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+      .audioContext=${app.audioContext}
+      .buffers=${app.buffers}
+      .audioOutput=${app.audioContext.destination}
+    ></soap-metronome-renderer>
+    <br />
+    <soap-score-examples
+      @change=${(e7) => app.setScore(e7.detail.value)}
+    ></soap-score-examples>
+    <br />
+    <soap-score-generator
+      @change=${(e7) => app.setScore(e7.detail.value)}
+    ></soap-score-generator>
+    <br />
+    <soap-score-import
+      @change=${(e7) => app.setScore(e7.detail.value)}
+    ></soap-score-import>
+    <br />
+    <soap-score-export
+      .score=${app.score}
+    ></soap-score-export>
+  `;
+}
+
+// src/layouts/test.js
+function layoutTest(app) {
+  return x`
+    <sc-clock
+      .getTimeFunction=${() => app.transport.currentPosition}
+    ></sc-clock>
+    <br />
+    <soap-transport-control
+      .global=${app.global}
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+      .audioContext=${app.audioContext}
+      score=${app.score}
+    ></soap-transport-control>
+
+    <br />
+    <soap-flash-beat-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-flash-beat-renderer>
+  `;
+}
+
 // src/App.js
 var App = class {
   constructor(audioContext3, buffers2, defaultScore2) {
     this.audioContext = audioContext3;
     this.buffers = buffers2;
+    this.layout = "full";
     const getTime4 = () => audioContext3.currentTime;
     this.scheduler = new Scheduler_default(getTime4);
     this.transport = new Transport_default(this.scheduler);
@@ -54339,65 +54422,33 @@ var App = class {
   }
   // @todo - provide several layouts
   render() {
+    let inner = x`<h1>Coucou</h1>`;
+    switch (this.layout) {
+      case "full": {
+        inner = layoutFull(this);
+        break;
+      }
+      case "test": {
+        inner = layoutTest(this);
+        break;
+      }
+      default: {
+        console.log(`layout ${this.layout} not implemented`);
+        break;
+      }
+    }
+    console.log(inner);
     j(x`
-      <div>
-        <sc-clock
-          .getTimeFunction=${() => this.transport.currentPosition}
-        ></sc-clock>
-        <br />
-        <div style="width: 50%; border: 1px solid red;">
-          <soap-transport-control
-            .transport=${this.transport}
-            .interpreter=${this.interpreter}
-            .audioContext=${this.audioContext}
-            score=${this.score}
-          ></soap-transport-control>
-        </div>
-        <!-- <br />
-        <soap-flash-beat-renderer
-          .transport=${this.transport}
-          .interpreter=${this.interpreter}
-        ></soap-flash-beat-renderer>
-        <br />
-        <soap-score-location-renderer
-          .transport=${this.transport}
-          .interpreter=${this.interpreter}
-        ></soap-score-location-renderer>
-        <br />
-        <soap-stave-renderer
-          .transport=${this.transport}
-          .interpreter=${this.interpreter}
-        ></soap-stave-renderer>
-        <br >
-        <soap-score-editor
-          score=${this.score}
-          @change=${(e7) => this.setScore(e7.detail.value)}
-        ></soap-score-editor>
-        <br >
-        <soap-metronome-renderer
-          .transport=${this.transport}
-          .interpreter=${this.interpreter}
-          .audioContext=${this.audioContext}
-          .buffers=${this.buffers}
-          .audioOutput=${this.audioContext.destination}
-        ></soap-metronome-renderer>
-        <br />
-        <soap-score-examples
-          @change=${(e7) => this.setScore(e7.detail.value)}
-        ></soap-score-examples>
-        <br />
-        <soap-score-generator
-          @change=${(e7) => this.setScore(e7.detail.value)}
-        ></soap-score-generator>
-        <br />
-        <soap-score-import
-          @change=${(e7) => this.setScore(e7.detail.value)}
-        ></soap-score-import>
-        <br />
-        <soap-score-export
-          .score=${this.score}
-        ></soap-score-export> -->
-      </div>
+      <header>
+        <sc-select
+          .options=${["full", "test"]}
+          @change=${(e7) => {
+      this.layout = e7.detail.value;
+      this.render();
+    }}
+        ></sc-select>
+      </header>
+      <h1>${inner}</h1>
     `, document.body);
   }
 };
@@ -54497,20 +54548,6 @@ lit-html/directive.js:
    * SPDX-License-Identifier: BSD-3-Clause
    *)
 
-lit-html/directives/class-map.js:
-  (**
-   * @license
-   * Copyright 2018 Google LLC
-   * SPDX-License-Identifier: BSD-3-Clause
-   *)
-
-lit-html/directives/unsafe-html.js:
-  (**
-   * @license
-   * Copyright 2017 Google LLC
-   * SPDX-License-Identifier: BSD-3-Clause
-   *)
-
 lit-html/directive-helpers.js:
   (**
    * @license
@@ -54519,6 +54556,20 @@ lit-html/directive-helpers.js:
    *)
 
 lit-html/directives/repeat.js:
+  (**
+   * @license
+   * Copyright 2017 Google LLC
+   * SPDX-License-Identifier: BSD-3-Clause
+   *)
+
+lit-html/directives/class-map.js:
+  (**
+   * @license
+   * Copyright 2018 Google LLC
+   * SPDX-License-Identifier: BSD-3-Clause
+   *)
+
+lit-html/directives/unsafe-html.js:
   (**
    * @license
    * Copyright 2017 Google LLC
