@@ -295,20 +295,20 @@ export default class SoapEngine {
       {
         let sound;
         switch(this.application.model.sound) {
-        case 'drum':
-          sound = (freq === 900) ? 'bell.wav' : (freq === 600) ? 'kick.wav' : 'sidestik.wav';
-          break;
-        case 'old-numerical':
-          sound = 'old-numerical.wav';
-          break;
-        case 'mechanical':
-          const rand = Math.ceil(Math.random() * 26);
-          const randStr = ("00" + rand).slice(-3);
-          sound = `mechanical-${randStr.toString()}.wav`;
-          break;
-        case 'drumstick':
-          sound = 'drumstick.wav';
-          break;
+          case 'drum':
+            sound = (freq === 900) ? 'bell.wav' : (freq === 600) ? 'kick.wav' : 'sidestik.wav';
+            break;
+          case 'old-numerical':
+            sound = 'old-numerical.wav';
+            break;
+          case 'mechanical':
+            const rand = Math.ceil(Math.random() * 26);
+            const randStr = ("00" + rand).slice(-3);
+            sound = `mechanical-${randStr.toString()}.wav`;
+            break;
+          case 'drumstick':
+            sound = 'drumstick.wav';
+            break;
         }
         const buffer = this.sound.buffers[sound];
         const env = this.audioContext.createGain();

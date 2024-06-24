@@ -62,7 +62,6 @@ class SoapScoreLocationRenderer extends LitElement {
     }
 
     const infos = this.updateFromPosition(position, event.tickLookahead);
-
     return position + infos.dt;
   }
 }

@@ -319,10 +319,8 @@ export default class Application {
     const element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.model.score));
     element.setAttribute('download', 'score.soap');
-
     element.style.display = 'none';
     document.body.appendChild(element);
-
     element.click();
 
     document.body.removeChild(element);
