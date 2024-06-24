@@ -7,6 +7,7 @@ import '@ircam/sc-components/sc-tap-tempo.js';
 class SoapScoreGenerator extends LitElement {
   static styles = css`
     :host {
+      background-color: red;
       width: 100%;
       height: 100%;
       box-sizing: border-box;
