@@ -16,9 +16,8 @@ async function ensureResumedAudioContext(audioContext) {
 class SoapTransportControl extends LitElement {
   static styles = css`
     :host {
-      background-color: yellow;
       display: block;
-      width: 100%;
+      width: 50%;
       height: 100%;
       padding: 10px;
     }

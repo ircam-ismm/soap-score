@@ -44,13 +44,25 @@ class App {
 
     render(html`
       <header>
-        <sc-select
-          .options=${layouts}
-          @change=${e => {
-            this.layout = e.detail.value;
-            this.render();
-          }}
-        ></sc-select>
+        <div>
+          <sc-select
+            .options=${layouts}
+            @change=${e => {
+              this.layout = e.detail.value;
+              this.render();
+            }}
+          ></sc-select>
+        </div>
+        <div style="font-size: 0;">
+          <sc-icon
+            type="burger"
+            @input=${e => {
+              renderAdvancedOptions = !renderAdvancedOptions;
+              app.render();
+            }}
+          ></sc-icon>
+          <sc-fullscreen></sc-fullscreen>
+        </div>
       </header>
       <h1>${inner}</h1>
     `, document.body)

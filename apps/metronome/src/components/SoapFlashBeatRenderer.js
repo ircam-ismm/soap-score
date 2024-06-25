@@ -6,11 +6,12 @@ import '@ircam/sc-components/sc-flash.js';
 class SoapFlashBeatRenderer extends LitElement {
   static styles = css`
     :host {
-      background-color: red;
       display: block;
       width: 100%;
       height: 100%;
       padding: 10px;
+      background-color: white;
+
     }
 
     :host > div {
@@ -20,6 +21,7 @@ class SoapFlashBeatRenderer extends LitElement {
     :host sc-transport {
       height: 60px;
       margin-bottom: 12px;
+
     }
   `;
 
