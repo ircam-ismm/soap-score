@@ -1,9 +1,30 @@
-import { html, LitElement } from 'lit';
+import { html, LitElement, css } from 'lit';
 import { TransportEvent } from '@ircam/sc-scheduling';
 
 import '@ircam/sc-components/sc-flash.js';
 
 class SoapFlashBeatRenderer extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      background-color: white;
+
+    }
+
+    :host > div {
+      margin-bottom: 4px;
+    }
+
+    :host sc-transport {
+      height: 60px;
+      margin-bottom: 12px;
+
+    }
+  `;
+
   constructor() {
     super();
 
