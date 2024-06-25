@@ -20,6 +20,7 @@ class SoapMobileTransportControl extends LitElement {
       width: 100%;
       height: 100%;
       padding: 10px;
+      background-color: yellow;
     }
 
     :host > div {
@@ -27,7 +28,7 @@ class SoapMobileTransportControl extends LitElement {
     }
 
     :host sc-transport {
-      height: 60px;
+      height: 14vh;
       margin-bottom: 12px;
     }
   `;
@@ -69,7 +70,7 @@ class SoapMobileTransportControl extends LitElement {
         }}
       ></sc-transport>
       <div>
-        <sc-text style="width: 150px;">speed</sc-text>
+        <sc-text style="width: 25%;">speed</sc-text>
         <sc-number
           min="0.1"
           max="5"
@@ -81,10 +82,11 @@ class SoapMobileTransportControl extends LitElement {
         ></sc-number>
       </div>
       <div>
-        <sc-text style="width: 150px;">start at position</sc-text>
+        <sc-text style="width: 25%;">start at</sc-text>
         <sc-prev
           @input=${e => this.transport.seek(0)}
         ></sc-prev>
+        <input type="number" inputmode="decimal" id="seek" name="seek" min="1"/>
         <sc-number
           min="1"
           integer
@@ -106,63 +108,8 @@ class SoapMobileTransportControl extends LitElement {
           }}
         ></sc-number>
       </div>
-      <div>
-        <sc-text style="width: 62px">loop</sc-text>
-        <sc-loop
-          ?value=${this.loop}
-          @change=${e => {
-            this.loop = e.detail.value
-            console.log('loop', this.loop);
-            this.transport.loop(this.loop);
-          }}
-        ></sc-loop>
-      </div>
-        <sc-text style="width: 62px;">from</sc-text>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopStartBar}
-          @change=${e => {
-            this.loopStartBar = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
-            console.log('loopStart', position);
-            this.transport.loopStart(position);
-          }}
-        ></sc-number>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopStartBeat}
-          @change=${e => {
-            this.loopStartBeat = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
-            this.transport.loopStart(position);
-          }}
-        ></sc-number>
       </div>
       <div>
-        <sc-text style="width: 62px">to</sc-text>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopEndBar}
-          @change=${e => {
-            this.loopEndBar = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
-            console.log('loopEnd', position);
-            this.transport.loopEnd(position);
-          }}
-        ></sc-number>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopEndBeat}
-          @change=${e => {
-            this.loopEndBeat = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
-            this.transport.loopEnd(position);
-          }}
-        ></sc-number>
       </div>
       ${labels.length > 0 ?
         html`
@@ -179,6 +126,18 @@ class SoapMobileTransportControl extends LitElement {
         ` : nothing
       }
     `;
+
+    const seekElement = document.querySelector(".seek");
+    seekElement.addEventListener("change", (event) => {
+      // parse event decimal to bar/beat
+      const decValue = event.detail.value;
+      console.log(decValue);
+      // this.seekBar = e.detail.value;
+      // const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+      // this.transport.seek(position);
+    });
+
+
   }
 
   connectedCallback() {

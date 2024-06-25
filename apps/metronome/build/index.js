@@ -56341,6 +56341,234 @@ var init_full = __esm({
   }
 });
 
+// src/components/SoapMobileTransportControl.js
+async function ensureResumedAudioContext2(audioContext3) {
+  if (audioContext3.state === "suspended") {
+    await audioContext3.resume();
+  }
+}
+var SoapMobileTransportControl;
+var init_SoapMobileTransportControl = __esm({
+  "src/components/SoapMobileTransportControl.js"() {
+    init_lit();
+    init_src3();
+    init_sc_transport();
+    init_sc_text();
+    init_sc_number();
+    init_sc_prev();
+    init_sc_loop();
+    SoapMobileTransportControl = class extends s3 {
+      static styles = i`
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      background-color: yellow;
+    }
+
+    :host > div {
+      margin-bottom: 4px;
+    }
+
+    :host sc-transport {
+      height: 14vh;
+      margin-bottom: 12px;
+    }
+  `;
+      static properties = {
+        score: { type: String }
+      };
+      constructor() {
+        super();
+        this.transport = null;
+        this.interpreter = null;
+        this.audioContext = null;
+        this.state = "stop";
+        this.speed = 1;
+        this.seekBar = 1;
+        this.seekBeat = 1;
+        this.loopStartBar = 1;
+        this.loopStartBeat = 1;
+        this.loopEndBar = 1;
+        this.loopEndBeat = 1;
+        this.loop = false;
+        this.process = this.process.bind(this);
+      }
+      render() {
+        const labels = this.interpreter.getLabels();
+        return x`
+      <sc-transport
+        .buttons=${["start", "pause", "stop"]}
+        value=${this.state}
+        @change=${async (e7) => {
+          await ensureResumedAudioContext2(this.audioContext);
+          this.transport[e7.detail.value]();
+        }}
+      ></sc-transport>
+      <div>
+        <sc-text style="width: 25%;">speed</sc-text>
+        <sc-number
+          min="0.1"
+          max="5"
+          value=${this.speed}
+          @change=${(e7) => {
+          this.speed = e7.detail.value;
+          this.transport.speed(this.speed);
+        }}
+        ></sc-number>
+      </div>
+      <div>
+        <sc-text style="width: 25%;">start at</sc-text>
+        <sc-prev
+          @input=${(e7) => this.transport.seek(0)}
+        ></sc-prev>
+        <input type="number" inputmode="decimal" id="seek" name="seek" min="1"/>
+        <sc-number
+          min="1"
+          integer
+          value=${this.seekBar}
+          @change=${(e7) => {
+          this.seekBar = e7.detail.value;
+          const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+          this.transport.seek(position);
+        }}
+        ></sc-number>
+        <sc-number
+          min="1"
+          integer
+          value=${this.seekBeat}
+          @change=${(e7) => {
+          this.seekBeat = e7.detail.value;
+          const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+          this.transport.seek(position);
+        }}
+        ></sc-number>
+      </div>
+      </div>
+      <div>
+      </div>
+      ${labels.length > 0 ? x`
+          <div>
+            <sc-select
+              placeholder="go to label"
+              .options=${labels}
+              @change=${(e7) => {
+          const position = this.interpreter.getPositionAtLabel(e7.detail.value);
+          this.transport.seek(position);
+        }}
+            ></sc-select>
+          </div>
+        ` : T}
+    `;
+        const seekElement = document.querySelector(".seek");
+        seekElement.addEventListener("change", (event) => {
+          const decValue = event.detail.value;
+          console.log(decValue);
+        });
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        if (!this.transport.has(this.process)) {
+          this.transport.add(this.process);
+        }
+      }
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        if (this.transport.has(this.process)) {
+          this.transport.remove(this.process);
+        }
+      }
+      // transport callback
+      process(position, audioTime, event) {
+        if (event instanceof TransportEvent_default) {
+          console.log(event);
+          if (["start", "pause", "stop"].includes(event.type)) {
+            this.state = event.type;
+            setTimeout(() => this.requestUpdate(), event.tickLookahead * 1e3);
+          }
+          return event.speed > 0 ? position : Infinity;
+        }
+      }
+    };
+    if (customElements.get("soap-mobile-transport-control") === void 0) {
+      customElements.define("soap-mobile-transport-control", SoapMobileTransportControl);
+    }
+  }
+});
+
+// src/layouts/mobile.js
+var mobile_exports = {};
+__export(mobile_exports, {
+  default: () => layoutFull2
+});
+function layoutFull2(app) {
+  return x`
+    <soap-stave-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-stave-renderer>
+    <sc-clock
+      .getTimeFunction=${() => app.transport.currentPosition}
+    ></sc-clock>
+    <br />
+    <soap-mobile-transport-control
+      .global=${app.global}
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+      .audioContext=${app.audioContext}
+      score=${app.score}
+    ></soap-mobile-transport-control>
+
+    <br />
+    <soap-flash-beat-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-flash-beat-renderer>
+    <br />
+    <soap-score-location-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-score-location-renderer>
+    <br >
+    <soap-metronome-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+      .audioContext=${app.audioContext}
+      .buffers=${app.buffers}
+      .audioOutput=${app.audioContext.destination}
+    ></soap-metronome-renderer>
+    <br />
+    <soap-score-examples
+      @change=${(e7) => app.setScore(e7.detail.value)}
+    ></soap-score-examples>
+    <br />
+    <soap-score-generator
+      @change=${(e7) => app.setScore(e7.detail.value)}
+    ></soap-score-generator>
+    <br />
+    <soap-score-export
+      .score=${app.score}
+    ></soap-score-export>
+  `;
+}
+var init_mobile = __esm({
+  "src/layouts/mobile.js"() {
+    init_lit();
+    init_sc_clock();
+    init_SoapMobileTransportControl();
+    init_SoapMetronomeRenderer();
+    init_SoapFlashBeatRenderer();
+    init_SoapScoreLocationRenderer();
+    init_SoapStaveRenderer();
+    init_SoapScoreExamples();
+    init_SoapScoreGenerator();
+    init_SoapScoreEditor();
+    init_SoapScoreImport();
+    init_SoapScoreExport();
+  }
+});
+
 // src/layouts/test.js
 var test_exports = {};
 __export(test_exports, {
@@ -56652,16 +56880,17 @@ init_sc_select();
 // import("./layouts/**/*.js") in src/App.js
 var globImport_layouts_js = __glob({
   "./layouts/full.js": () => Promise.resolve().then(() => (init_full(), full_exports)),
+  "./layouts/mobile.js": () => Promise.resolve().then(() => (init_mobile(), mobile_exports)),
   "./layouts/test.js": () => Promise.resolve().then(() => (init_test(), test_exports))
 });
 
 // src/App.js
-var layouts = ["full", "test"];
+var layouts = ["mobile", "full", "test"];
 var App = class {
   constructor(audioContext3, buffers2, defaultScore2) {
     this.audioContext = audioContext3;
     this.buffers = buffers2;
-    this.layout = "full";
+    this.layout = "mobile";
     const getTime4 = () => audioContext3.currentTime;
     this.scheduler = new Scheduler_default(getTime4);
     this.transport = new Transport_default(this.scheduler);
