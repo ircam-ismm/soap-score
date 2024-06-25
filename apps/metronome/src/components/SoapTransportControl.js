@@ -17,7 +17,7 @@ class SoapTransportControl extends LitElement {
   static styles = css`
     :host {
       display: block;
-      width: 100%;
+      width: 50%;
       height: 100%;
       padding: 10px;
     }

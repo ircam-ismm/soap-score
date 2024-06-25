@@ -15,24 +15,29 @@ import '../components/SoapScoreExport.js';
 
 export default function layoutFull(app) {
   return html`
-    <sc-clock
-      .getTimeFunction=${() => app.transport.currentPosition}
-    ></sc-clock>
-    <br />
-    <soap-transport-control
-      .global=${app.global}
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-      .audioContext=${app.audioContext}
-      score=${app.score}
-    ></soap-transport-control>
 
-    <br />
-    <soap-flash-beat-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-    ></soap-flash-beat-renderer>
-    <br />
+    <div class='timer'>
+      <sc-clock
+        .getTimeFunction=${() => app.transport.currentPosition}
+      ></sc-clock>
+    </div>
+    <div class='flash'>
+      <soap-flash-beat-renderer
+        .transport=${app.transport}
+        .interpreter=${app.interpreter}
+      ></soap-flash-beat-renderer>
+    </div>
+    <div id="full">
+      <div class="transport-control">
+        <soap-transport-control
+          .global=${app.global}
+          .transport=${app.transport}
+          .interpreter=${app.interpreter}
+          .audioContext=${app.audioContext}
+          score=${app.score}
+        ></soap-transport-control>
+      </div>
+    </div>
     <soap-score-location-renderer
       .transport=${app.transport}
       .interpreter=${app.interpreter}

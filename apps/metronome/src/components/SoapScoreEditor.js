@@ -2,6 +2,7 @@ import { html, LitElement, nothing } from 'lit';
 import SoapScoreInterpreter from '../../../../src/SoapScoreInterpreter.js';
 
 import '@ircam/sc-components/sc-editor.js';
+import '@ircam/sc-components/sc-button.js';
 
 async function ensureResumedAudioContext(audioContext) {
   if (audioContext.state === 'suspended') {
@@ -23,6 +24,12 @@ class SoapScoreEditor extends LitElement {
 
   render() {
     return html`
+      <sc-button
+        @input=${e => {
+          const $editor = e.target.nextElementSibling;
+          $editor.save();
+        }}
+      >Save score</sc-button>
       <sc-editor
         save-button
         value=${this.score}
