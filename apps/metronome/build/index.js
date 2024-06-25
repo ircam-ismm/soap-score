@@ -15717,10 +15717,10 @@ var AudioBufferLoader = createAudioBufferLoader(
   loadFile
 );
 
-// ../../../../libs/ircam-ismm/sc-scheduling/node_modules/@ircam/sc-utils/src/is-browser.js
+// ../../../sc-scheduling/node_modules/@ircam/sc-utils/src/is-browser.js
 var isBrowser2 = new Function("try {return this===window;}catch(e){ return false;}");
 
-// ../../../../libs/ircam-ismm/sc-scheduling/node_modules/@ircam/sc-gettime/src/browser.js
+// ../../../sc-scheduling/node_modules/@ircam/sc-gettime/src/browser.js
 var usePerf2 = globalThis.performance && globalThis.performance.now;
 var start2 = usePerf2 ? performance.now() : Date.now();
 if (!globalThis.crossOriginIsolated) {
@@ -15728,17 +15728,17 @@ if (!globalThis.crossOriginIsolated) {
 (see: https://web.dev/coop-coep/ for more informations)`);
 }
 
-// ../../../../libs/ircam-ismm/sc-scheduling/node_modules/@ircam/sc-utils/src/is-function.js
+// ../../../sc-scheduling/node_modules/@ircam/sc-utils/src/is-function.js
 function isFunction2(val) {
   return Object.prototype.toString.call(val) == "[object Function]" || Object.prototype.toString.call(val) == "[object AsyncFunction]";
 }
 
-// ../../../../libs/ircam-ismm/sc-scheduling/node_modules/@ircam/sc-utils/src/is-number.js
+// ../../../sc-scheduling/node_modules/@ircam/sc-utils/src/is-number.js
 function isNumber2(val) {
   return Number(val) === val;
 }
 
-// ../../../../libs/ircam-ismm/sc-scheduling/src/utils.js
+// ../../../sc-scheduling/src/utils.js
 function quantize(val, precision = 1e-9) {
   return Math.round(val / precision) * precision;
 }
@@ -15750,7 +15750,7 @@ function isPositiveNumber(value2) {
   return Number.isFinite(value2) && value2 >= 0;
 }
 
-// ../../../../libs/ircam-ismm/sc-scheduling/src/PriorityQueue.js
+// ../../../sc-scheduling/src/PriorityQueue.js
 function swap(arr, a3, b3) {
   const tmp = arr[a3];
   arr[a3] = arr[b3];
@@ -15991,7 +15991,7 @@ var PriorityQueue = class {
 };
 var PriorityQueue_default = PriorityQueue;
 
-// ../../../../libs/ircam-ismm/sc-scheduling/src/SchedulerEvent.js
+// ../../../sc-scheduling/src/SchedulerEvent.js
 var customInspectSymbol = Symbol.for("nodejs.util.inspect.custom");
 var kTickLookahead = Symbol("sc-scheduling:tick-lookahead");
 var SchedulerEvent = class {
@@ -16010,7 +16010,7 @@ var SchedulerEvent = class {
   }
 };
 
-// ../../../../libs/ircam-ismm/sc-scheduling/src/Scheduler.js
+// ../../../sc-scheduling/src/Scheduler.js
 var kSchedulerInstance = Symbol("sc-scheduling:scheduler");
 var kSchedulerCompatMode = Symbol("sc-scheduling:compat-mode");
 var Scheduler = class {
@@ -16257,6 +16257,9 @@ var Scheduler = class {
       throw new DOMException(`Cannot execute 'reset' on Scheduler: Processor has not been added to this scheduler`, "NotSupportedError");
     }
     if (isNumber2(time)) {
+      const processorInfos = this.#processorRecursionsInfos.get(processor);
+      processorInfos.time = time;
+      processorInfos.counter = 1;
       this.#queue.move(processor, time);
     } else {
       this.#remove(processor);
@@ -16363,7 +16366,7 @@ This is generally due to a implementation bug, but if you know what you are doin
 };
 var Scheduler_default = Scheduler;
 
-// ../../../../libs/ircam-ismm/sc-scheduling/src/TransportEvent.js
+// ../../../sc-scheduling/src/TransportEvent.js
 var customInspectSymbol2 = Symbol.for("nodejs.util.inspect.custom");
 var TransportEvent = class {
   #type = null;
@@ -16456,7 +16459,7 @@ var TransportEvent = class {
 };
 var TransportEvent_default = TransportEvent;
 
-// ../../../../libs/ircam-ismm/sc-scheduling/src/TransportEventQueue.js
+// ../../../sc-scheduling/src/TransportEventQueue.js
 var TransportControlEventQueue = class {
   constructor(currentTime) {
     if (!Number.isFinite(currentTime)) {
@@ -16611,7 +16614,7 @@ var TransportControlEventQueue = class {
   }
 };
 
-// ../../../../libs/ircam-ismm/sc-scheduling/src/Transport.js
+// ../../../sc-scheduling/src/Transport.js
 var kTransportInstance = Symbol("sc-scheduling:transport");
 var Transport = class {
   #scheduler = null;
@@ -20360,7 +20363,6 @@ async function ensureResumedAudioContext(audioContext3) {
 var SoapTransportControl = class extends s3 {
   static styles = i`
     :host {
-      background-color: yellow;
       display: block;
       width: 100%;
       height: 100%;
@@ -20779,7 +20781,7 @@ var SoapMetronomeRenderer = class extends s3 {
     this.audioOutput = null;
     this.process = this.process.bind(this);
     this.sonification = "sine";
-    this.sonificationMode = "sine";
+    this.sonificationMode = "auto";
   }
   render() {
     const soundbanks = Object.keys(this.buffers);
@@ -20789,6 +20791,11 @@ var SoapMetronomeRenderer = class extends s3 {
         .options=${soundbanks}
         value=${this.sonification}
         @change=${(e7) => this.sonification = e7.detail.value}
+      ></sc-select>
+      <sc-select
+        .options=${["auto", "double", "beat", "bar", "odd", "even"]}
+        value=${this.sonificationMode}
+        @change=${(e7) => this.sonificationMode = e7.detail.value}
       ></sc-select>
     `;
   }
@@ -20804,6 +20811,18 @@ var SoapMetronomeRenderer = class extends s3 {
       this.transport.remove(this.process);
     }
   }
+  triggerSubBeat(audioTime, infos) {
+    let upper = infos.unit.upper;
+    const duration = infos.duration;
+    if (upper === 1) {
+      upper = 2;
+    }
+    const delta = duration / upper;
+    for (let i5 = 1; i5 < upper; i5++) {
+      const subBeatTime = audioTime + i5 * delta;
+      this.triggerBeat(subBeatTime, "subbeat");
+    }
+  }
   // transport callback
   process(position, audioTime, event) {
     if (event instanceof TransportEvent_default) {
@@ -20813,14 +20832,54 @@ var SoapMetronomeRenderer = class extends s3 {
     const infos = this.interpreter.getLocationInfos(bar, beat);
     if (Math.floor(beat) === beat) {
       const type = beat === 1 ? "downbeat" : "upbeat";
-      this.triggerBeat(audioTime, type);
+      switch (this.sonificationMode) {
+        case "auto":
+          this.triggerBeat(audioTime, type);
+          if (infos.event.tempo.curve) {
+            this.triggerSubBeat(audioTime, infos);
+          }
+          break;
+        case "double":
+          this.triggerBeat(audioTime, type);
+          this.triggerSubBeat(audioTime, infos);
+          break;
+        case "beat":
+          this.triggerBeat(audioTime, type);
+          break;
+        case "bar":
+          if (beat === 1) {
+            this.triggerBeat(audioTime, type);
+          }
+          break;
+        case "odd":
+          if (beat % 2 === 1) {
+            this.triggerBeat(audioTime, type);
+          }
+          break;
+        case "even":
+          if (beat % 2 === 0) {
+            this.triggerBeat(audioTime, type);
+          }
+          break;
+      }
     }
     return position + infos.dt;
   }
   triggerBeat(audioTime, type, gain) {
     audioTime = Math.max(audioTime, this.audioContext.currentTime);
     if (this.sonification === "sine") {
-      const freq = type === "downbeat" ? 900 : 600;
+      let freq;
+      switch (type) {
+        case "downbeat":
+          freq = 900;
+          break;
+        case "upbeat":
+          freq = 600;
+          break;
+        case "subbeat":
+          freq = 1200;
+          break;
+      }
       const gain2 = 1;
       const env = this.audioContext.createGain();
       env.connect(this.audioOutput);
@@ -20843,6 +20902,8 @@ var SoapMetronomeRenderer = class extends s3 {
             buffer = buffers2[0];
           } else if (type === "upbeat") {
             buffer = buffers2[1];
+          } else if (type === "subbeat") {
+            buffer = buffers2[2];
           }
           gain2 = 1;
           break;
@@ -20850,13 +20911,35 @@ var SoapMetronomeRenderer = class extends s3 {
         case "mechanical": {
           const index2 = Math.floor(Math.random() * buffers2.length);
           buffer = buffers2[index2];
-          gain2 = type === "downbeat" ? 1 : 0.5;
+          let gain3;
+          switch (type) {
+            case "downbeat":
+              gain3 = 1;
+              break;
+            case "upbeat":
+              gain3 = 0.5;
+              break;
+            case "subbeat":
+              gain3 = 0.1;
+              break;
+          }
           break;
         }
         case "drumstick":
         case "old-numerical": {
           buffer = buffers2;
-          gain2 = type === "downbeat" ? 1 : 0.5;
+          let gain3;
+          switch (type) {
+            case "downbeat":
+              gain3 = 1;
+              break;
+            case "upbeat":
+              gain3 = 0.5;
+              break;
+            case "subbeat":
+              gain3 = 0.1;
+              break;
+          }
           break;
         }
       }
@@ -53411,6 +53494,7 @@ function computeMetricLocation(events) {
     }
     bar += Math.floor(nextNormBeat);
     const remaining = nextNormBeat - Math.floor(nextNormBeat);
+    console.log(event, remaining, numQuarterNoteInBar);
     beat = remaining * numQuarterNoteInBar + 1;
     event.bar = bar;
     event.beat = beat;
@@ -53440,6 +53524,7 @@ var midi2soap = {
   // },
   readString(input) {
     const midi = import_midi_parser_js.default.parse(input);
+    console.log(midi);
     const data = midi.track[0].event;
     const timeDiv = midi.timeDivision;
     const soapScore = this.parse(data, timeDiv);
@@ -54319,7 +54404,199 @@ if (customElements.get("soap-score-export") === void 0) {
   customElements.define("soap-score-export", SoapScoreExport);
 }
 
-// src/App.js
+// src/components/SoapMobileTransportControl.js
+async function ensureResumedAudioContext2(audioContext3) {
+  if (audioContext3.state === "suspended") {
+    await audioContext3.resume();
+  }
+}
+var SoapMobileTransportControl = class extends s3 {
+  static styles = i`
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+    }
+
+    :host > div {
+      margin-bottom: 4px;
+    }
+
+    :host sc-transport {
+      height: 60px;
+      margin-bottom: 12px;
+    }
+  `;
+  static properties = {
+    score: { type: String }
+  };
+  constructor() {
+    super();
+    this.transport = null;
+    this.interpreter = null;
+    this.audioContext = null;
+    this.state = "stop";
+    this.speed = 1;
+    this.seekBar = 1;
+    this.seekBeat = 1;
+    this.loopStartBar = 1;
+    this.loopStartBeat = 1;
+    this.loopEndBar = 1;
+    this.loopEndBeat = 1;
+    this.loop = false;
+    this.process = this.process.bind(this);
+  }
+  render() {
+    const labels = this.interpreter.getLabels();
+    return x`
+      <sc-transport
+        .buttons=${["start", "pause", "stop"]}
+        value=${this.state}
+        @change=${async (e7) => {
+      await ensureResumedAudioContext2(this.audioContext);
+      this.transport[e7.detail.value]();
+    }}
+      ></sc-transport>
+      <div>
+        <sc-text style="width: 150px;">speed</sc-text>
+        <sc-number
+          min="0.1"
+          max="5"
+          value=${this.speed}
+          @change=${(e7) => {
+      this.speed = e7.detail.value;
+      this.transport.speed(this.speed);
+    }}
+        ></sc-number>
+      </div>
+      <div>
+        <sc-text style="width: 150px;">start at position</sc-text>
+        <sc-prev
+          @input=${(e7) => this.transport.seek(0)}
+        ></sc-prev>
+        <sc-number
+          min="1"
+          integer
+          value=${this.seekBar}
+          @change=${(e7) => {
+      this.seekBar = e7.detail.value;
+      const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+      this.transport.seek(position);
+    }}
+        ></sc-number>
+        <sc-number
+          min="1"
+          integer
+          value=${this.seekBeat}
+          @change=${(e7) => {
+      this.seekBeat = e7.detail.value;
+      const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+      this.transport.seek(position);
+    }}
+        ></sc-number>
+      </div>
+      <div>
+        <sc-text style="width: 62px">loop</sc-text>
+        <sc-loop
+          ?value=${this.loop}
+          @change=${(e7) => {
+      this.loop = e7.detail.value;
+      console.log("loop", this.loop);
+      this.transport.loop(this.loop);
+    }}
+        ></sc-loop>
+      </div>
+        <sc-text style="width: 62px;">from</sc-text>
+        <sc-number
+          min="1"
+          integer
+          value=${this.loopStartBar}
+          @change=${(e7) => {
+      this.loopStartBar = e7.detail.value;
+      const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
+      console.log("loopStart", position);
+      this.transport.loopStart(position);
+    }}
+        ></sc-number>
+        <sc-number
+          min="1"
+          integer
+          value=${this.loopStartBeat}
+          @change=${(e7) => {
+      this.loopStartBeat = e7.detail.value;
+      const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
+      this.transport.loopStart(position);
+    }}
+        ></sc-number>
+      </div>
+      <div>
+        <sc-text style="width: 62px">to</sc-text>
+        <sc-number
+          min="1"
+          integer
+          value=${this.loopEndBar}
+          @change=${(e7) => {
+      this.loopEndBar = e7.detail.value;
+      const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
+      console.log("loopEnd", position);
+      this.transport.loopEnd(position);
+    }}
+        ></sc-number>
+        <sc-number
+          min="1"
+          integer
+          value=${this.loopEndBeat}
+          @change=${(e7) => {
+      this.loopEndBeat = e7.detail.value;
+      const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
+      this.transport.loopEnd(position);
+    }}
+        ></sc-number>
+      </div>
+      ${labels.length > 0 ? x`
+          <div>
+            <sc-select
+              placeholder="go to label"
+              .options=${labels}
+              @change=${(e7) => {
+      const position = this.interpreter.getPositionAtLabel(e7.detail.value);
+      this.transport.seek(position);
+    }}
+            ></sc-select>
+          </div>
+        ` : T}
+    `;
+  }
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.transport.has(this.process)) {
+      this.transport.add(this.process);
+    }
+  }
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.transport.has(this.process)) {
+      this.transport.remove(this.process);
+    }
+  }
+  // transport callback
+  process(position, audioTime, event) {
+    if (event instanceof TransportEvent_default) {
+      console.log(event);
+      if (["start", "pause", "stop"].includes(event.type)) {
+        this.state = event.type;
+        setTimeout(() => this.requestUpdate(), event.tickLookahead * 1e3);
+      }
+      return event.speed > 0 ? position : Infinity;
+    }
+  }
+};
+if (customElements.get("soap-mobile-transport-control") === void 0) {
+  customElements.define("soap-mobile-transport-control", SoapMobileTransportControl);
+}
+
+// src/MobileApp.js
 var App = class {
   constructor(audioContext3, buffers2, defaultScore2) {
     this.audioContext = audioContext3;
@@ -54341,19 +54618,22 @@ var App = class {
   render() {
     j(x`
       <div>
+        <soap-stave-renderer
+          .transport=${this.transport}
+          .interpreter=${this.interpreter}
+        ></soap-stave-renderer>
+        <br >
         <sc-clock
           .getTimeFunction=${() => this.transport.currentPosition}
         ></sc-clock>
         <br />
-        <div style="width: 50%; border: 1px solid red;">
-          <soap-transport-control
-            .transport=${this.transport}
-            .interpreter=${this.interpreter}
-            .audioContext=${this.audioContext}
-            score=${this.score}
-          ></soap-transport-control>
-        </div>
-        <!-- <br />
+        <soap-mobile-transport-control
+          .transport=${this.transport}
+          .interpreter=${this.interpreter}
+          .audioContext=${this.audioContext}
+          score=${this.score}
+        ></soap-mobile-transport-control>
+        <br />
         <soap-flash-beat-renderer
           .transport=${this.transport}
           .interpreter=${this.interpreter}
@@ -54364,15 +54644,7 @@ var App = class {
           .interpreter=${this.interpreter}
         ></soap-score-location-renderer>
         <br />
-        <soap-stave-renderer
-          .transport=${this.transport}
-          .interpreter=${this.interpreter}
-        ></soap-stave-renderer>
-        <br >
-        <soap-score-editor
-          score=${this.score}
-          @change=${(e7) => this.setScore(e7.detail.value)}
-        ></soap-score-editor>
+
         <br >
         <soap-metronome-renderer
           .transport=${this.transport}
@@ -54396,12 +54668,12 @@ var App = class {
         <br />
         <soap-score-export
           .score=${this.score}
-        ></soap-score-export> -->
+        ></soap-score-export>
       </div>
     `, document.body);
   }
 };
-var App_default = App;
+var MobileApp_default = App;
 
 // src/index.js
 var audioContext2 = new AudioContext();
@@ -54452,7 +54724,7 @@ var buffers = {
   ]),
   "drumstick": await loader.load("./assets/drumstick.wav")
 };
-new App_default(audioContext2, buffers, defaultScore);
+new MobileApp_default(audioContext2, buffers, defaultScore);
 /*! Bundled license information:
 
 @lit/reactive-element/css-tag.js:

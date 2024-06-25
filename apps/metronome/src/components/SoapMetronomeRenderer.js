@@ -18,7 +18,7 @@ class SoapMetronomeRenderer extends LitElement {
     this.sonification = 'sine';
     // @todo
     // 'auto', 'double', 'beat', 'bar', 'odd', 'even'
-    this.sonificationMode = 'sine';
+    this.sonificationMode = 'auto';
   }
 
   render() {
@@ -32,6 +32,11 @@ class SoapMetronomeRenderer extends LitElement {
         .options=${soundbanks}
         value=${this.sonification}
         @change=${e => this.sonification = e.detail.value}
+      ></sc-select>
+      <sc-select
+        .options=${['auto', 'double', 'beat', 'bar', 'odd', 'even']}
+        value=${this.sonificationMode}
+        @change=${e => this.sonificationMode = e.detail.value}
       ></sc-select>
     `;
   }
@@ -52,6 +57,21 @@ class SoapMetronomeRenderer extends LitElement {
     }
   }
 
+  triggerSubBeat(audioTime, infos) {
+    let upper = infos.unit.upper;
+    const duration = infos.duration;
+    if (upper === 1) {
+      upper = 2;
+    }
+
+    const delta = duration / upper;
+
+    for (let i = 1; i < upper; i++) {
+      const subBeatTime = audioTime + i * delta;
+      this.triggerBeat(subBeatTime, 'subbeat');
+    }
+  }
+
   // transport callback
   process(position, audioTime, event) {
     if (event instanceof TransportEvent) {
@@ -63,11 +83,40 @@ class SoapMetronomeRenderer extends LitElement {
 
     // do not sonify in between beat events, e.g. labels
     if (Math.floor(beat) === beat) {
+      const type = beat === 1 ? 'downbeat' : 'upbeat';
+      switch (this.sonificationMode) {
+      case 'auto':
+        this.triggerBeat(audioTime, type);
+        if (infos.event.tempo.curve) {
+          this.triggerSubBeat(audioTime, infos);
+        }
+        break;
+      case 'double':
+        this.triggerBeat(audioTime, type);
+        this.triggerSubBeat(audioTime, infos);
+        break;
+      case 'beat':
+        this.triggerBeat(audioTime, type);
+        break;
+      case 'bar':
+        if (beat === 1) {
+          this.triggerBeat(audioTime, type);
+        }
+        break;
+      case 'odd':
+        if (beat % 2 === 1) {
+          this.triggerBeat(audioTime, type);
+        }
+        break;
+      case 'even':
+        if (beat % 2 === 0) {
+          this.triggerBeat(audioTime, type);
+        }
+        break;
+      }
       // @todo
       // - handle subbeat
       // - abstract so that it can be used in export to wav
-      const type = beat === 1 ? 'downbeat' : 'upbeat';
-      this.triggerBeat(audioTime, type);
     }
 
     return position + infos.dt;
@@ -77,7 +126,18 @@ class SoapMetronomeRenderer extends LitElement {
     audioTime = Math.max(audioTime, this.audioContext.currentTime);
 
     if (this.sonification === 'sine') {
-      const freq = type === 'downbeat' ? 900 : 600;
+      let freq;
+      switch (type) {
+      case 'downbeat':
+        freq = 900;
+        break;
+      case 'upbeat':
+        freq = 600;
+        break;
+      case 'subbeat':
+        freq = 1200;
+        break;
+      }
       const gain = 1;
 
       const env = this.audioContext.createGain();
@@ -103,6 +163,8 @@ class SoapMetronomeRenderer extends LitElement {
             buffer = buffers[0];
           } else if (type === 'upbeat') {
             buffer = buffers[1];
+          } else if (type === 'subbeat') {
+            buffer = buffers[2];
           }
 
           gain = 1;
@@ -111,13 +173,35 @@ class SoapMetronomeRenderer extends LitElement {
         case 'mechanical': {
           const index = Math.floor(Math.random() * buffers.length);
           buffer = buffers[index];
-          gain = type === 'downbeat' ? 1 : 0.5;
+          let gain;
+          switch (type) {
+            case 'downbeat':
+              gain = 1;
+              break;
+            case 'upbeat':
+              gain = 0.5;
+              break;
+            case 'subbeat':
+              gain = 0.1;
+              break;
+          }
           break;
         }
         case 'drumstick':
         case 'old-numerical': {
           buffer = buffers;
-          gain = type === 'downbeat' ? 1 : 0.5;
+          let gain;
+          switch (type) {
+            case 'downbeat':
+              gain = 1;
+              break;
+            case 'upbeat':
+              gain = 0.5;
+              break;
+            case 'subbeat':
+              gain = 0.1;
+              break;
+          }
           break;
         }
       }

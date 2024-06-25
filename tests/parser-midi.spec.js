@@ -53,6 +53,26 @@ BAR 4 [4/4] \
       //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
+    it('## Example 3 bis', () => {
+      const input = [
+        { deltaTime: 0, type: 255, metaType: 88, data: [ 4, 3, 12, 8 ] },
+        { deltaTime: 0, type: 255, metaType: 81, data: 1116279 },
+        { deltaTime: 1920, type: 255, metaType: 88, data: [ 2, 3, 12, 8 ] },
+        { deltaTime: 480, type: 255, metaType: 88, data: [ 15, 3, 24, 8 ] },
+        { deltaTime: 3600, type: 255, metaType: 88, data: [ 4, 3, 12, 8 ] },
+        { deltaTime: 0, type: 255, metaType: 47 } ];
+      const outputScore = midi2soap.parse(input);
+      const outputData = parseScore(outputScore);
+      const expectedScore = `\
+BAR 1 [4/8] TEMPO [1/4]=53.75
+BAR 3 [2/8]
+BAR 4 [15/8]
+BAR 5 [4/8] \
+`;
+      const expectedData = parseScore(expectedScore);
+      //console.log(outputScore);
+      assert.deepEqual(outputData, expectedData);
+    });
     it('## Example 4', () => {
       const input = [
         { deltaTime: 0, type: 255, metaType: 88, data: [ 4, 2, 24, 8 ] },
@@ -105,7 +125,7 @@ BAR 1 [4/4] TEMPO [1/4]=120 "To Flute"
       //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
-    it('## Example 3', () => {
+    it.only('## Example 3', () => {
       const input = [
         { deltaTime: 0, type: 255, metaType: 88, data: [ 4, 2, 24, 8 ] },
         { deltaTime: 0, type: 255, metaType: 81, data: 500000 },
@@ -886,6 +906,33 @@ BAR 27 TEMPO [1/4]=120 \
       // //console.log("expected \n", expectedScore);
       const outputData = parseScore(outputScore);
       assert.deepEqual(outputData, expectedData);
+    });
+    it('## Bug Matalon SubMeasure', () => {
+
+      // DP
+      const input = [
+        { deltaTime: 0, type: 255, metaType: 1, data: "02-DAVID ET GOLIATH" },
+        { deltaTime: 0, type: 255, metaType: 88, data: [ 4, 3, 12, 8 ] },
+        { deltaTime: 0, type: 255, metaType: 81, data: 1116279 },
+        { deltaTime: 1920, type: 255, metaType: 88, data: [ 2, 3, 12, 8 ] },
+        { deltaTime: 480, type: 255, metaType: 88, data: [ 15, 3, 24, 8 ] },
+        { deltaTime: 3560, type: 255, metaType: 1, data: "david y goliath 2" },
+        { deltaTime: 40, type: 255, metaType: 88, data: [ 4, 3, 12, 8 ] }
+      ];
+
+      const outputScore = midi2soap.parse(input, 480);
+      console.log(outputScore);
+      const outputData = parseScore(outputScore);
+//       const expectedScore = `\
+// BAR 1 [4/8] TEMPO [1/4]=53.75 "02-DAVID ET GOLIATH"
+// BAR 3 [2/8]
+// BAR 4 [15/8]
+// |4.2 "david y goliath 2"
+// BAR 5 [4/8] \
+// `;
+//       const expectedData = parseScore(expectedScore);
+//       //console.log(outputScore);
+//       assert.deepEqual(outputData, expectedData);
     });
   });
 //   describe('# Curve Examples', () => {

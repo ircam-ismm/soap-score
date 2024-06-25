@@ -28,7 +28,8 @@ function computeMetricLocation(events) {
     bar += Math.floor(nextNormBeat);
 
     const remaining = nextNormBeat - Math.floor(nextNormBeat);
-    beat = remaining * numQuarterNoteInBar + 1;
+    console.log(event, remaining, numQuarterNoteInBar);
+    beat = (remaining * numQuarterNoteInBar) + 1;
 
     event.bar = bar;
     event.beat = beat;
@@ -65,6 +66,7 @@ const midi2soap = {
 
   readString(input) {
     const midi = midiParser.parse(input);
+    console.log(midi);
     const data = midi.track[0].event;
     const timeDiv = midi.timeDivision;
     const soapScore = this.parse(data, timeDiv);

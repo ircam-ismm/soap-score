@@ -17,6 +17,7 @@ import './components/SoapScoreGenerator.js';
 import './components/SoapScoreEditor.js';
 import './components/SoapScoreImport.js';
 import './components/SoapScoreExport.js';
+import './components/SoapMobileTransportControl.js';
 
 class App {
   constructor(audioContext, buffers, defaultScore) {
@@ -48,16 +49,21 @@ class App {
   render() {
     render(html`
       <div>
+        <soap-stave-renderer
+          .transport=${this.transport}
+          .interpreter=${this.interpreter}
+        ></soap-stave-renderer>
+        <br >
         <sc-clock
           .getTimeFunction=${() => this.transport.currentPosition}
         ></sc-clock>
         <br />
-        <soap-transport-control
+        <soap-mobile-transport-control
           .transport=${this.transport}
           .interpreter=${this.interpreter}
           .audioContext=${this.audioContext}
           score=${this.score}
-        ></soap-transport-control>
+        ></soap-mobile-transport-control>
         <br />
         <soap-flash-beat-renderer
           .transport=${this.transport}
@@ -69,15 +75,7 @@ class App {
           .interpreter=${this.interpreter}
         ></soap-score-location-renderer>
         <br />
-        <soap-stave-renderer
-          .transport=${this.transport}
-          .interpreter=${this.interpreter}
-        ></soap-stave-renderer>
-        <br >
-        <soap-score-editor
-          score=${this.score}
-          @change=${e => this.setScore(e.detail.value)}
-        ></soap-score-editor>
+
         <br >
         <soap-metronome-renderer
           .transport=${this.transport}

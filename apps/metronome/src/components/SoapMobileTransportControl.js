@@ -13,7 +13,7 @@ async function ensureResumedAudioContext(audioContext) {
   }
 }
 
-class SoapTransportControl extends LitElement {
+class SoapMobileTransportControl extends LitElement {
   static styles = css`
     :host {
       display: block;
@@ -211,6 +211,6 @@ class SoapTransportControl extends LitElement {
   }
 }
 
-if (customElements.get('soap-transport-control') === undefined) {
-  customElements.define('soap-transport-control', SoapTransportControl);
+if (customElements.get('soap-mobile-transport-control') === undefined) {
+  customElements.define('soap-mobile-transport-control', SoapMobileTransportControl);
 }
