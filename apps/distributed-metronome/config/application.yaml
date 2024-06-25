@@ -1,0 +1,6 @@
+name: distributed-metronome
+author: ""
+clients:
+  metronome:
+    target: browser
+    default: true
