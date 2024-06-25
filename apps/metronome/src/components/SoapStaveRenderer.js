@@ -68,7 +68,7 @@ class SoapStaveRenderer extends LitElement {
     :host {
       background-color: white;
       display: block;
-      width: 300px;
+      width: 100%;
       height: 150px;
       color: black;
       font-size: 24px;

@@ -760,8 +760,8 @@ var init_Scheduler = __esm({
        * @param {function} getTimeFunction - Function that returns a time in seconds,
        *  defining the timeline in which the scheduler is running.
        * @param {object} options - Options of the scheduler
-       * @param {number} [options.period=0.25] - Period of the scheduler, in seconds
-       * @param {number} [options.period=0.1] - Lookahead of the scheduler, in seconds
+       * @param {number} [options.period=0.02] - Period of the scheduler, in seconds
+       * @param {number} [options.period=0.05] - Lookahead of the scheduler, in seconds
        * @param {number} [options.queueSize=1e3] - Default size of the queue, i.e.
        *  the number of events that can be scheduled in parallel
        * @param {function} [options.currentTimeToProcessorTimeFunction=Identity] - Function
@@ -771,8 +771,8 @@ var init_Scheduler = __esm({
        *  at same time before the processor is rejected from the scheduler
        */
       constructor(getTimeFunction, {
-        period = 0.025,
-        lookahead = 0.1,
+        period = 0.02,
+        lookahead = 0.05,
         queueSize = 1e3,
         currentTimeToProcessorTimeFunction = identity,
         // [deprecated]
@@ -6385,7 +6385,7 @@ var init_SoapTransportControl = __esm({
       static styles = i`
     :host {
       display: block;
-      width: 100%;
+      width: 50%;
       height: 100%;
       padding: 10px;
     }
@@ -6824,6 +6824,25 @@ var init_SoapFlashBeatRenderer = __esm({
     init_src3();
     init_sc_flash();
     SoapFlashBeatRenderer = class extends s3 {
+      static styles = i`
+    :host {
+      display: block;
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      background-color: yellowgreen;
+    }
+
+    :host > div {
+      margin-bottom: 4px;
+    }
+
+    :host sc-flash {
+
+    }
+
+
+  `;
       constructor() {
         super();
         this.transport = null;
@@ -6885,7 +6904,7 @@ var init_SoapScoreLocationRenderer = __esm({
     SoapScoreLocationRenderer = class extends s3 {
       static styles = i`
     :host {
-      font-size: 20px;
+      font-size: 200%;
     }
   `;
       constructor() {
@@ -37136,7 +37155,7 @@ var init_SoapStaveRenderer = __esm({
     :host {
       background-color: white;
       display: block;
-      width: 300px;
+      width: 100%;
       height: 150px;
       color: black;
       font-size: 24px;
@@ -39318,6 +39337,7 @@ var init_SoapScoreGenerator = __esm({
     SoapScoreGenerator = class extends s3 {
       static styles = i`
     :host {
+      background-color: red;
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -54071,6 +54091,228 @@ var init_sc_editor = __esm({
   }
 });
 
+// node_modules/@ircam/sc-components/src/sc-button.js
+var ScButtonBase, ScButton;
+var init_sc_button = __esm({
+  "node_modules/@ircam/sc-components/src/sc-button.js"() {
+    init_lit();
+    init_class_map2();
+    init_ScElement();
+    init_midi_controlled();
+    init_keyboard_controller();
+    ScButtonBase = class extends ScElement_default {
+      static properties = {
+        value: {
+          type: String,
+          reflect: true
+        },
+        midiValue: {
+          type: Number
+        },
+        selected: {
+          type: Boolean,
+          reflect: true
+        },
+        disabled: {
+          type: Boolean,
+          reflect: true
+        },
+        disableKeyboard: {
+          type: Boolean,
+          reflect: true,
+          attribute: "disable-keyboard"
+        },
+        _pressed: {
+          type: Boolean,
+          state: true
+        }
+      };
+      static styles = i`
+    :host {
+      vertical-align: top;
+      display: inline-block;
+      box-sizing: border-box;
+      overflow: hidden;
+      width: 200px;
+      height: 30px;
+      line-height: 0;
+      font-size: var(--sc-font-size);
+      color: #ffffff;
+      border: 1px solid var(--sc-color-primary-3);
+
+      --sc-button-background-color: var(--sc-color-primary-2);
+      --sc-button-background-color-hover: var(--sc-color-primary-3);
+      --sc-button-background-color-active: var(--sc-color-primary-4);
+      --sc-button-background-color-selected: var(--sc-color-secondary-3);
+    }
+
+    :host([hidden]) {
+      display: none
+    }
+
+    :host([disabled]) {
+      opacity: 0.7;
+    }
+
+    :host(:focus), :host(:focus-visible) {
+      outline: none;
+      border: 1px solid var(--sc-color-primary-4);
+    }
+
+    button {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      font-family: var(--sc-font-family);
+      background-color: var(--sc-button-background-color);
+      border: none;
+      font-size: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    /* remove default button focus */
+    button:focus, button:focus-visible {
+      outline: none;
+    }
+
+    button:hover {
+      background-color: var(--sc-button-background-color-hover);
+    }
+
+    button.selected {
+      background-color: var(--sc-button-background-color-selected);
+    }
+
+    :host([selected]) {
+      border: 1px solid var(--sc-button-background-color-selected);
+    }
+
+    /* use class because :active does not work in Firefox because of e.preventDefault(); */
+    button.active {
+      background-color: var(--sc-button-background-color-active);
+    }
+
+    /* prevent any layout change when disabled */
+    :host([disabled]) button {
+      cursor: default;
+    }
+
+    :host([disabled]) button:hover {
+      background-color: var(--sc-button-background-color);
+      cursor: default;
+    }
+
+    :host([disabled]) button.selected:hover {
+      background-color: var(--sc-button-background-color-selected);
+      cursor: default;
+    }
+  `;
+      // sc-midi controller interface
+      get midiType() {
+        return "control";
+      }
+      set midiValue(value2) {
+        if (this.disabled) {
+          return;
+        }
+        const eventName = value2 === 0 ? "release" : "press";
+        this._dispatchEvent(eventName);
+      }
+      get midiValue() {
+        return this._pressed ? 127 : 0;
+      }
+      constructor() {
+        super();
+        this.value = null;
+        this.selected = false;
+        this.disabled = false;
+        this._pressed = false;
+        this._keyboard = new keyboard_controller_default(this, {
+          filterCodes: ["Enter", "Space"],
+          callback: this._onKeyboardEvent.bind(this),
+          deduplicateEvents: true
+        });
+      }
+      render() {
+        const classes = {
+          active: this._pressed,
+          selected: this.selected
+        };
+        return x`
+      <button
+        tabindex="-1"
+        class="${e5(classes)}"
+        @mousedown="${this._onEvent}"
+        @mouseup="${this._onEvent}"
+        @touchstart="${{
+          handleEvent: this._onEvent.bind(this),
+          passive: false
+        }}"
+        @touchend="${this._onEvent}"
+      >
+        <slot>${this.value}</slot>
+      </button>
+    `;
+      }
+      updated(changedProperties) {
+        if (changedProperties.has("disabled")) {
+          const tabindex = this.disabled ? -1 : this._tabindex;
+          this.setAttribute("tabindex", tabindex);
+          if (this.disabled) {
+            this.blur();
+          }
+        }
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        this._tabindex = this.getAttribute("tabindex") || 0;
+      }
+      _onKeyboardEvent(e7) {
+        if (this.disabled || this.disableKeyboard) {
+          return;
+        }
+        const eventName = e7.type === "keydown" ? "press" : "release";
+        this._dispatchEvent(eventName);
+      }
+      _onEvent(e7) {
+        e7.preventDefault();
+        if (this.disabled) {
+          return;
+        }
+        this.focus();
+        const eventName = e7.type === "touchend" || e7.type === "mouseup" ? "release" : "press";
+        this._dispatchEvent(eventName);
+      }
+      _dispatchEvent(eventName) {
+        if (eventName === "release" && this._pressed === false) {
+          return;
+        }
+        const value2 = this.value === null ? this.textContent : this.value;
+        this._pressed = eventName === "press";
+        const event = new CustomEvent(eventName, {
+          bubbles: true,
+          composed: true,
+          detail: { value: value2 }
+        });
+        this.dispatchEvent(event);
+        if (eventName === "press") {
+          const inputEvent = new CustomEvent("input", {
+            bubbles: true,
+            composed: true,
+            detail: { value: value2 }
+          });
+          this.dispatchEvent(inputEvent);
+        }
+      }
+    };
+    ScButton = midi_controlled_default("ScButton", ScButtonBase);
+    if (customElements.get("sc-button") === void 0) {
+      customElements.define("sc-button", ScButton);
+    }
+  }
+});
+
 // src/components/SoapScoreEditor.js
 var SoapScoreEditor;
 var init_SoapScoreEditor = __esm({
@@ -54078,6 +54320,7 @@ var init_SoapScoreEditor = __esm({
     init_lit();
     init_SoapScoreInterpreter();
     init_sc_editor();
+    init_sc_button();
     SoapScoreEditor = class extends s3 {
       static properties = {
         score: { type: String }
@@ -54089,6 +54332,12 @@ var init_SoapScoreEditor = __esm({
       }
       render() {
         return x`
+      <sc-button
+        @input=${(e7) => {
+          const $editor = e7.target.nextElementSibling;
+          $editor.save();
+        }}
+      >Save score</sc-button>
       <sc-editor
         save-button
         value=${this.score}
@@ -56264,63 +56513,78 @@ var full_exports = {};
 __export(full_exports, {
   default: () => layoutFull
 });
-function layoutFull(app) {
+function layoutFull(app2) {
   return x`
-    <sc-clock
-      .getTimeFunction=${() => app.transport.currentPosition}
-    ></sc-clock>
-    <br />
-    <soap-transport-control
-      .global=${app.global}
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-      .audioContext=${app.audioContext}
-      score=${app.score}
-    ></soap-transport-control>
 
-    <br />
-    <soap-flash-beat-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-    ></soap-flash-beat-renderer>
-    <br />
-    <soap-score-location-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-    ></soap-score-location-renderer>
-    <br />
-    <soap-stave-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-    ></soap-stave-renderer>
-    <br >
-    <soap-score-editor
-      score=${app.score}
-      @change=${(e7) => app.setScore(e7.detail.value)}
-    ></soap-score-editor>
-    <br >
-    <soap-metronome-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-      .audioContext=${app.audioContext}
-      .buffers=${app.buffers}
-      .audioOutput=${app.audioContext.destination}
-    ></soap-metronome-renderer>
+    <div class="timer">
+      <sc-clock
+        .getTimeFunction=${() => app2.transport.currentPosition}
+      ></sc-clock>
+    </div>
+    <div id="full">
+      <div class="metric">
+        <div class="stave">
+          <soap-stave-renderer
+            .transport=${app2.transport}
+            .interpreter=${app2.interpreter}
+          ></soap-stave-renderer>
+        </div>
+        <div class="flash">
+          <soap-flash-beat-renderer
+            .transport=${app2.transport}
+            .interpreter=${app2.interpreter}
+          ></soap-flash-beat-renderer>
+        </div>
+        <div class="location">
+          <soap-score-location-renderer
+            .transport=${app2.transport}
+            .interpreter=${app2.interpreter}
+          ></soap-score-location-renderer>
+        </div>
+      </div>
+      <div class ="down">
+        <div class="score-generator">
+          <soap-score-generator
+            @change=${(e7) => app2.setScore(e7.detail.value)}
+          ></soap-score-generator>
+        </div>
+        <div class="score-editor">
+          <soap-score-editor
+            score=${app2.score}
+            @change=${(e7) => app2.setScore(e7.detail.value)}
+          ></soap-score-editor>
+        </div>
+      </div>
+      <div class="transport-control">
+        <soap-transport-control
+          .global=${app2.global}
+          .transport=${app2.transport}
+          .interpreter=${app2.interpreter}
+          .audioContext=${app2.audioContext}
+          score=${app2.score}
+        ></soap-transport-control>
+      </div>
+    </div>
+      <soap-metronome-renderer
+        .transport=${app2.transport}
+        .interpreter=${app2.interpreter}
+        .audioContext=${app2.audioContext}
+        .buffers=${app2.buffers}
+        .audioOutput=${app2.audioContext.destination}
+      ></soap-metronome-renderer>
     <br />
     <soap-score-examples
-      @change=${(e7) => app.setScore(e7.detail.value)}
+      @change=${(e7) => app2.setScore(e7.detail.value)}
     ></soap-score-examples>
     <br />
-    <soap-score-generator
-      @change=${(e7) => app.setScore(e7.detail.value)}
-    ></soap-score-generator>
+    
     <br />
     <soap-score-import
-      @change=${(e7) => app.setScore(e7.detail.value)}
+      @change=${(e7) => app2.setScore(e7.detail.value)}
     ></soap-score-import>
     <br />
     <soap-score-export
-      .score=${app.score}
+      .score=${app2.score}
     ></soap-score-export>
   `;
 }
@@ -56346,24 +56610,24 @@ var test_exports = {};
 __export(test_exports, {
   default: () => layoutTest
 });
-function layoutTest(app) {
+function layoutTest(app2) {
   return x`
     <sc-clock
-      .getTimeFunction=${() => app.transport.currentPosition}
+      .getTimeFunction=${() => app2.transport.currentPosition}
     ></sc-clock>
     <br />
     <soap-transport-control
-      .global=${app.global}
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-      .audioContext=${app.audioContext}
-      score=${app.score}
+      .global=${app2.global}
+      .transport=${app2.transport}
+      .interpreter=${app2.interpreter}
+      .audioContext=${app2.audioContext}
+      score=${app2.score}
     ></soap-transport-control>
 
     <br />
     <soap-flash-beat-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
+      .transport=${app2.transport}
+      .interpreter=${app2.interpreter}
     ></soap-flash-beat-renderer>
   `;
 }
@@ -56682,13 +56946,35 @@ var App = class {
     const inner = layout(this);
     j(x`
       <header>
-        <sc-select
-          .options=${layouts}
-          @change=${(e7) => {
+        <div>
+          <img src="./assets/logo-200x200.png" />
+          <h1>SO(a)P Metronome</h1>
+          <a href="#" @click=${(e7) => {
+      e7.preventDefault();
+      renderDoc = !renderDoc;
+      app.render();
+    }}>Syntax documentation</a>
+        </div>
+        <div>
+          <sc-select
+            .options=${layouts}
+            @change=${(e7) => {
       this.layout = e7.detail.value;
       this.render();
     }}
-        ></sc-select>
+          ></sc-select>
+        </div>
+        <div style="font-size: 0;">
+          <sc-clock format="hh:mm:ss"></sc-clock>
+          <sc-icon type="github" href="https://github.com/ircam-ismm/soap-score"></sc-icon>
+          <sc-icon
+            type="burger"
+            @input=${(e7) => {
+      renderAdvancedOptions = !renderAdvancedOptions;
+      app.render();
+    }}
+          ></sc-icon>
+        </div>
       </header>
       <h1>${inner}</h1>
     `, document.body);

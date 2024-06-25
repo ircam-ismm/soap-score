@@ -7,7 +7,7 @@ import '@ircam/sc-components/sc-flash.js';
 class SoapScoreLocationRenderer extends LitElement {
   static styles = css`
     :host {
-      font-size: 20px;
+      font-size: 200%;
     }
   `;
 

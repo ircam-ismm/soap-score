@@ -8,21 +8,20 @@ class SoapFlashBeatRenderer extends LitElement {
     :host {
       display: block;
       width: 100%;
-      height: 100%;
+      height: 150px;
       padding: 10px;
-      background-color: white;
-
+      background-color: yellowgreen;
     }
 
     :host > div {
       margin-bottom: 4px;
     }
 
-    :host sc-transport {
-      height: 60px;
-      margin-bottom: 12px;
+    :host sc-flash {
 
     }
+
+
   `;
 
   constructor() {

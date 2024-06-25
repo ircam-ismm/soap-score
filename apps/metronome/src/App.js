@@ -45,6 +45,15 @@ class App {
     render(html`
       <header>
         <div>
+          <img src="./assets/logo-200x200.png" />
+          <h1>SO(a)P Metronome</h1>
+          <a href="#" @click=${e => {
+            e.preventDefault();
+            renderDoc = !renderDoc;
+            app.render();
+          }}>Syntax documentation</a>
+        </div>
+        <div>
           <sc-select
             .options=${layouts}
             @change=${e => {
@@ -54,6 +63,8 @@ class App {
           ></sc-select>
         </div>
         <div style="font-size: 0;">
+          <sc-clock format="hh:mm:ss"></sc-clock>
+          <sc-icon type="github" href="https://github.com/ircam-ismm/soap-score"></sc-icon>
           <sc-icon
             type="burger"
             @input=${e => {
@@ -61,7 +72,6 @@ class App {
               app.render();
             }}
           ></sc-icon>
-          <sc-fullscreen></sc-fullscreen>
         </div>
       </header>
       <h1>${inner}</h1>
