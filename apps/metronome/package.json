@@ -8,7 +8,7 @@
     "serve": "^14.2.3"
   },
   "dependencies": {
-    "@ircam/sc-components": "^3.0.0-alpha.64",
+    "@ircam/sc-components": "^3.0.0-alpha.65",
     "@ircam/sc-loader": "^1.0.0",
     "lit": "^3.1.4",
     "vexflow": "^4.2.4"

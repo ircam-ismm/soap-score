@@ -47,13 +47,13 @@ class App {
         <div>
           <img src="./assets/logo-200x200.png" />
           <h1>SO(a)P Metronome</h1>
-          <a href="#" @click=${e => {
+           <a href="#" @click=${e => {
             e.preventDefault();
             renderDoc = !renderDoc;
             app.render();
           }}>Syntax documentation</a>
         </div>
-        <div>
+         <div>
           <sc-select
             .options=${layouts}
             @change=${e => {
