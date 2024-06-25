@@ -7,13 +7,13 @@ import SoapScoreInterpreter from '../../../src/SoapScoreInterpreter.js';
 
 import '@ircam/sc-components/sc-select.js';
 
-const layouts = ['full', 'test']
+const layouts = ['mobile', 'full', 'test']
 
 class App {
   constructor(audioContext, buffers, defaultScore) {
     this.audioContext = audioContext;
     this.buffers = buffers;
-    this.layout = 'full';
+    this.layout = 'mobile';
 
     const getTime = () => audioContext.currentTime;
     this.scheduler = new Scheduler(getTime);
