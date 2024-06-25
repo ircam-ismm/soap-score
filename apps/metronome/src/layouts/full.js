@@ -15,7 +15,6 @@ import '../components/SoapScoreExport.js';
 
 export default function layoutFull(app) {
   return html`
-
     <div class="timer">
       <sc-clock
         .getTimeFunction=${() => app.transport.currentPosition}
@@ -71,13 +70,16 @@ export default function layoutFull(app) {
         .audioContext=${app.audioContext}
         .buffers=${app.buffers}
         .audioOutput=${app.audioContext.destination}
+        sonification=${app.sonification}
+        sonificationMode=${app.sonificationMode}
+        @change=${e => app.updateSonification(e.detail.key, e.detail.value)}
       ></soap-metronome-renderer>
     <br />
     <soap-score-examples
       @change=${e => app.setScore(e.detail.value)}
     ></soap-score-examples>
     <br />
-    
+
     <br />
     <soap-score-import
       @change=${e => app.setScore(e.detail.value)}
@@ -85,6 +87,10 @@ export default function layoutFull(app) {
     <br />
     <soap-score-export
       .score=${app.score}
+      .interpreter=${app.interpreter}
+      .buffers=${app.buffers}
+      sonification=${app.sonification}
+      sonificationMode=${app.sonificationMode}
     ></soap-score-export>
   `;
 }
