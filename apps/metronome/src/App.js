@@ -22,6 +22,11 @@ class App {
     this.interpreter = null;
     this.score = null;
 
+    // 'sine', 'drum', 'old-numerical', 'mechanical', 'drumstick'
+    this.sonification = 'sine';
+    // 'auto', 'double', 'beat', 'bar', 'odd', 'even'
+    this.sonificationMode = 'auto';
+
     this.setScore(defaultScore);
   }
 
@@ -33,6 +38,11 @@ class App {
     // const processor = new SoapProcessor(this.interpreter);
     // this.transport.add(processor.process);
 
+    this.render();
+  }
+
+  updateSonification(key, value) {
+    this[key] = value;
     this.render();
   }
 

@@ -10,6 +10,7 @@
   "dependencies": {
     "@ircam/sc-components": "^3.0.0-alpha.64",
     "@ircam/sc-loader": "^1.0.0",
+    "audiobuffer-to-wav": "^1.0.0",
     "lit": "^3.1.4",
     "vexflow": "^4.2.4"
   },
