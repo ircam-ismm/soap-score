@@ -1,6 +1,6 @@
 import { AudioBufferLoader } from '@ircam/sc-loader';
 
-import App from './MobileApp.js';
+import App from './App.js';
 // import '@ircam/sc-components';
 
 const audioContext = new AudioContext();
