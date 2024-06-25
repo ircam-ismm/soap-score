@@ -18,7 +18,7 @@ class SoapTransportControl extends LitElement {
     :host {
       display: block;
       width: 100%;
-      height: 100%;
+/*      height: 100%;*/
       padding: 10px;
     }
 
@@ -39,19 +39,20 @@ class SoapTransportControl extends LitElement {
   constructor() {
     super();
 
+    this.global = null;
     this.transport = null;
-    this.interpreter = null;
-    this.audioContext = null;
+    // this.interpreter = null;
+    // this.audioContext = null;
 
     this.state = 'stop';
-    this.speed = 1;
-    this.seekBar = 1;
-    this.seekBeat = 1;
-    this.loopStartBar = 1;
-    this.loopStartBeat = 1;
-    this.loopEndBar = 1;
-    this.loopEndBeat = 1;
-    this.loop = false;
+    // this.speed = 1;
+    // this.seekBar = 1;
+    // this.seekBeat = 1;
+    // this.loopStartBar = 1;
+    // this.loopStartBeat = 1;
+    // this.loopEndBar = 1;
+    // this.loopEndBeat = 1;
+    // this.loop = false;
 
     this.process = this.process.bind(this);
   }
@@ -63,11 +64,11 @@ class SoapTransportControl extends LitElement {
       <sc-transport
         .buttons=${['start', 'pause', 'stop']}
         value=${this.state}
-        @change=${async e => {
-          await ensureResumedAudioContext(this.audioContext);
-          this.transport[e.detail.value]();
+        @change=${e => {
+          this.global.set({ transportControl: [e.detail.value] });
         }}
       ></sc-transport>
+      <!--
       <div>
         <sc-text style="width: 150px;">speed</sc-text>
         <sc-number
@@ -175,6 +176,7 @@ class SoapTransportControl extends LitElement {
           </div>
         ` : nothing
       }
+      -->
     `;
   }
 
@@ -196,7 +198,11 @@ class SoapTransportControl extends LitElement {
 
   process(position, audioTime, event) {
     if (event instanceof TransportEvent) {
-      // console.log(event);
+      if (event.type === 'init') {
+        this.state = event.speed > 0 ? 'start' : 'stop';
+        setTimeout(() => this.requestUpdate(), event.tickLookahead * 1000);
+      }
+
       if (['start', 'pause', 'stop'].includes(event.type)) {
         this.state = event.type;
         setTimeout(() => this.requestUpdate(), event.tickLookahead * 1000);
