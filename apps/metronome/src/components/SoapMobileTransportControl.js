@@ -50,8 +50,7 @@ class SoapMobileTransportControl extends LitElement {
 
     this.state = 'stop';
     this.speed = 1;
-    this.seekBar = 1;
-    this.seekBeat = 1;
+    this.seek = 1;
     this.loopStartBar = 1;
     this.loopStartBeat = 1;
     this.loopEndBar = 1;
@@ -74,40 +73,17 @@ class SoapMobileTransportControl extends LitElement {
         }}
       ></sc-transport>
       <div>
-        <sc-text style="width: 25%;">speed</sc-text>
-        <sc-number
-          min="0.1"
-          max="5"
-          value=${this.speed}
-          @change=${e => {
-            this.speed = e.detail.value;
-            this.transport.speed(this.speed);
-          }}
-        ></sc-number>
-      </div>
-      <div>
-        <sc-text style="width: 25%;">start at</sc-text>
+        <sc-text style="width: 40%; font-size: 20px;">start at</sc-text>
         <sc-prev
           @input=${e => this.transport.seek(0)}
         ></sc-prev>
-        <input type="number" inputmode="decimal" id="seek" name="seek" min="1"/>
         <sc-number
           min="1"
-          integer
-          value=${this.seekBar}
+          value=${this.seek}
           @change=${e => {
-            this.seekBar = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
-            this.transport.seek(position);
-          }}
-        ></sc-number>
-        <sc-number
-          min="1"
-          integer
-          value=${this.seekBeat}
-          @change=${e => {
-            this.seekBeat = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+            this.seek = e.detail.value;
+            this.seekBar = Math.floor(this.seek);
+            const position = this.interpreter.getPositionAtLocation(this.seekBar, 1);
             this.transport.seek(position);
           }}
         ></sc-number>
@@ -130,18 +106,6 @@ class SoapMobileTransportControl extends LitElement {
         ` : nothing
       }
     `;
-
-    const seekElement = document.querySelector(".seek");
-    seekElement.addEventListener("change", (event) => {
-      // parse event decimal to bar/beat
-      const decValue = event.detail.value;
-      console.log(decValue);
-      // this.seekBar = e.detail.value;
-      // const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
-      // this.transport.seek(position);
-    });
-
-
   }
 
   connectedCallback() {

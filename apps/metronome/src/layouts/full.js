@@ -19,7 +19,15 @@ const breakpoint = 960;
 
 export default function layoutFull(app) {
   return html`
+<<<<<<< HEAD
 
+=======
+    <div class="timer">
+      <sc-clock
+        .getTimeFunction=${() => app.transport.currentPosition}
+      ></sc-clock>
+    </div>
+>>>>>>> 0b911f636b101ca18aa76b8782efea7c369739d3
     <div id="full">
       <div class="row-1">
         <div class="stave">
@@ -78,6 +86,7 @@ export default function layoutFull(app) {
         </div>
       </div>
     </div>
+<<<<<<< HEAD
 
     ${renderAdvancedOptions ? html`
       <div class="advanced-options">
@@ -200,11 +209,39 @@ export default function layoutFull(app) {
       </div>
     ` : nothing}
 <!--     <soap-score-import
+=======
+      <soap-metronome-renderer
+        .transport=${app.transport}
+        .interpreter=${app.interpreter}
+        .audioContext=${app.audioContext}
+        .buffers=${app.buffers}
+        .audioOutput=${app.audioContext.destination}
+        sonification=${app.sonification}
+        sonificationMode=${app.sonificationMode}
+        @change=${e => app.updateSonification(e.detail.key, e.detail.value)}
+      ></soap-metronome-renderer>
+    <br />
+    <soap-score-examples
+      @change=${e => app.setScore(e.detail.value)}
+    ></soap-score-examples>
+    <br />
+
+    <br />
+    <soap-score-import
+>>>>>>> 0b911f636b101ca18aa76b8782efea7c369739d3
       @change=${e => app.setScore(e.detail.value)}
     ></soap-score-import>
     <br />
     <soap-score-export
       .score=${app.score}
+<<<<<<< HEAD
     ></soap-score-export> -->
+=======
+      .interpreter=${app.interpreter}
+      .buffers=${app.buffers}
+      sonification=${app.sonification}
+      sonificationMode=${app.sonificationMode}
+    ></soap-score-export>
+>>>>>>> 0b911f636b101ca18aa76b8782efea7c369739d3
   `;
 }

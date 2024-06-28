@@ -15,14 +15,21 @@ import '../components/SoapScoreExport.js';
 
 export default function layoutFull(app) {
   return html`
-    <soap-stave-renderer
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <soap-score-generator
+      @change=${e => app.setScore(e.detail.value)}
+    ></soap-score-generator>
+    <soap-flash-beat-renderer
       .transport=${app.transport}
       .interpreter=${app.interpreter}
-    ></soap-stave-renderer>
+    ></soap-flash-beat-renderer>
     <sc-clock
       .getTimeFunction=${() => app.transport.currentPosition}
     ></sc-clock>
-    <br />
+    <soap-score-location-renderer
+      .transport=${app.transport}
+      .interpreter=${app.interpreter}
+    ></soap-score-location-renderer>
     <soap-mobile-transport-control
       .global=${app.global}
       .transport=${app.transport}
@@ -30,17 +37,7 @@ export default function layoutFull(app) {
       .audioContext=${app.audioContext}
       score=${app.score}
     ></soap-mobile-transport-control>
-
     <br />
-    <soap-flash-beat-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-    ></soap-flash-beat-renderer>
-    <br />
-    <soap-score-location-renderer
-      .transport=${app.transport}
-      .interpreter=${app.interpreter}
-    ></soap-score-location-renderer>
     <br >
     <soap-metronome-renderer
       .transport=${app.transport}
@@ -50,13 +47,6 @@ export default function layoutFull(app) {
       .audioOutput=${app.audioContext.destination}
     ></soap-metronome-renderer>
     <br />
-    <soap-score-examples
-      @change=${e => app.setScore(e.detail.value)}
-    ></soap-score-examples>
-    <br />
-    <soap-score-generator
-      @change=${e => app.setScore(e.detail.value)}
-    ></soap-score-generator>
     <br />
     <soap-score-export
       .score=${app.score}

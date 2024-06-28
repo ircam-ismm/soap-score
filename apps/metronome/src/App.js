@@ -23,6 +23,11 @@ class App {
     this.interpreter = null;
     this.score = null;
 
+    // 'sine', 'drum', 'old-numerical', 'mechanical', 'drumstick'
+    this.sonification = 'sine';
+    // 'auto', 'double', 'beat', 'bar', 'odd', 'even'
+    this.sonificationMode = 'auto';
+
     this.setScore(defaultScore);
   }
 
@@ -37,6 +42,11 @@ class App {
     this.render();
   }
 
+  updateSonification(key, value) {
+    this[key] = value;
+    this.render();
+  }
+
   // @todo - provide several layouts
   async render() {
     const mod = await import(`./layouts/${this.layout}.js`);
@@ -48,13 +58,13 @@ class App {
         <div>
           <img src="./assets/logo-200x200.png" />
           <h1>SO(a)P Metronome</h1>
-          <a href="#" @click=${e => {
+           <a href="#" @click=${e => {
             e.preventDefault();
             renderDoc = !renderDoc;
             app.render();
           }}>Syntax documentation</a>
         </div>
-        <div>
+         <div>
           <sc-select
             .options=${layouts}
             @change=${e => {

@@ -10,7 +10,6 @@ class SoapFlashBeatRenderer extends LitElement {
       width: 100%;
       height: 150px;
       padding: 10px;
-      background-color: yellowgreen;
     }
 
     :host > div {

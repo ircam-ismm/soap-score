@@ -1,5 +1,8 @@
 import { html, LitElement, css, nothing } from 'lit';
 import soap2asco from '../../../../src/parsers/soap2asco.js';
+import toWav from 'audiobuffer-to-wav';
+
+import MetronomeRenderer from '../audio/MetronomeRenderer.js';
 
 import '@ircam/sc-components/sc-icon.js'
 import '@ircam/sc-components/sc-text.js'
@@ -9,12 +12,16 @@ class SoapScoreExport extends LitElement {
 
   static properties = {
     score: { type: String },
+    sonification: { type: String },
+    sonificationMode: { type: String },
   };
 
   constructor() {
     super();
 
     this.score = null;
+    this.buffers = null;
+    this.interpreter = null;
   }
 
   render() {
@@ -94,8 +101,102 @@ class SoapScoreExport extends LitElement {
     document.body.removeChild(element);
   }
 
-  _exportToAudio() {
-    console.warn('not implemented, do sonification mode before and share synthesis')
+  async _exportToAudio() {
+    this.err = null;
+
+    // check that the current score has an end
+    const lastEvent = this.interpreter.score[this.interpreter.score.length - 1];
+
+    console.log(lastEvent);
+
+    if (lastEvent.end !== true) {
+      this.err = new Error(`Cannot export file, no END tag found`);
+      this.requestUpdate();
+      return;
+    }
+
+    // dry run score to compute duration
+    let duration;
+    {
+      // find first event
+      const { bar, beat } = this.interpreter.getLocationAtPosition(0);
+      let infos = this.interpreter.getLocationInfos(bar, beat);
+      let audioTime = 0;
+      let fermata = null;
+
+      while (infos !== null) {
+        const { bar, beat } = infos;
+
+        if (infos.event.fermata && infos.event.fermata !== fermata) {
+          fermata = infos.event.fermata;
+
+          if (fermata.suspended) { // arbitrary suspension
+            infos.dt = infos.duration * 4;
+          }
+        }
+
+        audioTime += infos.dt; // time to next event
+        infos = this.interpreter.getNextLocationInfos(bar, beat);
+      }
+
+      duration = audioTime;
+    }
+
+    const sampleRate = 48000;
+    const audioContext = new OfflineAudioContext({
+      numberOfChannels: 1,
+      sampleRate: sampleRate,
+      length: Math.ceil(duration * sampleRate),
+    });
+
+    const renderer = new MetronomeRenderer(audioContext, audioContext.destination, this.buffers);
+    renderer.sonification = this.sonification;
+    renderer.sonificationMode = this.sonificationMode;
+
+    // find first event
+    const { bar, beat } = this.interpreter.getLocationAtPosition(0);
+    let infos = this.interpreter.getLocationInfos(bar, beat);
+    let audioTime = 0;
+    let fermata = null;
+
+    while (infos !== null) {
+              const { bar, beat } = infos;
+
+      if (Math.floor(beat) === beat) {
+        renderer.renderBeat(beat, infos, audioTime);
+      }
+
+      if (infos.event.fermata && infos.event.fermata !== fermata) {
+        fermata = infos.event.fermata;
+
+        if (fermata.suspended) { // arbitrary suspension
+          infos.dt = infos.duration * 4;
+        }
+
+        const firstPreBeatTime = audioTime + infos.dt - infos.duration * 2;
+        const secondPreBeatTime = audioTime + infos.dt - infos.duration;
+
+        renderer.triggerBeat(firstPreBeatTime, 'subbeat');
+        renderer.triggerBeat(secondPreBeatTime, 'subbeat');
+      } else {
+        fermata = null;
+      }
+
+      audioTime += infos.dt; // time to next event
+      infos = this.interpreter.getNextLocationInfos(bar, beat);
+    }
+
+    const buffer = await audioContext.startRendering();
+    const wav = toWav(buffer);
+    const wavObjectURL = URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
+
+    const element = document.createElement('a');
+    element.setAttribute('href', wavObjectURL);
+    element.setAttribute('download', 'score.wav');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   }
 }
 
