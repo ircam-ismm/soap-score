@@ -17,8 +17,7 @@ class SoapTransportControl extends LitElement {
   static styles = css`
     :host {
       display: block;
-      width: 50%;
-      height: 100%;
+      width: 100%;
       padding: 10px;
     }
 
@@ -29,6 +28,10 @@ class SoapTransportControl extends LitElement {
     :host sc-transport {
       height: 60px;
       margin-bottom: 12px;
+    }
+
+    :host  .block {
+      display: inline-block;
     }
   `;
 
@@ -82,29 +85,31 @@ class SoapTransportControl extends LitElement {
       </div>
       <div>
         <sc-text style="width: 150px;">start at position</sc-text>
-        <sc-prev
-          @input=${e => this.transport.seek(0)}
-        ></sc-prev>
-        <sc-number
-          min="1"
-          integer
-          value=${this.seekBar}
-          @change=${e => {
-            this.seekBar = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
-            this.transport.seek(position);
-          }}
-        ></sc-number>
-        <sc-number
-          min="1"
-          integer
-          value=${this.seekBeat}
-          @change=${e => {
-            this.seekBeat = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
-            this.transport.seek(position);
-          }}
-        ></sc-number>
+        <div class="block">
+          <sc-prev
+            @input=${e => this.transport.seek(0)}
+          ></sc-prev>
+          <sc-number
+            min="1"
+            integer
+            value=${this.seekBar}
+            @change=${e => {
+              this.seekBar = e.detail.value;
+              const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+              this.transport.seek(position);
+            }}
+          ></sc-number>
+          <sc-number
+            min="1"
+            integer
+            value=${this.seekBeat}
+            @change=${e => {
+              this.seekBeat = e.detail.value;
+              const position = this.interpreter.getPositionAtLocation(this.seekBar, this.seekBeat);
+              this.transport.seek(position);
+            }}
+          ></sc-number>
+        </div>
       </div>
       <div>
         <sc-text style="width: 62px">loop</sc-text>
@@ -117,49 +122,53 @@ class SoapTransportControl extends LitElement {
         ></sc-loop>
       </div>
         <sc-text style="width: 62px;">from</sc-text>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopStartBar}
-          @change=${e => {
-            this.loopStartBar = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
-            this.transport.loopStart(position);
-          }}
-        ></sc-number>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopStartBeat}
-          @change=${e => {
-            this.loopStartBeat = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
-            this.transport.loopStart(position);
-          }}
-        ></sc-number>
+        <div class="block">
+          <sc-number
+            min="1"
+            integer
+            value=${this.loopStartBar}
+            @change=${e => {
+              this.loopStartBar = e.detail.value;
+              const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
+              this.transport.loopStart(position);
+            }}
+          ></sc-number>
+          <sc-number
+            min="1"
+            integer
+            value=${this.loopStartBeat}
+            @change=${e => {
+              this.loopStartBeat = e.detail.value;
+              const position = this.interpreter.getPositionAtLocation(this.loopStartBar, this.loopStartBeat);
+              this.transport.loopStart(position);
+            }}
+          ></sc-number>
+        </div>
       </div>
       <div>
         <sc-text style="width: 62px">to</sc-text>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopEndBar}
-          @change=${e => {
-            this.loopEndBar = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
-            this.transport.loopEnd(position);
-          }}
-        ></sc-number>
-        <sc-number
-          min="1"
-          integer
-          value=${this.loopEndBeat}
-          @change=${e => {
-            this.loopEndBeat = e.detail.value;
-            const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
-            this.transport.loopEnd(position);
-          }}
-        ></sc-number>
+        <div class="block">
+          <sc-number
+            min="1"
+            integer
+            value=${this.loopEndBar}
+            @change=${e => {
+              this.loopEndBar = e.detail.value;
+              const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
+              this.transport.loopEnd(position);
+            }}
+          ></sc-number>
+          <sc-number
+            min="1"
+            integer
+            value=${this.loopEndBeat}
+            @change=${e => {
+              this.loopEndBeat = e.detail.value;
+              const position = this.interpreter.getPositionAtLocation(this.loopEndBar, this.loopEndBeat);
+              this.transport.loopEnd(position);
+            }}
+          ></sc-number>
+        </div>
       </div>
       ${labels.length > 0 ?
         html`

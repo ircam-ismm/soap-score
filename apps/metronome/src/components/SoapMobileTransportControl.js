@@ -31,6 +31,10 @@ class SoapMobileTransportControl extends LitElement {
       height: 14vh;
       margin-bottom: 12px;
     }
+
+    :host  .block {
+      display: inline-block;
+    }
   `;
 
   static properties = {

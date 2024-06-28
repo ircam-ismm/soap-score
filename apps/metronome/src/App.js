@@ -1,5 +1,5 @@
 import { Scheduler, Transport } from '@ircam/sc-scheduling';
-import { html, render } from 'lit';
+import { html, render, nothing } from 'lit';
 
 import SoapScoreInterpreter from '../../../src/SoapScoreInterpreter.js';
 
@@ -7,13 +7,14 @@ import SoapScoreInterpreter from '../../../src/SoapScoreInterpreter.js';
 
 import '@ircam/sc-components/sc-select.js';
 
-const layouts = ['mobile', 'full', 'test']
+const layouts = ['mobile', 'full', 'test', 'conductor']
+let renderAdvancedOptions = false;
 
 class App {
   constructor(audioContext, buffers, defaultScore) {
     this.audioContext = audioContext;
     this.buffers = buffers;
-    this.layout = 'mobile';
+    this.layout = 'full';
 
     const getTime = () => audioContext.currentTime;
     this.scheduler = new Scheduler(getTime);

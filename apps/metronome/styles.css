@@ -12,7 +12,7 @@
 
 html, body {
   width: 100%;
-/*  min-height: 100vh;*/
+  min-height: 100vh;
   background-color: var(--background-color);
   color: var(--font-color);
 }
@@ -22,7 +22,7 @@ html {
 }
 
 body {
-  padding: 10px;
+  
   margin: 0;
 }
 
@@ -69,6 +69,14 @@ header sc-clock {
   height: 100%;
 }*/
 
+@media (max-width: 920px) {
+  header sc-clock,
+  header sc-icon,
+  header a {
+    display: none;
+  }
+}
+
 .timer {
   height: 40px;
   display: flex;
@@ -91,41 +99,79 @@ header sc-clock {
   background-color: red;
 }
 
-#full .metric {
+#full .row-1 {
   flex: 1;
   display: flex;
   flex-direction: row;
-  height: 2px;
   width: 100%;
   background-color: blue;
 }
 
 #full .stave {
-  flex: 0.3;
+  flex: 0.25;
 }
 
 #full .flash {
-  flex: 0.3;
+  flex: 0.25;
 }
 
 #full .location {
-  flex: 0.3;
+  flex: 0.5;
 }
 
 
-#full .down {
+#full .row-2 {
   flex: 1;
   display: flex;
   flex-direction: row;
-  height: 125px;
   width: 100%;
   background-color: hotpink;
 }
 
-#full .score-generator {
-  flex: 0.5;
+#full .row-2 .col-1 {
+  flex: 1;
+  background-color: cyan;
+/*  display: flex;*/
+  flex-direction: colmun;
 }
 
-#full .score-editor {
-  flex: 0.5;
+#full .row-2 .col-2 {
+  flex: 1;
+}
+
+#conductor {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#conductor .row {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#conductor .row-2 {
+  flex-direction: row;
+  flex: 5;
+}
+
+#conductor .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#conductor .col-1 {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.fit {
+  width:100%; 
+  height: 50px; 
+  font-size: 34px; 
+  margin-bottom: 3px;
 }

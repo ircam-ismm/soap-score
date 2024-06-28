@@ -16,6 +16,10 @@ class SoapScoreGenerator extends LitElement {
     :host > div {
       margin: 4px;
     }
+
+    :host  .block {
+      display: inline-block;
+    }
   `;
 
   constructor() {
@@ -31,42 +35,46 @@ class SoapScoreGenerator extends LitElement {
     return html`
       <div>
         <sc-text>Time signature</sc-text>
-        <sc-number
-          min="0"
-          value=${this.signatureUpper}
-          integer
-          @change=${e => {
-            e.stopPropagation();
-            this._generateScore('signatureUpper', e.detail.value);
-          }}
-        ></sc-number>
-        <sc-text style="width: 20px">/</sc-text>
-        <sc-number
-          min="0"
-          value=${this.signatureLower}
-          integer
-          @change=${e => {
-            e.stopPropagation();
-            this._generateScore('signatureLower', e.detail.value);
-          }}
-        ></sc-number>
+        <div class="block">
+          <sc-number
+            min="0"
+            value=${this.signatureUpper}
+            integer
+            @change=${e => {
+              e.stopPropagation();
+              this._generateScore('signatureUpper', e.detail.value);
+            }}
+          ></sc-number>
+          <sc-text style="width: 20px">/</sc-text>
+          <sc-number
+            min="0"
+            value=${this.signatureLower}
+            integer
+            @change=${e => {
+              e.stopPropagation();
+              this._generateScore('signatureLower', e.detail.value);
+            }}
+          ></sc-number>
+        </div>
       </div>
       <div>
         <sc-text>Tempo</sc-text>
-        <sc-number
-          min="1"
-          value=${this.tempo}
-          @change=${e => {
-            e.stopPropagation();
-            this._generateScore('tempo', e.detail.value);
-          }}
-        ></sc-number>
-        <sc-tap-tempo
-          @change=${e => {
-            e.stopPropagation();
-            this._generateScore('tempo', parseFloat(e.detail.value.toFixed(2)));
-          }}
-        ></sc-tap-tempo>
+        <div class="block">
+          <sc-number
+            min="1"
+            value=${this.tempo}
+            @change=${e => {
+              e.stopPropagation();
+              this._generateScore('tempo', e.detail.value);
+            }}
+          ></sc-number>
+          <sc-tap-tempo
+            @change=${e => {
+              e.stopPropagation();
+              this._generateScore('tempo', parseFloat(e.detail.value.toFixed(2)));
+            }}
+          ></sc-tap-tempo>
+        </div>
       </div>
       <div>
         <sc-text>BPM basis</sc-text>

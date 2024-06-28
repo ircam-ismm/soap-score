@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from 'lit';
+import { html, LitElement, css, nothing } from 'lit';
 import SoapScoreInterpreter from '../../../../src/SoapScoreInterpreter.js';
 
 import '@ircam/sc-components/sc-editor.js';
@@ -15,6 +15,13 @@ class SoapScoreEditor extends LitElement {
     score: { type: String },
   };
 
+  static styles = css`
+    :host sc-editor {
+      width: 95%;
+      height: 95%;
+    }
+  `;
+
   constructor() {
     super();
 
@@ -24,17 +31,17 @@ class SoapScoreEditor extends LitElement {
 
   render() {
     return html`
+      <sc-editor
+        save-button
+        value=${this.score}
+        @change=${this._onScoreChange}
+      ></sc-editor>
       <sc-button
         @input=${e => {
           const $editor = e.target.nextElementSibling;
           $editor.save();
         }}
       >Save score</sc-button>
-      <sc-editor
-        save-button
-        value=${this.score}
-        @change=${this._onScoreChange}
-      ></sc-editor>
       ${this.err
         ? html`<p>${this.err.message}</p>`
         : nothing

@@ -14,13 +14,19 @@ class SoapFlashBeatRenderer extends LitElement {
     }
 
     :host > div {
-      margin-bottom: 4px;
+      margin-bottom: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      top: 25%;
     }
 
     :host sc-flash {
-
+      width: 45%;
+      height: 50px;
+      margin: 3px;
     }
-
 
   `;
 
@@ -37,19 +43,23 @@ class SoapFlashBeatRenderer extends LitElement {
     // use Math.random() as a hack to trigger the flashes even if we have two
     // consecutive beats with same value, e.g. 2 bars with absolute duration
     return html`
-      <sc-flash class="downbeat"
-        .active=${this.beat !== null && this.beat === 1 ? Math.random() : null}
-      ></sc-flash>
-      <sc-flash class="upbeat"
-        .active=${this.beat !== null && this.beat !== 1 ? Math.random() : null}
-      ></sc-flash>
+      <div>
+        <sc-flash class="downbeat"
+          style ="--sc-flash-active: var(--sc-color-secondary-3);"
+          .active=${this.beat !== null && this.beat === 1 ? Math.random() : null}
+        ></sc-flash>
+        <sc-flash class="upbeat"
+          style ="--sc-flash-active: var(--sc-color-secondary-1);"
+          .active=${this.beat !== null && this.beat !== 1 ? Math.random() : null}
+        ></sc-flash>
+      </div>
     `;
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    if (!this.transport.has(this.process)) {
+    if (!this.transport.has(this.process)) {  
       this.transport.add(this.process);
     }
   }
