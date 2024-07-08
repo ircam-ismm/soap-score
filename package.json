@@ -15,7 +15,7 @@
     "access": "public"
   },
   "exports": {
-    ".": "./src/",
+    "./*": "./src/*",
     "./components/*": "./src/components/*",
     "./parsers/*": "./src/parsers/*"
   },

@@ -1,7 +1,7 @@
 import { Scheduler, Transport } from '@ircam/sc-scheduling';
 import { html, render, nothing } from 'lit';
 
-import SoapScoreInterpreter from '../../../src/SoapScoreInterpreter.js';
+import SoapScoreInterpreter from '@ircam/soap-score/SoapScoreInterpreter.js';
 import '@ircam/sc-components/sc-select.js';
 
 const layouts = ['default'];
