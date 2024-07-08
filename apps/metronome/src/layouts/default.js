@@ -83,26 +83,19 @@ export default function layoutFull(app) {
           @change=${e => app.setScore(e.detail.value)}
         ></soap-score-editor>
       </div>
-    </div>
 
-    <div class="advanced-options" style="display: none;">
-      <soap-score-examples
-        @change=${e => app.setScore(e.detail.value)}
-      ></soap-score-examples>
-      <br />
-
-      <br />
-      <soap-score-import
-        @change=${e => app.setScore(e.detail.value)}
-      ></soap-score-import>
-      <br />
-      <soap-score-export
-        .score=${app.score}
-        .interpreter=${app.interpreter}
-        .buffers=${app.buffers}
-        sonification=${app.sonification}
-        sonificationMode=${app.sonificationMode}
-      ></soap-score-export>
+      ${app.renderAdvancedOptions
+        ? html`
+          <div class="advanced-options">
+            <soap-score-examples
+              @change=${e => app.setScore(e.detail.value)}
+            ></soap-score-examples>
+            <soap-score-import
+              @change=${e => app.setScore(e.detail.value)}
+            ></soap-score-import>
+          </div>`
+        : nothing
+      }
     </div>
   `;
 }

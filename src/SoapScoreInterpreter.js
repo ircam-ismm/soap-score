@@ -126,6 +126,7 @@ export default class SoapScoreInterpreter {
 
       const bar = event.bar + numFullBars;
       let beat = 1 + (norm % 1);
+
       // mitigate potential floating point errors, e.g. score
       // > BAR 1 [4/4] TEMPO [1/4]=90
       // > BAR 2 2s

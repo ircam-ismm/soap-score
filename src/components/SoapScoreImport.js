@@ -7,11 +7,21 @@ import midi2soap from '../parsers/midi2soap.js';
 import augustin2soap from '../parsers/augustin2soap.js';
 
 class SoapScoreImport extends LitElement {
-  static styles = css``;
+  static styles = css`
+    :host {
+      display: block;
+      padding: 20px 0 0 0;
+    }
+
+    sc-dragndrop {
+      margin: 0 4px 4px 0;
+      width: 100%;
+    }
+  `;
 
   render() {
     return html`
-      <sc-text>Import</sc-text>
+      <sc-text>Import score</sc-text>
       <sc-dragndrop
         @change=${e => this._parseSoap(e)}
       >drag'n'drop SO(a)P</sc-dragndrop>

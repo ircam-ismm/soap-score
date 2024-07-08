@@ -6,6 +6,8 @@ import '@ircam/sc-components/sc-flash.js';
 import './utils/soap-chenillard.js';
 import './utils/soap-progress-bar.js';
 
+const easing = x => x + (Math.sin(x * Math.PI * 2) / 28);
+
 class SoapProgressBeatRenderer extends LitElement {
   static styles = css`
     :host {
@@ -58,7 +60,8 @@ class SoapProgressBeatRenderer extends LitElement {
             const currentPosition = this.transport.currentPosition;
             const { position, duration, beat } = this.infos;
             const norm = Math.min(1, Math.max(0, (currentPosition - position) / duration));
-            return (beat % 2 === 0) ? 1 - norm : norm;
+            const animated = easing(norm);
+            return (beat % 2 === 0) ? 1 - animated : animated;
           }}
         ></soap-chenillard>
       `

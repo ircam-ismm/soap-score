@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit';
+import { html, LitElement, css } from 'lit';
 import * as fixtures from '../../tests/fixtures.js';
 
 import '@ircam/sc-components/sc-select.js';
@@ -13,9 +13,18 @@ for (let name in fixtures) {
 }
 
 class SoapScoreExamples extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+    }
+
+    sc-select {
+      width: 100%;
+    }
+  `
+
   constructor() {
     super();
-
     this.value = null;
   }
 

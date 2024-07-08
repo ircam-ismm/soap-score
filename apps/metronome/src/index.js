@@ -5,11 +5,15 @@ import App from './App.js';
 const audioContext = new AudioContext();
 const loader = new AudioBufferLoader(audioContext);
 
+// let defaultScore = `\
+// BAR 1 [4/4] TEMPO [1/4]=90
+// BAR 2 2s
+// BAR 3 2s
+// BAR 4 [3+2+2/8] TEMPO [3/8]=60
+// `;
+
 let defaultScore = `\
-BAR 1 [4/4] TEMPO [1/4]=90
-BAR 2 2s
-BAR 3 2s
-BAR 4 [3+2+2/8] TEMPO [3/8]=60
+BAR 1 [4/4] TEMPO [1/4]=60
 `;
 
 const searchParams = new URLSearchParams(window.location.search);

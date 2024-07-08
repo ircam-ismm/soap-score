@@ -5,13 +5,14 @@ import SoapScoreInterpreter from '../../../src/SoapScoreInterpreter.js';
 import '@ircam/sc-components/sc-select.js';
 
 const layouts = ['default'];
-let renderAdvancedOptions = false;
 
 class App {
   constructor(audioContext, buffers, defaultScore) {
     this.audioContext = audioContext;
     this.buffers = buffers;
+
     this.layout = 'default';
+    this.renderAdvancedOptions = true;
 
     const getTime = () => audioContext.currentTime;
     this.scheduler = new Scheduler(getTime);
@@ -56,12 +57,10 @@ class App {
         <div>
           <img src="./assets/logo-200x200.png" />
           <h1>SO(a)P Metronome</h1>
-           <a href="#" @click=${e => {
-            e.preventDefault();
-            console.log('@todo - syntax');
-            // renderDoc = !renderDoc;
-            // app.render();
-          }}>Syntax documentation</a>
+           <a
+            href="https://github.com/ircam-ismm/soap-score/blob/main/docs/SYNTAX.md"
+            target="_blank"
+          >Syntax documentation</a>
         </div>
         <div style="font-size: 0;">
           <!-- <sc-select
@@ -74,9 +73,8 @@ class App {
           <sc-icon
             type="burger"
             @input=${e => {
-              console.log('@todo - advanced options');
-              // renderAdvancedOptions = !renderAdvancedOptions;
-              // app.render();
+              this.renderAdvancedOptions = !this.renderAdvancedOptions;
+              this.render();
             }}
           ></sc-icon>
         </div>
