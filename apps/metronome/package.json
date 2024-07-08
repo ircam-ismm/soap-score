@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "concurrently \"esbuild src/index.js --bundle --sourcemap --format=esm --watch --outdir=build\" \"serve\""
+    "dev": "concurrently \"esbuild src/index.js --bundle --sourcemap --format=esm --watch --outdir=build\" \"serve\"",
+    "build": "esbuild src/index.js --bundle --minify --sourcemap --format=esm --outdir=build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
@@ -11,7 +12,7 @@
     "@ircam/sc-components": "^3.0.0-alpha.66",
     "@ircam/sc-loader": "^1.0.0",
     "@ircam/sc-scheduling": "^1.0.0",
-    "@ircam/soap-score": "^1.1.0",
+    "@ircam/soap-score": "^1.1.1",
     "lit": "^3.1.4"
   },
   "name": "metronome"
