@@ -4,3 +4,5 @@ package-lock.json
 
 node_modules/
 _resources/Grisey - Tempus ex Machina.pdf
+
+apps/metronome/build
