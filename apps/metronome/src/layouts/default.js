@@ -14,10 +14,6 @@ import '@ircam/soap-score/components/SoapScoreEditor.js';
 import '@ircam/soap-score/components/SoapScoreImport.js';
 import '@ircam/soap-score/components/SoapScoreExport.js';
 
-// let renderDoc = false;
-// let renderAdvancedOptions = false;
-// const breakpoint = 960;
-
 export default function layoutFull(app) {
   return html`
     <div id="full">

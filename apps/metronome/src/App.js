@@ -12,7 +12,7 @@ class App {
     this.buffers = buffers;
 
     this.layout = 'default';
-    this.renderAdvancedOptions = true;
+    this.renderAdvancedOptions = false;
 
     const getTime = () => audioContext.currentTime;
     this.scheduler = new Scheduler(getTime);

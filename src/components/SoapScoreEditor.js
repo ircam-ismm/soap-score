@@ -49,7 +49,7 @@ class SoapScoreEditor extends LitElement {
       ></sc-editor>
       <sc-button
         @input=${e => {
-          const $editor = e.target.nextElementSibling;
+          const $editor = e.target.previousElementSibling;
           $editor.save();
         }}
       >Save score</sc-button>
