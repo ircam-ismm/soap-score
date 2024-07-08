@@ -2,19 +2,16 @@ import { Scheduler, Transport } from '@ircam/sc-scheduling';
 import { html, render, nothing } from 'lit';
 
 import SoapScoreInterpreter from '../../../src/SoapScoreInterpreter.js';
-
-// import SoapProcessor from './processors/SoapProcessor.js';
-
 import '@ircam/sc-components/sc-select.js';
 
-const layouts = ['mobile', 'full', 'test', 'conductor']
+const layouts = ['default'];
 let renderAdvancedOptions = false;
 
 class App {
   constructor(audioContext, buffers, defaultScore) {
     this.audioContext = audioContext;
     this.buffers = buffers;
-    this.layout = 'full';
+    this.layout = 'default';
 
     const getTime = () => audioContext.currentTime;
     this.scheduler = new Scheduler(getTime);
@@ -31,14 +28,15 @@ class App {
     this.setScore(defaultScore);
   }
 
+  setLayout(layout) {
+    this.layout = layout;
+    this.render();
+  }
+
   setScore(score) {
     this.transport.stop();
-
     this.score = score;
     this.interpreter = new SoapScoreInterpreter(score);
-    // const processor = new SoapProcessor(this.interpreter);
-    // this.transport.add(processor.process);
-
     this.render();
   }
 
@@ -60,32 +58,30 @@ class App {
           <h1>SO(a)P Metronome</h1>
            <a href="#" @click=${e => {
             e.preventDefault();
-            renderDoc = !renderDoc;
-            app.render();
+            console.log('@todo - syntax');
+            // renderDoc = !renderDoc;
+            // app.render();
           }}>Syntax documentation</a>
         </div>
-         <div>
-          <sc-select
-            .options=${layouts}
-            @change=${e => {
-              this.layout = e.detail.value;
-              this.render();
-            }}
-          ></sc-select>
-        </div>
         <div style="font-size: 0;">
+          <!-- <sc-select
+            value=${this.layout}
+            .options=${layouts}
+            @change=${e => this.setLayout(e.detail.value)}
+          ></sc-select> -->
           <sc-clock format="hh:mm:ss"></sc-clock>
           <sc-icon type="github" href="https://github.com/ircam-ismm/soap-score"></sc-icon>
           <sc-icon
             type="burger"
             @input=${e => {
-              renderAdvancedOptions = !renderAdvancedOptions;
-              app.render();
+              console.log('@todo - advanced options');
+              // renderAdvancedOptions = !renderAdvancedOptions;
+              // app.render();
             }}
           ></sc-icon>
         </div>
       </header>
-      <h1>${inner}</h1>
+      ${inner}
     `, document.body)
   }
 }

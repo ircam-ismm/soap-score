@@ -38,7 +38,6 @@ class App {
       // lookahead: Math.max(0.05, this.audioContext.outputLatency + 0.02),
     });
 
-    alert(this.audioContext.outputLatency);
     this.transport = new Transport(this.scheduler, this.global.get('transportState'));
 
     this.global.onUpdate(updates => {

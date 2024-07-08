@@ -124,7 +124,19 @@ export default class SoapScoreInterpreter {
       const norm = delta / event.duration;
       const numFullBars = Math.floor(norm);
 
-      return { bar: event.bar + numFullBars, beat: 1 + (norm % 1) };
+      const bar = event.bar + numFullBars;
+      let beat = 1 + (norm % 1);
+      // mitigate potential floating point errors, e.g. score
+      // > BAR 1 [4/4] TEMPO [1/4]=90
+      // > BAR 2 2s
+      // > BAR 3 [4/4] TEMPO [1/4]=90
+      // > BAR 4 2s
+      // crashes at bar 5
+      if (Math.abs(Math.round(beat) - beat) < 1e-3) {
+        beat = Math.round(beat);
+      }
+
+      return { bar, beat };
     } else {
       // just brute force things with _getBeatDuration as it will magically handle
       // irregular (and additive) signature as well as on going curves
@@ -151,6 +163,10 @@ export default class SoapScoreInterpreter {
         if (Math.abs(targetPosition - position) < 1e-3) {
           break;
         }
+      }
+
+      if (Math.abs(Math.round(beat) - beat) < 1e-3) {
+        beat = Math.round(beat);
       }
 
       return { bar, beat };

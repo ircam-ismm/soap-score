@@ -1,8 +1,7 @@
 {
-  "name": "soap-score",
+  "name": "@ircam/soap-score",
   "version": "1.0.1",
   "description": "",
-  "type": "module",
   "scripts": {
     "test": "mocha tests/*.spec.js",
     "test:only": "mocha"
@@ -11,6 +10,15 @@
     "Benjamin Matuszewski",
     "Etienne Démoulin"
   ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/",
+    "./components/*": "./src/components/*",
+    "./parsers/*": "./src/parsers/*"
+  },
   "license": "BSD-3-Clause",
   "devDependencies": {
     "chai": "^4.3.7",
@@ -18,11 +26,17 @@
   },
   "dependencies": {
     "@ircam/sc-utils": "^1.0.1",
+    "audiobuffer-to-wav": "^1.0.0",
     "lodash.chunk": "^4.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
-    "lodash.sortby": "^4.7.0",
     "midi-parser-js": "^4.0.4",
     "parse-duration": "^1.0.2"
+  },
+  "peerDependencies": {
+    "@ircam/sc-components": "^3.0.0-alpha.66",
+    "@ircam/sc-scheduling": "^1.0.0",
+    "lit": "^3.1.4",
+    "vexflow": "^4.2.4"
   }
 }
