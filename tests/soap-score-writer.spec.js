@@ -2,8 +2,7 @@ import { assert } from 'chai';
 
 import { parseScore } from '../src/soap-score-parser.js';
 import { writeScore } from '../src/soap-score-writer.js';
-
-import * as fixtures from './fixtures.js';
+import * as fixtures from '../src/utils/fixtures.js';
 
 describe('soap.writeScore', () => {
     describe('# Basics', () => {

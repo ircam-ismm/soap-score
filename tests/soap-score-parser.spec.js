@@ -1,8 +1,7 @@
 import { assert } from 'chai';
 
 import { parseScore } from '../src/soap-score-parser.js';
-
-import * as fixtures from './fixtures.js';
+import * as fixtures from '../src/utils/fixtures.js';
 
 describe(`> soap.parseScore(score)`, () => {
   describe('# Basics', () => {

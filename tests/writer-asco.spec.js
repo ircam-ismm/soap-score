@@ -3,8 +3,7 @@ import { assert } from 'chai';
 import soap2asco from '../src/parsers/soap2asco.js';
 import { writeScore } from '../src/soap-score-writer.js';
 import { parseScore } from '../src/soap-score-parser.js';
-
-import * as fixtures from './fixtures.js';
+import * as fixtures from '../src/utils/fixtures.js';
 
 describe('soap.writeScore', () => {
   describe('# Basics', () => {

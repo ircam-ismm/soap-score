@@ -1,5 +1,5 @@
 import { html, LitElement, css } from 'lit';
-import * as fixtures from '../../tests/fixtures.js';
+import * as fixtures from '../utils/fixtures.js';
 
 import '@ircam/sc-components/sc-select.js';
 // import '@ircam/sc-components/sc-text.js'

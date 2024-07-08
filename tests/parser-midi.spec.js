@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 
 import midi2soap from '../src/parsers/midi2soap.js';
-import { writeScore } from '../src/soap-score-writer.js';
+// import { writeScore } from '../src/soap-score-writer.js';
 import { parseScore } from '../src/soap-score-parser.js';
 
 describe('soap.parse.midi2soap', () => {
@@ -108,6 +108,7 @@ BAR 3 "section B" \
       //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
+
     it('## Example 2', () => {
       const input = [
         { deltaTime: 0, type: 255, metaType: 88, data: [ 4, 2, 24, 8 ] },
@@ -125,7 +126,8 @@ BAR 1 [4/4] TEMPO [1/4]=120 "To Flute"
       //console.log(outputScore);
       assert.deepEqual(outputData, expectedData);
     });
-    it.only('## Example 3', () => {
+
+    it('## Example 3', () => {
       const input = [
         { deltaTime: 0, type: 255, metaType: 88, data: [ 4, 2, 24, 8 ] },
         { deltaTime: 0, type: 255, metaType: 81, data: 500000 },

@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 
 import augustin2soap from '../src/parsers/augustin2soap.js';
-import { writeScore } from '../src/soap-score-writer.js';
+// import { writeScore } from '../src/utils/soap-score-writer.js';
 import { parseScore } from '../src/soap-score-parser.js';
 
 describe('soap.parse.augustin2soap', () => {
