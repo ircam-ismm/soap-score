@@ -6,7 +6,7 @@
     "test": "mocha tests/*.spec.js",
     "test:only": "mocha"
   },
-  "author": [
+  "contributors": [
     "Benjamin Matuszewski",
     "Etienne Démoulin"
   ],
@@ -34,7 +34,7 @@
     "parse-duration": "^1.0.2"
   },
   "peerDependencies": {
-    "@ircam/sc-components": "^3.0.0-alpha.66",
+    "@ircam/sc-components": "^3.0.0-alpha.74",
     "@ircam/sc-scheduling": "^1.0.0",
     "lit": "^3.1.4",
     "vexflow": "^4.2.4"
