@@ -24,7 +24,7 @@ class SoapScoreEditor extends LitElement {
     }
 
     :host sc-editor {
-      width: 99%;
+      width: 100%;
       flex: 1;
     }
 
