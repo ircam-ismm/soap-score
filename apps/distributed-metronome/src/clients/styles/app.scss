@@ -24,6 +24,7 @@ html {
 body {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
 }
 
 * {
@@ -77,3 +78,181 @@ body.loading {
     padding: 20px;
   }
 }
+
+
+header {
+  height: 40px;
+  line-height: 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #343434;
+}
+
+header > div {
+  display: flex;
+}
+
+header h1 {
+  font-size: 14px;
+  line-height: 40px;
+  margin: 0;
+  padding: 0 80px 0 40px;
+  display: inline-block;
+}
+
+header a {
+  color: white;
+  font-size: 12px;
+  line-height: 40px;
+}
+
+header sc-icon {
+  width: 40px;
+  height: 40px;
+}
+
+header sc-clock, header sc-select {
+  height: 40px;
+}
+
+#full {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+}
+
+#full .row-1 {
+  height: 240px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+  #full .row-1 > div {
+    flex: 1;
+  }
+
+  #full .row-1 .col-1 {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #full .row-1 .col-1 div {
+    display: flex;
+    flex: 1;
+  }
+
+  #full .row-1 .col-1 soap-progress-beat-renderer {
+    height: 40px;
+  }
+
+  #full .row-1 .col-2 {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #full .row-1 .col-2 sc-clock, #full .row-1 .col-2 soap-score-location-renderer {
+    width: 100%;
+    height: 50%;
+  }
+
+  #full .row-1 .col-2 sc-clock {
+    font-size: 30px;
+  }
+
+#full .row-2 {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+  #full .row-2 .col-1 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #full .row-2 .col-2 {
+    flex: 1;
+  }
+
+#full .advanced-options {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+/*  height: 100%;*/
+  background-color: #121212;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.5);
+}
+
+@media (max-width: 920px) {
+  header sc-clock,
+  header sc-icon,
+  header sc-select,
+  header a {
+    display: none;
+  }
+
+  #full .row-2 .col-2 {
+    display: none;
+  }
+
+  #full .row-1 .col-2 sc-clock, #full .row-1 .col-2 soap-score-location-renderer {
+    font-size: 20px;
+  }
+
+  #full .row-1 .col-1 div {
+    flex-direction: column;
+  }
+
+  #full .advanced-options {
+    display: none;
+  }
+}
+
+
+
+/*#conductor {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#conductor .row {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#conductor .row-2 {
+  flex-direction: row;
+  flex: 5;
+}
+
+#conductor .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#conductor .col-1 {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.fit {
+  width:100%;
+  height: 50px;
+  font-size: 34px;
+  margin-bottom: 3px;
+}*/
