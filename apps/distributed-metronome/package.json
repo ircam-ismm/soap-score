@@ -19,8 +19,9 @@
   "dependencies": {
     "@ircam/sc-components": "^3.0.0-alpha.60",
     "@ircam/sc-loader": "^1.0.0",
-    "@ircam/sc-scheduling": "^0.1.7",
+    "@ircam/sc-scheduling": "^1.0.0",
     "@ircam/sc-utils": "^1.4.0",
+    "@ircam/soap-score": "^1.1.3",
     "@soundworks/core": "^4.0.0-alpha.21",
     "@soundworks/helpers": "^1.0.0-alpha.12",
     "@soundworks/plugin-platform-init": "^1.0.0-alpha.5",

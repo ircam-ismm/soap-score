@@ -6,16 +6,19 @@ import SoapScoreInterpreter from '../../../../../src/SoapScoreInterpreter.js';
 // import SoapProcessor from './processors/SoapProcessor.js';
 
 import '@ircam/sc-components/sc-clock.js';
+
 import '../components/SoapTransportControl.js';
-import '../../../../metronome/src/components/SoapMetronomeRenderer.js';
-import '../../../../metronome/src/components/SoapFlashBeatRenderer.js';
-import '../../../../metronome/src/components/SoapScoreLocationRenderer.js';
-import '../../../../metronome/src/components/SoapStaveRenderer.js';
-import '../../../../metronome/src/components/SoapScoreExamples.js';
-import '../../../../metronome/src/components/SoapScoreGenerator.js';
-import '../../../../metronome/src/components/SoapScoreEditor.js';
-import '../../../../metronome/src/components/SoapScoreImport.js';
-import '../../../../metronome/src/components/SoapScoreExport.js';
+// import '@ircam/soap-score/components/SoapTransportControl.js';
+
+import '@ircam/soap-score/components/SoapMetronomeRenderer.js';
+import '@ircam/soap-score/components/SoapFlashBeatRenderer.js';
+import '@ircam/soap-score/components/SoapScoreLocationRenderer.js';
+import '@ircam/soap-score/components/SoapStaveRenderer.js';
+import '@ircam/soap-score/components/SoapScoreExamples.js';
+import '@ircam/soap-score/components/SoapScoreGenerator.js';
+import '@ircam/soap-score/components/SoapScoreEditor.js';
+import '@ircam/soap-score/components/SoapScoreImport.js';
+import '@ircam/soap-score/components/SoapScoreExport.js';
 
 class App {
   constructor(client, $container, audioContext, buffers, defaultScore) {
