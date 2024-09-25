@@ -40,6 +40,10 @@ header > div {
   display: flex;
 }
 
+header > div >img {
+  width: 40px;
+}
+
 header h1 {
   font-size: 14px;
   line-height: 40px;
@@ -198,8 +202,8 @@ header sc-clock, header sc-select {
 }
 
 .fit {
-  width:100%; 
-  height: 50px; 
-  font-size: 34px; 
+  width:100%;
+  height: 50px;
+  font-size: 34px;
   margin-bottom: 3px;
 }*/

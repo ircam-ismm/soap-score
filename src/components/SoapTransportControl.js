@@ -231,7 +231,6 @@ class SoapTransportControl extends LitElement {
 
   process(position, audioTime, event) {
     if (event instanceof TransportEvent) {
-      // console.log(event);
       if (['start', 'pause', 'stop'].includes(event.type)) {
         this.state = event.type;
         setTimeout(() => this.requestUpdate(), event.tickLookahead * 1000);

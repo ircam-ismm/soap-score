@@ -17,7 +17,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@ircam/sc-components": "^3.0.0-alpha.60",
+    "@ircam/sc-components": "^3.0.0-alpha.82",
     "@ircam/sc-loader": "^1.0.0",
     "@ircam/sc-scheduling": "^1.0.0",
     "@ircam/sc-utils": "^1.4.0",
