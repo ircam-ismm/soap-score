@@ -4,7 +4,7 @@ import { TransportEvent } from '@ircam/sc-scheduling';
 import '@ircam/sc-components/sc-select.js';
 import '@ircam/sc-components/sc-text.js';
 
-import MetronomeRenderer from './utils/MetronomeRenderer';
+import MetronomeRenderer from './utils/MetronomeRenderer.js';
 
 class SoapMetronomeRenderer extends LitElement {
   static styles = css`

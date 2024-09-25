@@ -10,7 +10,6 @@ import '@ircam/sc-components/sc-text.js'
 class SoapScoreExport extends LitElement {
   static styles = css`
     :host {
-/*      display: flex;*/
       box-sizing: border-box;
       padding: 20px;
     }
